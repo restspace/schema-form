@@ -1,0 +1,25 @@
+{
+  "name": "infrapac-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "files": ["lib/**/*"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamesej/infrapac-lib.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jamesej/infrapac-lib/issues"
+  },
+  "homepage": "https://github.com/jamesej/infrapac-lib#readme",
+  "devDependencies": {
+    "typescript": "^3.5.3"
+  }
+}
