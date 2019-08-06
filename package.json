@@ -1,25 +1,50 @@
 {
-  "name": "infrapac-lib",
+  "name": "schema-form",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "files": ["lib/**/*"],
+  "main": "build/index.js",
+  "module": "build/index.es.js",
+  "jsnext:main": "build/index.es.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "rollup -c"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamesej/infrapac-lib.git"
+    "url": "git+https://github.com/jamesej/schema-form.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jamesej/infrapac-lib/issues"
+    "url": "https://github.com/jamesej/schema-form/issues"
   },
-  "homepage": "https://github.com/jamesej/infrapac-lib#readme",
+  "homepage": "https://github.com/jamesej/schema-form#readme",
   "devDependencies": {
+    "@types/react": "^16.8.24",
+    "@types/react-dom": "^16.8.5",
+    "@types/react-test-renderer": "^16.8.3",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-scripts-ts": "^3.1.0",
+    "react-test-renderer": "^16.8.6",
+    "rollup": "^1.18.0",
+    "rollup-plugin-commonjs": "^10.0.2",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.0",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-typescript2": "^0.22.1",
     "typescript": "^3.5.3"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
+  },
+  "dependencies": {
+    "ajv": "^6.10.2"
   }
 }

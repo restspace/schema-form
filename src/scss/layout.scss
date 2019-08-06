@@ -1,0 +1,40 @@
+.sf-form {
+    background-color: whitesmoke;
+    list-style-type: none;
+    padding: 0;
+    border-radius: 3px;
+}
+.sf-row {
+    display: flex;
+    justify-content: flex-end;
+    padding: .5em 1em;
+}
+.sf-object {
+    padding-left: 2em;
+}
+.sf-row > label.sf-caption {
+    padding: .5em 1em .5em 0;
+    flex: 1;
+    max-width: 10rem;
+    text-align: left;
+}
+.sf-row > .sf-control {
+    flex: 2;
+    border: 1px solid grey;
+}
+.sf-row > .sf-control,
+.sf-row > button {
+    padding: .5em;
+}
+.sf-row > .sf-control.sf-has-error {
+    border-color: red;
+}
+.sf-row > button {
+    background: gray;
+    color: white;
+    border: 0;
+}
+.sf-error-row {
+    justify-content: flex-start;
+    color: red;
+}
