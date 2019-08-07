@@ -31,18 +31,22 @@ export function SchemaFormComponent({
             case "string":
                 return (<input type="text" name={name} id={name} value={(value || '').toString()} className={classes("sf-string")} onChange={handleChange} />)
             case "boolean":
-                return (<input type="checkbox" name={name} id={name} checked={value as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
+                return (<input type="checkbox" name={name} id={name} checked={(value || false) as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
             case "number":
                 return (<input type="number" name={name} id={name} value={(value || '').toString()} className={classes("sf-number")} onChange={handleNumberChange} />)
             case "date":
                 return (<input type="date" name={name} id={name} value={(value || '').toString()} className={classes("sf-date")} onChange={handleChange} />)
             case "email":
                 return (<input type="email" name={name} id={name} value={(value || '').toString()} className={classes("sf-email")} onChange={handleChange} />)
+            case "password":
+                return (<input type="password" name={name} id={name} value={(value || '').toString()} className={classes("sf-password")} onChange={handleChange} />)
             case "hidden":
                 return (<input type="hidden" name={name} id={name} value={(value || '').toString()} className="sf-hidden" onChange={handleChange} />)
+            case "textarea":
+                return (<textarea name={name} id={name} value={(value || '').toString()} className={classes("sf-textarea")} onChange={handleChange} />)
             case "enum":
                 return (
-                <select name={name} id={name} value={value.toString()} className={classes("sf-enum")} onChange={handleChange}>
+                <select name={name} id={name} value={(value || '').toString()} className={classes("sf-enum")} onChange={handleChange}>
                     {schema['enum'].map((val: string) =>
                         (<option key={val} value={val}>{val}</option>))}
                 </select>
@@ -60,6 +64,7 @@ export function SchemaFormComponent({
             {schemaInput(isError)}
         </div>
         {isError && <div className="sf-row sf-error-row">
+            <label className="sf-caption"></label>
             {errors.map((err, idx) => (
                 <label key={idx} className="sf-error" htmlFor={name}>{err.message}</label>
             ))}

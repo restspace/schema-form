@@ -24,6 +24,28 @@ const schema = {
       type: "string",
       format: "date"
     },
+    password: {
+      type: "string",
+      format: "password"
+    },
+    comments: {
+      type: "string",
+      editor: "textarea"
+    },
+    things: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          first: {
+            type: "string"
+          },
+          second: {
+            type: "string"
+          }
+        }
+      }
+    },
     address: {
       type: "object",
       properties: {
@@ -44,6 +66,8 @@ const value = {
   firstName: "John",
   lastName: "Smith",
   canContact: false,
+  password: "abc",
+  things: [ { first: "thing1", second: "thing2" } ],
   address: {
     addressLine: "13 Rose St",
     postcode: ""

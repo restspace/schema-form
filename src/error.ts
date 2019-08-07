@@ -4,12 +4,18 @@ export class ErrorObject {
     [ errorName: string ]: Ajv.ErrorObject[] | ErrorObject
 }
 
+export function getAjv(): Ajv.Ajv {
+    const ajv = new Ajv({ allErrors: true });
+    ajv.addFormat("password", (val) => true);
+    return ajv;
+}
+
 export function rectifyErrorPaths(errors: Ajv.ErrorObject[]): Ajv.ErrorObject[] {
     return errors.map((e) => ({
         ...e,
         dataPath: e.params['missingProperty']
-            ? e.dataPath + '.' + e.params['missingProperty'] 
-            : e.dataPath
+            ? e.dataPath.replace('[', '.[') + '.' + e.params['missingProperty'] 
+            : e.dataPath.replace('[', '.[')
     }));
 }
 

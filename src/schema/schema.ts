@@ -15,6 +15,7 @@ export function fieldType(schema: object): string {
         case "string-date":
         case "string-time":
         case "string-email":
+        case "string-password":
             return schema['format'];
         default:
             return type;
