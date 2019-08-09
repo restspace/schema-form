@@ -1,6 +1,8 @@
 import React from 'react'
-import { ISchemaContainerProps, ComponentForType } from 'components/schema-form'
+import { ComponentForType } from 'components/component-for-type'
 import { ErrorObject } from 'error'
+import { fieldCaption } from 'schema/schema'
+import { ISchemaContainerProps } from 'components/schema-form-interfaces'
 
 export function SchemaFormObject({
     schema,
@@ -8,25 +10,34 @@ export function SchemaFormObject({
     value,
     errors,
     onChange,
+    onFocus,
+    onBlur,
     context
 }: ISchemaContainerProps): React.ReactElement {
-    function handleChange(key: string, newValue: object) {
-        onChange({ ...value, [key]: newValue });
+    const pathEl = path.length ? path[path.length - 1] : '';
+    const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
+
+    function handleChange(key: string, newValue: object, path: string[]) {
+        onChange({ ...value, [key]: newValue }, path);
     }
 
-    const objectClass = path.length === 0 ? "" : "sf-object sf-" + path[path.length - 1];
     return (
         <div className={objectClass}>
+            <div className="sf-title">{fieldCaption(schema, path) || '\u00A0'}</div>
+            <fieldset className="sf-object-fieldset">
             {Object.entries(schema['properties']).map(([key, subSchema]) => (
                 <ComponentForType
                     schema={subSchema as object}
                     path={[ ...path, key]}
                     value={value && value[key]}
                     errors={(errors instanceof ErrorObject) ? errors[key] : []}
-                    onChange={(value) => handleChange(key, value)}
+                    onChange={(value, path) => handleChange(key, value, path)}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
                     key={key}
                     context={context}/>
             ))}
+            </fieldset>
         </div>
     )
 }

@@ -15,7 +15,8 @@ const schema = {
       maxLength: 10
     },
     lastName: {
-      type: "string"
+      type: "string",
+      readOnly: true
     },
     canContact: {
       type: "boolean"
@@ -34,6 +35,7 @@ const schema = {
     },
     things: {
       type: "array",
+      readOnly: true,
       items: {
         type: "object",
         properties: {
@@ -77,18 +79,24 @@ const value = {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { value, errors: [] };
+    this.state = { value, errors: [], path: '', focus: '' };
   }
 
   render() {
     return (
       <>
       <div className="App">
-        <SchemaForm schema={schema} value={value} onChange={(value, errors) => this.setState({ value, errors })} />
+        <SchemaForm schema={schema} value={value}
+          onChange={(value, path, errors) =>
+            this.setState({ value, errors, path: path.join('.') })}
+          onFocus={(path) =>
+            this.setState({focus: path.join('.')})} />
       </div>
       <div>
-        Value: {JSON.stringify(this.state.value)}
-        Errors: {JSON.stringify(this.state.errors)}
+        <div>Value: {JSON.stringify(this.state.value)}</div>
+        <div>Errors: {JSON.stringify(this.state.errors)}</div>
+        <div>Path: {this.state.path}</div>
+        <div>Focus: {this.state.focus}</div>
       </div>
       </>
     );

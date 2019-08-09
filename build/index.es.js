@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -26,6 +26,14 @@ var __assign = function() {
     return __assign.apply(this, arguments);
 };
 
+function isEmpty(map) {
+    if (map === null)
+        return false;
+    for (var key in map) {
+        return !map.hasOwnProperty(key);
+    }
+    return true;
+}
 function deepCopy(obj) {
     var copy;
     // Handle the 3 simple types, and null or undefined
@@ -92,6 +100,52 @@ function camelToTitle(camel) {
     words.push(camel.substring(start, camel.length).toLowerCase());
     return words.join(' ').replace(/[a-z]/i, function (ltr) { return ltr.toUpperCase(); });
 }
+function getByPath(value, path) {
+    if (path.length === 0)
+        return value;
+    var head = path[0], tail = path.slice(1);
+    if (Array.isArray(value)) {
+        return getByPath(value[indexFromPathElement(head)], tail);
+    }
+    else if (typeof value === 'object') {
+        return getByPath(value[head], tail);
+    }
+    else {
+        return undefined;
+    }
+}
+function setByPath(target, path, value) {
+    if (path.length === 0)
+        throw ("path too short to set");
+    if (target === undefined)
+        throw ("path does not exist on target");
+    var head = path[0], tail = path.slice(1);
+    if (Array.isArray(value)) {
+        if (tail.length === 0) {
+            target[indexFromPathElement(head)] = value;
+        }
+        else {
+            setByPath(target[indexFromPathElement(head)], tail, value);
+        }
+    }
+    else if (typeof value === 'object') {
+        if (tail.length === 0) {
+            target[head] = value;
+        }
+        else {
+            setByPath(target[head], tail, value);
+        }
+    }
+    else {
+        throw ("path does not exist on target");
+    }
+}
+function indexFromPathElement(pathEl) {
+    if (!/^\[[0-9]+\]$/.test(pathEl))
+        throw ("value at path is array but path element is " + pathEl);
+    var idx = parseInt(pathEl.substring(1, pathEl.length - 1));
+    return idx;
+}
 
 function fieldType(schema) {
     var type = schema['type'];
@@ -113,6 +167,14 @@ function fieldType(schema) {
         default:
             return type;
     }
+}
+function fieldCaption(schema, path) {
+    var pathEl = path && path.length ? path[path.length - 1] : '';
+    var title = schema['title'];
+    var idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
+    return idx
+        ? (title ? title.replace('##', idx) : '')
+        : (title || camelToTitle(pathEl));
 }
 /** manipulate the schema to allow any optional property to have a null value
  * which is appropriate for form input */
@@ -7321,38 +7383,41 @@ function attachError(errorObj, path, error) {
 }
 
 function SchemaFormComponent(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, caption = _a.caption;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, caption = _a.caption;
     var name = path.join('.');
     function handleChange(ev) {
-        onChange(ev.target['value']);
+        onChange(ev.target['value'], path);
     }
     function handleCheckChange(ev) {
-        onChange(ev.target['checked']);
+        onChange(ev.target['checked'], path);
     }
-    function handleNumberChange(ev) {
-        onChange(parseFloat(ev.target['value']));
+    function handleFocus() {
+        onFocus(path);
     }
     function schemaInput(isError) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
+        var readOnly = schema['readOnly'] || false;
+        var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: onBlur };
+        var commonProps = __assign({}, baseProps, { value: (value || '').toString(), onChange: handleChange });
         switch (fieldType(schema)) {
             case "string":
-                return (React.createElement("input", { type: "text", name: name, id: name, value: (value || '').toString(), className: classes("sf-string"), onChange: handleChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "text", className: classes("sf-string") })));
             case "boolean":
-                return (React.createElement("input", { type: "checkbox", name: name, id: name, checked: (value || false), className: classes("sf-boolean sf-checkbox"), onChange: handleCheckChange }));
+                return (React.createElement("input", __assign({}, baseProps, { type: "checkbox", checked: (value || false), className: classes("sf-boolean sf-checkbox"), onChange: handleCheckChange })));
             case "number":
-                return (React.createElement("input", { type: "number", name: name, id: name, value: (value || '').toString(), className: classes("sf-number"), onChange: handleNumberChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "number", className: classes("sf-number") })));
             case "date":
-                return (React.createElement("input", { type: "date", name: name, id: name, value: (value || '').toString(), className: classes("sf-date"), onChange: handleChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
             case "email":
-                return (React.createElement("input", { type: "email", name: name, id: name, value: (value || '').toString(), className: classes("sf-email"), onChange: handleChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "email", className: classes("sf-email") })));
             case "password":
-                return (React.createElement("input", { type: "password", name: name, id: name, value: (value || '').toString(), className: classes("sf-password"), onChange: handleChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "password", className: classes("sf-password") })));
             case "hidden":
-                return (React.createElement("input", { type: "hidden", name: name, id: name, value: (value || '').toString(), className: "sf-hidden", onChange: handleChange }));
+                return (React.createElement("input", __assign({}, commonProps, { type: "hidden", className: "sf-hidden" })));
             case "textarea":
-                return (React.createElement("textarea", { name: name, id: name, value: (value || '').toString(), className: classes("sf-textarea"), onChange: handleChange }));
+                return (React.createElement("textarea", __assign({}, commonProps, { className: classes("sf-textarea") })));
             case "enum":
-                return (React.createElement("select", { name: name, id: name, value: (value || '').toString(), className: classes("sf-enum"), onChange: handleChange }, schema['enum'].map(function (val) {
+                return (React.createElement("select", __assign({}, commonProps, { className: classes("sf-enum") }), schema['enum'].map(function (val) {
                     return (React.createElement("option", { key: val, value: val }, val));
                 })));
         }
@@ -7361,75 +7426,110 @@ function SchemaFormComponent(_a) {
     var isError = errors.length > 0;
     return (React.createElement(React.Fragment, null,
         React.createElement("div", { className: "sf-row" },
-            React.createElement("label", { htmlFor: name, className: "sf-caption " + (isError && "sf-has-error") }, caption),
+            caption && React.createElement("label", { htmlFor: name, className: "sf-caption " + (isError && "sf-has-error") }, caption),
             schemaInput(isError)),
         isError && React.createElement("div", { className: "sf-row sf-error-row" },
             React.createElement("label", { className: "sf-caption" }),
             errors.map(function (err, idx) { return (React.createElement("label", { key: idx, className: "sf-error", htmlFor: name }, err.message)); }))));
 }
 
+function ComponentForType(props) {
+    var container = props.context.containers[props.schema['type']];
+    if (container) {
+        return container(props) || (React.createElement(React.Fragment, null));
+    }
+    else {
+        return (React.createElement(SchemaFormComponentWrapper, __assign({}, props)));
+    }
+}
+function SchemaFormComponentWrapper(_a) {
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
+    var componentProps = {
+        schema: schema, path: path, value: value, onChange: onChange, onFocus: onFocus, onBlur: onBlur,
+        errors: (errors || []),
+        caption: fieldCaption(schema, path)
+    };
+    var component = context.components[fieldType(schema)];
+    if (component) {
+        return component(componentProps) || (React.createElement(React.Fragment, null));
+    }
+    else {
+        return (React.createElement(React.Fragment, null));
+    }
+}
+
 function SchemaFormArray(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
     var itemSchema = schema['items'];
     var valueArray = (value || []);
-    var arrayClass = path.length === 0 ? "" : "sf-array sf-" + path[path.length - 1];
+    var pathEl = path.length ? path[path.length - 1] : '';
+    var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
-    var caption = schema['title'] || camelToTitle(path[path.length - 1]);
-    function handleChange(i, newValue) {
+    var updatable = !(schema['readOnly'] || false);
+    function handleChange(i, newValue, path) {
         var newValueArray = valueArray.slice();
         newValueArray[i] = newValue;
-        onChange(newValueArray);
+        onChange(newValueArray, path);
     }
-    function handleDelete(i) {
+    function handleDelete(i, path) {
         return function () {
             var newValueArray = valueArray.slice();
             newValueArray.splice(i, 1);
-            onChange(newValueArray);
+            onChange(newValueArray, path);
         };
     }
-    function handleUp(i) {
+    function handleUp(i, path) {
         return function () {
             var newValueArray = valueArray.slice();
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i - 1];
             newValueArray[i - 1] = mover;
-            onChange(newValueArray);
+            onChange(newValueArray, path);
         };
     }
-    function handleDown(i) {
+    function handleDown(i, path) {
         return function () {
             var newValueArray = valueArray.slice();
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i + 1];
             newValueArray[i + 1] = mover;
-            onChange(newValueArray);
+            onChange(newValueArray, path);
         };
     }
     function handleAdd() {
-        onChange(valueArray.concat([null]));
+        onChange(valueArray.concat([null]), path.concat(["[" + valueArray.length + "]"]));
+    }
+    function arrayElement(v, i) {
+        var newPath = path.concat(["[" + i + "]"]);
+        var newErrors = (errors instanceof ErrorObject) ? errors["[" + i + "]"] : [];
+        var onChange = function (value, path) { return handleChange(i, value, path); };
+        return (React.createElement("div", { className: "sf-element", key: i },
+            React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onChange: onChange, onFocus: onFocus, onBlur: onBlur, context: context }),
+            updatable && React.createElement("div", { className: "sf-array-buttons" },
+                React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(i, newPath) }, "x"),
+                i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(i, newPath) }, "^"),
+                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(i, newPath) }, "v"))));
     }
     return (React.createElement("div", { className: arrayClass },
-        React.createElement("div", { className: "sf-title" }, caption),
-        React.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return (React.createElement("div", { className: "sf-element", key: i },
-            React.createElement(ComponentForType, { schema: itemSchema, path: path.concat(["[" + i + "]"]), value: v, errors: (errors instanceof ErrorObject) ? errors["[" + i + "]"] : [], onChange: function (value) { return handleChange(i, value); }, context: context }),
-            React.createElement("div", { className: "sf-array-buttons" },
-                React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(i) }, "x"),
-                i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(i) }, "^"),
-                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(i) }, "v")))); })),
-        React.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
+        React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
+        React.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return arrayElement(v, i); })),
+        updatable && React.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
 }
 
 function SchemaFormObject(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, context = _a.context;
-    function handleChange(key, newValue) {
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
+    var pathEl = path.length ? path[path.length - 1] : '';
+    var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
+    function handleChange(key, newValue, path) {
         var _a;
-        onChange(__assign({}, value, (_a = {}, _a[key] = newValue, _a)));
+        onChange(__assign({}, value, (_a = {}, _a[key] = newValue, _a)), path);
     }
-    var objectClass = path.length === 0 ? "" : "sf-object sf-" + path[path.length - 1];
-    return (React.createElement("div", { className: objectClass }, Object.entries(schema['properties']).map(function (_a) {
-        var key = _a[0], subSchema = _a[1];
-        return (React.createElement(ComponentForType, { schema: subSchema, path: path.concat([key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: function (value) { return handleChange(key, value); }, key: key, context: context }));
-    })));
+    return (React.createElement("div", { className: objectClass },
+        React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
+        React.createElement("fieldset", { className: "sf-object-fieldset" }, Object.entries(schema['properties']).map(function (_a) {
+            var key = _a[0], subSchema = _a[1];
+            return (React.createElement(ComponentForType, { schema: subSchema, path: path.concat([key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: function (value, path) { return handleChange(key, value, path); }, onFocus: onFocus, onBlur: onBlur, key: key, context: context }));
+        }))));
 }
 
 var defaultComponentMap = {
@@ -7447,56 +7547,73 @@ var defaultContainerMap = {
     "object": SchemaFormObject
 };
 function SchemaForm(_a) {
-    var schema = _a.schema, value = _a.value, onChange = _a.onChange, showErrors = _a.showErrors;
+    var schema = _a.schema, value = _a.value, onChange = _a.onChange, onFocus = _a.onFocus, showErrors = _a.showErrors, className = _a.className, changeOnBlur = _a.changeOnBlur;
     var _b = useState(value), currentValue = _b[0], setValue = _b[1];
     var initErrors = showErrors || showErrors == undefined ? validate(value) : new ErrorObject();
     var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
+    var _d = useState([]), lastPath = _d[0], setLastPath = _d[1];
+    // feed value into state when props change
+    useEffect(function () {
+        setValue(value);
+    }, [value]);
     function validate(newValue) {
         var ajv = getAjv();
         ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(newValue));
         var newErrors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
         return newErrors;
     }
-    function handleChange(newValue) {
+    function handleChange(newValue, path) {
         setValue(newValue);
+        setLastPath(path);
         var newErrors = validate(newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }
-        if (onChange)
-            onChange(newValue, newErrors);
+        if (onChange && !changeOnBlur)
+            onChange(newValue, path, newErrors);
     }
+    function handleFocus(path) {
+        if (onFocus)
+            onFocus(path);
+    }
+    function handleBlur() {
+        if (onChange && changeOnBlur)
+            onChange(currentValue, lastPath, errors);
+    }
+    var formClass = "sf-form " + className;
     var context = {
         components: defaultComponentMap,
         containers: defaultContainerMap
     };
-    return (React.createElement("form", { className: "sf-form" },
-        React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, context: context })));
+    return (React.createElement("div", { className: formClass },
+        React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, context: context })));
 }
-function ComponentForType(props) {
-    var container = props.context.containers[props.schema['type']];
-    if (container) {
-        return container(props) || (React.createElement(React.Fragment, null));
+
+function SchemaSubmitForm(props) {
+    var _a = useState(props.value), value = _a[0], setValue = _a[1];
+    var _b = useState({}), errors = _b[0], setErrors = _b[1];
+    var _c = useState(false), submitted = _c[0], setSubmitted = _c[1];
+    // feed value into state when props change
+    useEffect(function () {
+        setValue(value);
+    }, [value]);
+    function onChange(value, path, errors) {
+        setValue(value);
+        setErrors(errors);
+        if (props.onChange)
+            props.onChange(value, path, errors);
     }
-    else {
-        return (React.createElement(SchemaFormComponentWrapper, __assign({}, props)));
+    function onSubmit(ev) {
+        ev.preventDefault();
+        setSubmitted(true);
+        if (props.onSubmit && isEmpty(errors))
+            props.onSubmit(value);
     }
-}
-function SchemaFormComponentWrapper(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, context = _a.context;
-    var componentProps = {
-        schema: schema, path: path, value: value, onChange: onChange,
-        errors: (errors || []),
-        caption: schema['title'] || camelToTitle(path[path.length - 1])
-    };
-    var component = context.components[fieldType(schema)];
-    if (component) {
-        return component(componentProps) || (React.createElement(React.Fragment, null));
-    }
-    else {
-        return (React.createElement(React.Fragment, null));
-    }
+    return (React.createElement("form", { className: "sf-submit-form", onSubmit: onSubmit },
+        React.createElement(SchemaForm, __assign({}, props, { onChange: onChange, showErrors: submitted })),
+        React.createElement("button", { className: "sf-submit" }, props.submitLabel || "Submit")));
 }
 
 export default SchemaForm;
+export { ErrorObject, SchemaSubmitForm, getByPath, setByPath };
 //# sourceMappingURL=index.es.js.map

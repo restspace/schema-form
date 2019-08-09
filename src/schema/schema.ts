@@ -1,4 +1,4 @@
-import { union, intersection, deepCopy, isEmpty } from "utility"
+import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility"
 
 export function fieldType(schema: object): string {
     let type = schema['type'];
@@ -20,6 +20,15 @@ export function fieldType(schema: object): string {
         default:
             return type;
     }
+}
+
+export function fieldCaption(schema: object, path: string[]): string {
+    const pathEl = path && path.length ? path[path.length - 1] : '';
+    const title = schema['title'];
+    const idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
+    return idx
+        ? (title ? title.replace('##', idx) : '')
+        : (title || camelToTitle(pathEl));
 }
 
 /** manipulate the schema to allow any optional property to have a null value
