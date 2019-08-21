@@ -6,10 +6,10 @@
 .sf-row {
     display: flex;
     justify-content: flex-end;
-    padding: .5em 1em;
+    padding: .5em 1em .5em 0;
 }
-.sf-object {
-    padding-left: 2em;
+.sf-object-fieldset, .sf-array-fieldset {
+    padding-left: 1.5em;
 }
 .sf-row > label.sf-caption {
     padding: .5em 1em .5em 0;
@@ -36,4 +36,7 @@
 .sf-error-row {
     justify-content: flex-start;
     color: red;
+}
+.sf-buttons {
+    margin-top: 1.5em;
 }

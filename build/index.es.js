@@ -26,6 +26,30 @@ var __assign = function() {
     return __assign.apply(this, arguments);
 };
 
+function intersection(arr0, arr1) {
+    var output = new Array();
+    for (var _i = 0, arr0_1 = arr0; _i < arr0_1.length; _i++) {
+        var val = arr0_1[_i];
+        if (arr1.indexOf(val) >= 0) {
+            output.push(val);
+        }
+    }
+    return output;
+}
+function union(arr0, arr1) {
+    var output = new Array();
+    for (var _i = 0, arr0_2 = arr0; _i < arr0_2.length; _i++) {
+        var val = arr0_2[_i];
+        output.push(val);
+    }
+    for (var _a = 0, arr1_1 = arr1; _a < arr1_1.length; _a++) {
+        var val = arr1_1[_a];
+        if (arr1.indexOf(val) < 0) {
+            output.push(val);
+        }
+    }
+    return output;
+}
 function isEmpty(map) {
     if (map === null)
         return false;
@@ -145,68 +169,6 @@ function indexFromPathElement(pathEl) {
         throw ("value at path is array but path element is " + pathEl);
     var idx = parseInt(pathEl.substring(1, pathEl.length - 1));
     return idx;
-}
-
-function fieldType(schema) {
-    var type = schema['type'];
-    if (schema['format'])
-        type += "-" + schema['format'];
-    if (schema['enum'])
-        type = "enum";
-    if (schema['hidden'])
-        type = "hidden";
-    if (schema['editor'])
-        type = schema['editor'];
-    switch (type) {
-        case "string-date-time":
-        case "string-date":
-        case "string-time":
-        case "string-email":
-        case "string-password":
-            return schema['format'];
-        default:
-            return type;
-    }
-}
-function fieldCaption(schema, path) {
-    var pathEl = path && path.length ? path[path.length - 1] : '';
-    var title = schema['title'];
-    var idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
-    return idx
-        ? (title ? title.replace('##', idx) : '')
-        : (title || camelToTitle(pathEl));
-}
-/** manipulate the schema to allow any optional property to have a null value
- * which is appropriate for form input */
-function nullOptionalsAllowed(schema) {
-    var newSchema = deepCopy(schema);
-    nullOptionalsAllowedApply(newSchema);
-    return newSchema;
-}
-function nullOptionalsAllowedApply(schema) {
-    var req = schema['required'] || [];
-    switch (schema['type']) {
-        case 'object':
-            for (var prop in schema['properties']) {
-                if (req.indexOf(prop) < 0) {
-                    nullOptionalsAllowedApply(schema['properties'][prop]);
-                }
-            }
-            break;
-        case 'array':
-            nullOptionalsAllowedApply(schema['items']);
-            break;
-        default:
-            if (Array.isArray(schema['type'])) {
-                if (schema['type'].indexOf('null') < 0) {
-                    schema['type'].push('null');
-                }
-            }
-            else if (schema['type'] != 'null') {
-                schema['type'] = [schema['type'], 'null'];
-            }
-            break;
-    }
 }
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -7382,6 +7344,371 @@ function attachError(errorObj, path, error) {
     return wasAttached;
 }
 
+function fieldType(schema) {
+    var type = schema['type'];
+    if (schema['format'])
+        type += "-" + schema['format'];
+    if (schema['enum'])
+        type = "enum";
+    if (schema['hidden'])
+        type = "hidden";
+    if (schema['editor'])
+        type = schema['editor'];
+    switch (type) {
+        case "string-date-time":
+        case "string-date":
+        case "string-time":
+        case "string-email":
+        case "string-password":
+            return schema['format'];
+        default:
+            return type;
+    }
+}
+function fieldCaption(schema, path) {
+    var pathEl = path && path.length ? path[path.length - 1] : '';
+    var title = schema['title'];
+    var idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
+    return idx
+        ? (title ? title.replace('##', idx) : '')
+        : (title || camelToTitle(pathEl));
+}
+/** manipulate the schema to allow any optional property to have a null value
+ * which is appropriate for form input */
+function nullOptionalsAllowed(schema) {
+    var newSchema = deepCopy(schema);
+    nullOptionalsAllowedApply(newSchema);
+    return newSchema;
+}
+function nullOptionalsAllowedApply(schema) {
+    var req = schema['required'] || [];
+    switch (schema['type']) {
+        case 'object':
+            for (var prop in schema['properties']) {
+                if (req.indexOf(prop) < 0) {
+                    nullOptionalsAllowedApply(schema['properties'][prop]);
+                }
+            }
+            break;
+        case 'array':
+            nullOptionalsAllowedApply(schema['items']);
+            break;
+        default:
+            if (Array.isArray(schema['type'])) {
+                if (schema['type'].indexOf('null') < 0) {
+                    schema['type'].push('null');
+                }
+            }
+            else if (schema['type'] != 'null') {
+                schema['type'] = [schema['type'], 'null'];
+            }
+            break;
+    }
+}
+function conjoin(schema0, schema1) {
+    if (schema0 === null || schema1 === null)
+        return null;
+    if (isEmpty(schema0))
+        return deepCopy(schema1);
+    var schema = deepCopy(schema0);
+    for (var prop in schema1) {
+        switch (prop) {
+            case 'properties':
+                if (!schema['properties']) {
+                    schema['properties'] = {};
+                }
+                for (var p in schema1['properties']) {
+                    var res = conjoin(schema['properties'][p], schema1['properties'][p]);
+                    if (res === null) {
+                        delete schema['properties'][p];
+                    }
+                    else {
+                        schema['properties'][p] = res;
+                    }
+                }
+                break;
+            case 'order':
+                if (!schema['order']) {
+                    schema['order'] = schema1['order'];
+                }
+                else {
+                    schema['order'] = mergeOrders(schema['order'], schema1['order']);
+                }
+                break;
+            case 'items':
+                schema['items'] = conjoin(schema['items'], schema1['items']);
+                break;
+            case 'type':
+            case 'enum':
+            case 'const':
+                var val1 = schema1[prop];
+                var val = schema[prop];
+                if (!val) {
+                    if (prop == 'enum' && schema['const']) {
+                        val = schema['const'];
+                    }
+                    else if (prop == 'const' && schema['enum']) {
+                        val = schema['enum'];
+                    }
+                    else {
+                        schema[prop] = schema1[prop];
+                        break;
+                    }
+                }
+                if (!Array.isArray(val1)) {
+                    val1 = [val1];
+                }
+                if (!Array.isArray(val)) {
+                    val = [val];
+                }
+                schema[prop] = intersection(val1, val);
+                if (schema[prop] == []) {
+                    return null;
+                }
+                if (prop == 'type' && schema['type'].length == 1) {
+                    schema['type'] = schema['type'][0];
+                }
+                else if (prop == 'enum' && schema['enum'].length == 1) {
+                    schema['const'] = schema['enum'][0];
+                    delete schema['enum'];
+                }
+                else if (prop == 'const') {
+                    if (schema['const'].length == 1) {
+                        schema['const'] = schema['const'][0];
+                    }
+                    else {
+                        schema['enum'] = schema['const'];
+                        delete schema['const'];
+                    }
+                }
+                break;
+            case 'required':
+                schema[prop] = union(schema[prop], schema1[prop]);
+                break;
+            case 'maximum':
+            case 'exclusiveMaximum':
+            case 'maxLength':
+            case 'maxItems':
+            case 'maxProperties':
+                if (schema[prop] > schema1[prop]) {
+                    schema[prop] = schema1[prop];
+                }
+            case 'minimum':
+            case 'exclusiveMinimum':
+            case 'minLength':
+            case 'minItems':
+            case 'minProperties':
+                if (schema[prop] < schema1[prop]) {
+                    schema[prop] = schema1[prop];
+                }
+            case 'if':
+            case 'then':
+            case 'else':
+            case 'anyOf':
+            case 'allOf':
+                break;
+            default:
+                if (schema[prop] && schema[prop] != schema1[prop])
+                    return null;
+                schema[prop] = schema1[prop];
+                break;
+        }
+    }
+    return schema;
+}
+function disjoin(schema0, schema1) {
+    if (schema0 === null)
+        return schema1;
+    else if (schema1 === null)
+        return schema0;
+    var schema = deepCopy(schema0);
+    for (var prop in schema1) {
+        switch (prop) {
+            case 'properties':
+                var deleteProps = [];
+                for (var p in schema['properties']) {
+                    var otherProp = schema1['properties'][p] || null;
+                    if (otherProp === null) {
+                        deleteProps.push(p);
+                    }
+                    else {
+                        var res = disjoin(schema['properties'][p], otherProp);
+                        if (isEmpty(res))
+                            throw "Disjoining property " + p + " means it has no definition";
+                        schema['properties'][p] = res;
+                    }
+                }
+                break;
+            case 'items':
+                schema['items'] = disjoin(schema['items'], schema1['items']);
+                break;
+            case 'type':
+            case 'enum':
+            case 'const':
+                var val1 = schema1[prop];
+                var val = schema[prop];
+                if (!val) {
+                    if (prop == 'enum' && schema['const']) {
+                        val = schema['const'];
+                    }
+                    else if (prop == 'const' && schema['enum']) {
+                        val = schema['enum'];
+                    }
+                    else {
+                        schema[prop] = schema1[prop];
+                        break;
+                    }
+                }
+                if (!Array.isArray(val1)) {
+                    val1 = [val1];
+                }
+                if (!Array.isArray(val)) {
+                    val = [val];
+                }
+                schema[prop] = union(val1, val);
+                if (prop == 'type' && schema['type'].length == 1) {
+                    schema['type'] = schema['type'][0];
+                }
+                else if (prop == 'enum' && schema['enum'].length == 1) {
+                    schema['const'] = schema['enum'][0];
+                    delete schema['enum'];
+                }
+                else if (prop == 'const') {
+                    if (schema['const'].length == 1) {
+                        schema['const'] = schema['const'][0];
+                    }
+                    else {
+                        schema['enum'] = schema['const'];
+                        delete schema['const'];
+                    }
+                }
+                break;
+            case 'required':
+                if (!schema[prop])
+                    schema[prop] = schema1[prop];
+                else
+                    schema[prop] = intersection(schema[prop], schema1[prop]);
+                break;
+            case 'maximum':
+            case 'exclusiveMaximum':
+            case 'maxLength':
+            case 'maxItems':
+            case 'maxProperties':
+                if (schema[prop] <= schema1[prop]) {
+                    schema[prop] = schema1[prop];
+                }
+            case 'minimum':
+            case 'exclusiveMinimum':
+            case 'minLength':
+            case 'minItems':
+            case 'minProperties':
+                if (schema[prop] >= schema1[prop]) {
+                    schema[prop] = schema1[prop];
+                }
+            default:
+                if (schema[prop] && schema[prop] != schema1[prop])
+                    throw "Property " + prop + " has different undisjoinable values";
+                schema[prop] = schema1[prop];
+                break;
+        }
+    }
+    return schema;
+}
+function applyConditional(schema, val) {
+    var result = null;
+    if (schema['if']) {
+        var ajv = getAjv();
+        var validate = ajv.compile(nullOptionalsAllowed(schema['if']));
+        var valid = validate(val);
+        var apply = null;
+        if (valid && schema['then']) {
+            apply = schema['then'];
+        }
+        else if (!valid && schema['else']) {
+            apply = schema['else'];
+        }
+        if (apply) {
+            // recurse into conditionals of then/else schemas
+            apply = applyConditional(apply, val) || apply;
+            result = conjoin(schema, apply);
+        }
+    }
+    if (schema['anyOf']) {
+        var ajv = getAjv();
+        var disjunction = null;
+        for (var _i = 0, _a = schema['anyOf']; _i < _a.length; _i++) {
+            var subSchema = _a[_i];
+            var validate = ajv.compile(nullOptionalsAllowed(subSchema));
+            if (validate(val)) {
+                var apply = applyConditional(subSchema, val) || subSchema;
+                disjunction = disjoin(disjunction, apply);
+            }
+        }
+        if (disjunction === null)
+            throw "Current state of form illegal, no condition in anyOf is true";
+        result = conjoin(result || schema, disjunction);
+    }
+    if (schema['allOf']) {
+        var conjunction = {};
+        for (var _b = 0, _c = schema['allOf']; _b < _c.length; _b++) {
+            var subSchema = _c[_b];
+            var apply = applyConditional(subSchema, val) || subSchema;
+            conjunction = conjoin(conjunction, apply);
+        }
+        if (conjunction === null)
+            throw "Current state of form illegal, a condition in allOf is not true";
+        result = conjoin(result || schema, conjunction);
+    }
+    return result;
+}
+function mergeOrders(order0, order1) {
+    var result = [];
+    var ord0 = order0.slice();
+    var ord1 = order1.slice();
+    while (ord0.length || ord1.length) {
+        if (!ord0.length) {
+            return result.concat(ord1);
+        }
+        else if (!ord1.length) {
+            return result.concat(ord0);
+        }
+        else if (ord0.indexOf(ord1[0]) > -1) {
+            while (ord0.length && ord0[0] !== ord1[0]) {
+                result.push(ord0.shift() || '');
+            }
+            if (ord0[0] === ord1[0]) {
+                result.push(ord0.shift() || '');
+                ord1.shift();
+            }
+            while (ord1.length && ord0.indexOf(ord1[0]) < 0) {
+                result.push(ord1.shift() || '');
+            }
+        }
+        else {
+            return result.concat(ord0).concat(ord1);
+        }
+    }
+    return result;
+}
+function applyOrder(items, selector, order) {
+    var result = [];
+    var itemMap = items.reduce(function (partMap, item) {
+        var _a;
+        return (__assign({}, partMap, (_a = {}, _a[selector(item)] = item, _a)));
+    }, {});
+    for (var _i = 0, order_1 = order; _i < order_1.length; _i++) {
+        var itemKey = order_1[_i];
+        if (itemMap[itemKey]) {
+            result.push(itemMap[itemKey]);
+            delete itemMap[itemKey];
+        }
+    }
+    for (var key in itemMap) {
+        result.push(itemMap[key]);
+    }
+    return result;
+}
+
 function SchemaFormComponent(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, caption = _a.caption;
     var name = path.join('.');
@@ -7434,12 +7761,16 @@ function SchemaFormComponent(_a) {
 }
 
 function ComponentForType(props) {
-    var container = props.context.containers[props.schema['type']];
+    var schema = props.schema, value = props.value;
+    var container = props.context.containers[schema['type']];
+    var condSchema = applyConditional(schema, value);
+    var mergedSchema = condSchema || schema;
+    console.log("Merged schema: " + JSON.stringify(mergedSchema));
     if (container) {
-        return container(props) || (React.createElement(React.Fragment, null));
+        return container(__assign({}, props, { schema: mergedSchema })) || (React.createElement(React.Fragment, null));
     }
     else {
-        return (React.createElement(SchemaFormComponentWrapper, __assign({}, props)));
+        return (React.createElement(SchemaFormComponentWrapper, __assign({}, props, { schema: mergedSchema })));
     }
 }
 function SchemaFormComponentWrapper(_a) {
@@ -7458,6 +7789,14 @@ function SchemaFormComponentWrapper(_a) {
     }
 }
 
+var ActionType;
+(function (ActionType) {
+    ActionType[ActionType["Create"] = 0] = "Create";
+    ActionType[ActionType["Delete"] = 1] = "Delete";
+    ActionType[ActionType["Up"] = 2] = "Up";
+    ActionType[ActionType["Down"] = 3] = "Down";
+})(ActionType || (ActionType = {}));
+
 function SchemaFormArray(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
     var itemSchema = schema['items'];
@@ -7466,16 +7805,16 @@ function SchemaFormArray(_a) {
     var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
     var updatable = !(schema['readOnly'] || false);
-    function handleChange(i, newValue, path) {
+    function handleChange(i, newValue, path, action) {
         var newValueArray = valueArray.slice();
         newValueArray[i] = newValue;
-        onChange(newValueArray, path);
+        onChange(newValueArray, path, action);
     }
     function handleDelete(i, path) {
         return function () {
             var newValueArray = valueArray.slice();
             newValueArray.splice(i, 1);
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Delete);
         };
     }
     function handleUp(i, path) {
@@ -7484,7 +7823,7 @@ function SchemaFormArray(_a) {
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i - 1];
             newValueArray[i - 1] = mover;
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Up);
         };
     }
     function handleDown(i, path) {
@@ -7493,16 +7832,16 @@ function SchemaFormArray(_a) {
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i + 1];
             newValueArray[i + 1] = mover;
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Down);
         };
     }
     function handleAdd() {
-        onChange(valueArray.concat([null]), path.concat(["[" + valueArray.length + "]"]));
+        onChange(valueArray.concat([null]), path.concat(["[" + valueArray.length + "]"]), ActionType.Create);
     }
     function arrayElement(v, i) {
         var newPath = path.concat(["[" + i + "]"]);
         var newErrors = (errors instanceof ErrorObject) ? errors["[" + i + "]"] : [];
-        var onChange = function (value, path) { return handleChange(i, value, path); };
+        var onChange = function (value, path, action) { return handleChange(i, value, path, action); };
         return (React.createElement("div", { className: "sf-element", key: i },
             React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onChange: onChange, onFocus: onFocus, onBlur: onBlur, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
@@ -7520,15 +7859,21 @@ function SchemaFormObject(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
     var pathEl = path.length ? path[path.length - 1] : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
-    function handleChange(key, newValue, path) {
+    function handleChange(key, newValue, path, action) {
         var _a;
-        onChange(__assign({}, value, (_a = {}, _a[key] = newValue, _a)), path);
+        onChange(__assign({}, value, (_a = {}, _a[key] = newValue, _a)), path, action);
     }
+    var properties = Object.entries(schema['properties']);
+    if (schema['order'])
+        properties = applyOrder(properties, function (_a) {
+            var key = _a[0], _ = _a[1];
+            return key;
+        }, schema['order']);
     return (React.createElement("div", { className: objectClass },
         React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
-        React.createElement("fieldset", { className: "sf-object-fieldset" }, Object.entries(schema['properties']).map(function (_a) {
+        React.createElement("fieldset", { className: "sf-object-fieldset" }, properties.map(function (_a) {
             var key = _a[0], subSchema = _a[1];
-            return (React.createElement(ComponentForType, { schema: subSchema, path: path.concat([key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: function (value, path) { return handleChange(key, value, path); }, onFocus: onFocus, onBlur: onBlur, key: key, context: context }));
+            return (React.createElement(ComponentForType, { schema: subSchema, path: path.concat([key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: function (value, path, action) { return handleChange(key, value, path, action); }, onFocus: onFocus, onBlur: onBlur, key: key, context: context }));
         }))));
 }
 
@@ -7551,33 +7896,41 @@ function SchemaForm(_a) {
     var _b = useState(value), currentValue = _b[0], setValue = _b[1];
     var initErrors = showErrors || showErrors == undefined ? validate(value) : new ErrorObject();
     var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
-    var _d = useState([]), lastPath = _d[0], setLastPath = _d[1];
+    var _d = useState(null), lastPath = _d[0], setLastPath = _d[1];
     // feed value into state when props change
     useEffect(function () {
         setValue(value);
     }, [value]);
+    // update error state with new props
+    useEffect(function () {
+        var newErrors = validate(value);
+        if (showErrors || showErrors == undefined) {
+            setErrors(newErrors);
+        }
+    }, [value, showErrors]);
     function validate(newValue) {
         var ajv = getAjv();
         ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(newValue));
         var newErrors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
         return newErrors;
     }
-    function handleChange(newValue, path) {
+    function handleChange(newValue, path, action) {
         setValue(newValue);
         setLastPath(path);
         var newErrors = validate(newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }
-        if (onChange && !changeOnBlur)
-            onChange(newValue, path, newErrors);
+        if (onChange && (action !== undefined || !changeOnBlur))
+            onChange(newValue, path, newErrors, action);
     }
     function handleFocus(path) {
+        setLastPath(null);
         if (onFocus)
             onFocus(path);
     }
     function handleBlur() {
-        if (onChange && changeOnBlur)
+        if (onChange && changeOnBlur && lastPath)
             onChange(currentValue, lastPath, errors);
     }
     var formClass = "sf-form " + className;
@@ -7595,25 +7948,78 @@ function SchemaSubmitForm(props) {
     var _c = useState(false), submitted = _c[0], setSubmitted = _c[1];
     // feed value into state when props change
     useEffect(function () {
-        setValue(value);
-    }, [value]);
+        setValue(props.value);
+    }, [props.value]);
     function onChange(value, path, errors) {
         setValue(value);
         setErrors(errors);
         if (props.onChange)
             props.onChange(value, path, errors);
     }
-    function onSubmit(ev) {
-        ev.preventDefault();
+    function onSubmit() {
         setSubmitted(true);
         if (props.onSubmit && isEmpty(errors))
             props.onSubmit(value);
     }
-    return (React.createElement("form", { className: "sf-submit-form", onSubmit: onSubmit },
+    return (React.createElement("form", { className: "sf-submit-form" },
         React.createElement(SchemaForm, __assign({}, props, { onChange: onChange, showErrors: submitted })),
-        React.createElement("button", { className: "sf-submit" }, props.submitLabel || "Submit")));
+        React.createElement("div", { className: "sf-buttons" },
+            React.createElement("div", { className: "sf-submit" }, props.makeSubmitLink(onSubmit)))));
+}
+
+function SchemaPagedForm(props) {
+    var _a = useState(props.value), value = _a[0], setValue = _a[1];
+    var _b = useState(props.value['page' + props.page]), pageValue = _b[0], setPageValue = _b[1];
+    var _c = useState({}), errors = _c[0], setErrors = _c[1];
+    var _d = useState(false), entered = _d[0], setEntered = _d[1];
+    // feed value into state when props change
+    useEffect(function () {
+        setValue(props.value);
+        setPageValue(props.value['page' + props.page]);
+    }, [props.value]);
+    useEffect(function () {
+        setEntered(false);
+        setPageValue(props.value['page' + props.page]);
+        console.log('entered -> false');
+    }, [props.page]);
+    function onChange(newPageValue, path, errors) {
+        var _a;
+        var newValue = __assign({}, value, (_a = {}, _a['page' + props.page] = newPageValue, _a));
+        setValue(newValue);
+        setPageValue(newPageValue);
+        setErrors(errors);
+        if (props.onChange)
+            props.onChange(newValue, path, errors);
+    }
+    function onPage(page) {
+        setEntered(true);
+        console.log('entered -> true');
+        if (props.onPage && isEmpty(errors))
+            props.onPage(value, page);
+    }
+    function onSubmit() {
+        setEntered(true);
+        if (props.onSubmit && isEmpty(errors))
+            props.onSubmit(value);
+    }
+    var pageSchema = props.schema['properties']['page' + props.page];
+    var pageLast = Object.keys(props.schema['properties']).reduce(function (currCount, key) {
+        var val = 0;
+        if (key.substr(0, 4) === 'page')
+            val = parseInt(key.substr(4));
+        return val > currCount ? val : currCount;
+    }, 0);
+    var hasLeft = props.page > 0;
+    var hasRight = props.page < pageLast;
+    return (React.createElement("form", { className: "sf-submit-form" },
+        React.createElement(SchemaForm, __assign({}, props, { value: pageValue, schema: pageSchema, onChange: onChange, showErrors: entered })),
+        React.createElement("div", { className: "sf-buttons" },
+            React.createElement("div", { className: hasLeft ? "sf-pager sf-left-pager" : "sf-pager sf-no-button" }, hasLeft && props.makePreviousLink(props.page - 1, onPage)),
+            React.createElement("div", { className: hasRight ? "sf-pager sf-right-pager" : "sf-pager sf-submit-pager" },
+                hasRight && props.makeNextLink(props.page + 1, onPage),
+                !hasRight && props.makeSubmitLink(onSubmit)))));
 }
 
 export default SchemaForm;
-export { ErrorObject, SchemaSubmitForm, getByPath, setByPath };
+export { ActionType, ErrorObject, SchemaPagedForm, SchemaSubmitForm, getByPath, setByPath };
 //# sourceMappingURL=index.es.js.map

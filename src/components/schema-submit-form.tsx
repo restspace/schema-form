@@ -6,7 +6,7 @@ import { isEmpty } from 'utility';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): void,
-    submitLabel?: string
+    makeSubmitLink(onClick: () => void): React.ReactNode,
 }
 
 export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
@@ -15,8 +15,8 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
     const [submitted, setSubmitted] = useState(false);
     // feed value into state when props change
     useEffect(() => {
-        setValue(value);
-    }, [value]);
+        setValue(props.value);
+    }, [props.value]);
 
     function onChange(value: object, path: string[], errors: ErrorObject) {
         setValue(value);
@@ -25,17 +25,20 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
             props.onChange(value, path, errors);
     }
 
-    function onSubmit(ev: React.FormEvent) {
-        ev.preventDefault();
+    function onSubmit() {
         setSubmitted(true);
         if (props.onSubmit && isEmpty(errors))
             props.onSubmit(value);
     }
 
     return (
-        <form className="sf-submit-form" onSubmit={onSubmit}>
+        <form className="sf-submit-form">
             <SchemaForm {...props} onChange={onChange} showErrors={submitted}/>
-            <button className="sf-submit">{props.submitLabel || "Submit"}</button>
+            <div className="sf-buttons">
+                <div className="sf-submit">
+                    {props.makeSubmitLink(onSubmit)}
+                </div>
+            </div>
         </form>
     );
 }

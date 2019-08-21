@@ -1,7 +1,19 @@
 {
-  "name": "schema-form",
+  "name": "@lynicon/schema-form",
   "version": "1.0.0",
-  "description": "",
+  "description": "JSON Schema based form generator in React",
+  "author": "James Ellis-Jones",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamesej/schema-form.git"
+  },
+  "keywords": [
+    "react",
+    "form generator",
+    "form builder",
+    "json schema"
+  ],
   "main": "build/index.js",
   "module": "build/index.es.js",
   "jsnext:main": "build/index.es.js",
@@ -9,24 +21,22 @@
     "build"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "rollup -c"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jamesej/schema-form.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/jamesej/schema-form/issues"
   },
   "homepage": "https://github.com/jamesej/schema-form#readme",
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/react": "^16.8.24",
     "@types/react-dom": "^16.8.5",
     "@types/react-test-renderer": "^16.8.3",
+    "babel-jest": "^24.9.0",
+    "jest": "^24.9.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts-ts": "^3.1.0",
@@ -45,6 +55,7 @@
     "react-dom": "^16.0.0"
   },
   "dependencies": {
+    "@types/jest": "^24.0.17",
     "ajv": "^6.10.2"
   }
 }

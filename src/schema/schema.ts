@@ -1,4 +1,6 @@
-import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility"
+import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility";
+import { getAjv } from "error";
+import { string } from "prop-types";
 
 export function fieldType(schema: object): string {
     let type = schema['type'];
@@ -86,6 +88,13 @@ export function conjoin(schema0: object | null, schema1: object | null): object 
                     } else {
                         schema['properties'][p] = res
                     }
+                }
+                break;
+            case 'order': 
+                if (!schema['order']) {
+                    schema['order'] = schema1['order']
+                } else {
+                    schema['order'] = mergeOrders(schema['order'], schema1['order']);
                 }
                 break;
             case 'items':
@@ -306,5 +315,100 @@ function expandConditionals(baseSchema: object, schema: object | null): object |
         schema = conjoin(schema, expandConditionals(baseSchema, subSchema));
     }
     return schema;
+}
+
+export function schemaHasConditional(schema: object) {
+    return (schema['if'] && (schema['then'] || schema['else']))
+        || (schema['anyOf'])
+        || (schema['allOf']);
+}
+
+export function applyConditional(schema: object, val: object): object | null {
+    let result: object | null = null;
+    if (schema['if']) {
+        let ajv = getAjv();
+        let validate = ajv.compile(nullOptionalsAllowed(schema['if']));
+        let valid = validate(val);
+        let apply: any = null;
+        if (valid && schema['then']) {
+            apply = schema['then'];
+        } else if (!valid && schema['else']) {
+            apply = schema['else'];
+        }
+        if (apply) {
+            // recurse into conditionals of then/else schemas
+            apply = applyConditional(apply, val) || apply;
+            result = conjoin(schema, apply);
+        }
+    }
+    if (schema['anyOf']) {
+        let ajv = getAjv();
+        let disjunction = null;
+        for (let subSchema of <object[]>schema['anyOf']) {
+            let validate = ajv.compile(nullOptionalsAllowed(subSchema));
+            if (validate(val)) {
+                let apply = applyConditional(subSchema, val) || subSchema;
+                disjunction = disjoin(disjunction, apply);
+            }
+        }
+        if (disjunction === null)
+            throw "Current state of form illegal, no condition in anyOf is true";
+        result = conjoin(result || schema, disjunction);
+    }
+    if (schema['allOf']) {
+        let conjunction: object | null = {};
+        for (let subSchema of <object[]>schema['allOf']) {
+            let apply = applyConditional(subSchema, val) || subSchema;
+            conjunction = conjoin(conjunction, apply);
+        }
+        if (conjunction === null)
+            throw "Current state of form illegal, a condition in allOf is not true";
+        result = conjoin(result || schema, conjunction);
+    }
+
+    return result;
+}
+
+export function mergeOrders(order0: string[], order1: string[]): string[] {
+    const result: string[] = [];
+    const ord0 = [ ...order0 ];
+    const ord1 = [ ...order1 ];
+    while (ord0.length || ord1.length) {
+        if (!ord0.length) {
+            return result.concat(ord1);
+        } else if (!ord1.length) {
+            return result.concat(ord0);
+        } else if (ord0.indexOf(ord1[0]) > -1) {
+            while (ord0.length && ord0[0] !== ord1[0]) {
+                result.push(ord0.shift() || '');
+            }
+            if (ord0[0] === ord1[0]) {
+                result.push(ord0.shift() || '');
+                ord1.shift();
+            }
+            while (ord1.length && ord0.indexOf(ord1[0]) < 0) {
+                result.push(ord1.shift() || '');
+            }
+        } else {
+            return result.concat(ord0).concat(ord1);
+        }
+    }
+
+    return result;
+}
+
+export function applyOrder<T>(items: T[], selector: (item: T) => string, order: string[]) : T[] {
+    const result: T[] = [];
+    const itemMap = items.reduce((partMap, item) => ({ ...partMap, [selector(item)]: item }), {});
+    for (let itemKey of order) {
+        if (itemMap[itemKey]) {
+            result.push(itemMap[itemKey]);
+            delete itemMap[itemKey];
+        }
+    }
+    for (let key in itemMap) {
+        result.push(itemMap[key]);
+    }
+    return result;
 }
     

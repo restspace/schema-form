@@ -1,13 +1,17 @@
 import Ajv from 'ajv'
 import { ErrorObject } from 'error'
 
+export enum ActionType {
+    Create, Delete, Up, Down
+}
+
 export interface ISchemaContainerProps {
     schema: object,
     path: string[],
     value: object,
     errors: ErrorObject | Ajv.ErrorObject[],
     context: ISchemaFormContext,
-    onChange(value: object, path: string[]): void,
+    onChange(value: object, path: string[], action?: ActionType): void,
     onFocus(path: string[]): void,
     onBlur(): void
 }

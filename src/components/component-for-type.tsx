@@ -1,15 +1,19 @@
 import React from "react"
-import { fieldType, fieldCaption } from "schema/schema"
+import { fieldType, fieldCaption, applyConditional } from "schema/schema"
 import Ajv from "ajv"
 import { ISchemaContainerProps, ISchemaComponentProps } from "components/schema-form-interfaces"
 
 export function ComponentForType(props: ISchemaContainerProps): React.ReactElement {
-    const container: React.FC<ISchemaContainerProps> = props.context.containers[props.schema['type']];
+    const { schema, value } = props;
+    const container: React.FC<ISchemaContainerProps> = props.context.containers[schema['type']];
+
+    let condSchema = applyConditional(schema, value);
+    let mergedSchema = condSchema || schema;
     
     if (container) {
-        return container(props) || (<></>)
+        return container({ ...props, schema: mergedSchema }) || (<></>)
     } else {
-        return (<SchemaFormComponentWrapper {...props} />);
+        return (<SchemaFormComponentWrapper {...props } schema={mergedSchema} />);
     }
 }
 

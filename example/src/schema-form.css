@@ -1,0 +1,106 @@
+fieldset {
+    border: none;
+    border-left: 1px solid #333;
+    margin: 0;
+}
+
+.sf-form {
+    padding: 1rem;
+}
+
+.sf-title {
+    border-bottom: 1px solid #333;
+    display: inline-block;
+    padding-right: 2rem;
+}
+
+.sf-row > label.sf-caption {
+    max-width: 9rem;
+}
+
+.sf-row {
+    padding: 0.25rem 0;
+}
+
+.sf-object {
+    padding: 0
+}
+
+.sf-form input.sf-control {
+    border: none;
+    border-bottom: 1px solid #333;
+}
+
+.sf-form input.sf-control:focus {
+    outline: none;
+    background-color: #ddd;
+}
+
+.sf-add-button {
+    font-size: 19px;
+    border: 1px solid #333;
+    padding: 0 6px;
+    border-radius: 13px;
+    cursor: pointer;
+    margin: 4px;
+    display: inline-block;
+}
+
+.sf-delete-button {
+    border: 1px solid #333;
+    display: inline-block;
+    width: 21px;
+    height: 22px;
+    text-align: center;
+    border-radius: 12px;
+    margin-top: 15px;
+    padding-left: 1px;
+}
+
+.sf-down-button, .sf-up-button {
+    border: 1px solid #333;
+    display: inline-block;
+    width: 21px;
+    height: 22px;
+    text-align: center;
+    border-radius: 12px;
+    margin-top: 15px;
+    padding-left: 1px;
+}
+
+.sf-control-button:hover {
+    background-color: #ddd;
+}
+
+.sf-array-fieldset > .sf-element {
+    display: flex;
+}
+
+.sf-array-fieldset > .sf-element > div {
+    flex-grow: 1;
+}
+
+.sf-array-fieldset > .sf-element > .sf-array-buttons {
+    flex-grow: unset;
+    padding-left: 0.3rem;
+}
+
+.sf-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.sf-pager, .sf-submit {
+    border: 1px solid #333;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+.sf-pager.sf-no-button {
+    border: none;
+    padding: 0;
+    cursor: auto;
+}
+.sf-pager:hover, .sf-submit:hover {
+    background-color: #ddd;
+}
+

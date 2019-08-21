@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentForType } from 'components/component-for-type'
-import { ISchemaContainerProps } from 'components/schema-form-interfaces'
+import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces'
 import { ErrorObject } from 'error'
 import { fieldCaption } from 'schema/schema'
 
@@ -21,17 +21,17 @@ export function SchemaFormArray({
     const count = valueArray.length;
     const updatable = !(schema['readOnly'] || false);
 
-    function handleChange(i: number, newValue: object, path: string[]) {
+    function handleChange(i: number, newValue: object, path: string[], action?: ActionType) {
         const newValueArray = [ ...valueArray ];
         newValueArray[i] = newValue;
-        onChange(newValueArray, path);
+        onChange(newValueArray, path, action);
     }
 
     function handleDelete(i: number, path: string[]) {
         return () => {
             const newValueArray = [ ...valueArray ];
             newValueArray.splice(i, 1);
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Delete);
         }
     }
 
@@ -41,7 +41,7 @@ export function SchemaFormArray({
             const mover = newValueArray[i];
             newValueArray[i] = newValueArray[i - 1];
             newValueArray[i - 1] = mover;
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Up);
         }
     }
 
@@ -51,21 +51,22 @@ export function SchemaFormArray({
             const mover = newValueArray[i];
             newValueArray[i] = newValueArray[i + 1];
             newValueArray[i + 1] = mover;
-            onChange(newValueArray, path);
+            onChange(newValueArray, path, ActionType.Down);
         }
     }
 
     function handleAdd() {
         onChange(
             [ ...valueArray, null ],
-            [ ...path, `[${valueArray.length}]` ]
+            [ ...path, `[${valueArray.length}]` ],
+            ActionType.Create
         );
     }
 
     function arrayElement(v: object, i: number) {
         const newPath = [ ...path, `[${i}]` ];
         const newErrors = (errors instanceof ErrorObject) ? errors[`[${i}]`] : [];
-        const onChange = (value: object, path: string[]) => handleChange(i, value, path);
+        const onChange = (value: object, path: string[], action?: ActionType) => handleChange(i, value, path, action);
 
         return (
         <div className="sf-element" key={i}>
