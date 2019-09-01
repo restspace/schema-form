@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { nullOptionalsAllowed } from "schema/schema"
-import { withoutFalsyProperties } from "utility"
-import { ErrorObject, errorPathsToObject, rectifyErrorPaths, getAjv } from "error"
+import { ErrorObject, validate } from "error"
 import { SchemaFormComponent } from "components/schema-form-component"
 import { SchemaFormArray } from "components/schema-form-array"
 import { SchemaFormObject } from "components/schema-form-object"
@@ -47,7 +45,7 @@ export default function SchemaForm({
     changeOnBlur
 }: ISchemaFormProps): React.ReactElement {
     const [currentValue, setValue] = useState(value);
-    const initErrors = showErrors || showErrors == undefined ? validate(value) : new ErrorObject();
+    const initErrors = showErrors || showErrors == undefined ? validate(schema, value) : new ErrorObject();
     const [errors, setErrors] = useState(initErrors);
     const [lastPath, setLastPath] = useState(null as string[] | null);
 
@@ -58,23 +56,16 @@ export default function SchemaForm({
 
     // update error state with new props
     useEffect(() => {
-        const newErrors = validate(value);
+        const newErrors = validate(schema, value);
         if (showErrors || showErrors == undefined) {
             setErrors(newErrors);
         }
     }, [value, showErrors]);
 
-    function validate(newValue: object) {
-        let ajv = getAjv();
-        ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(newValue));
-        const newErrors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
-        return newErrors;
-    }
-
     function handleChange(newValue: object, path: string[], action?: ActionType) {
         setValue(newValue);
         setLastPath(path);
-        let newErrors = validate(newValue);
+        let newErrors = validate(schema, newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }

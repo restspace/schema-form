@@ -26,151 +26,6 @@ var __assign = function() {
     return __assign.apply(this, arguments);
 };
 
-function intersection(arr0, arr1) {
-    var output = new Array();
-    for (var _i = 0, arr0_1 = arr0; _i < arr0_1.length; _i++) {
-        var val = arr0_1[_i];
-        if (arr1.indexOf(val) >= 0) {
-            output.push(val);
-        }
-    }
-    return output;
-}
-function union(arr0, arr1) {
-    var output = new Array();
-    for (var _i = 0, arr0_2 = arr0; _i < arr0_2.length; _i++) {
-        var val = arr0_2[_i];
-        output.push(val);
-    }
-    for (var _a = 0, arr1_1 = arr1; _a < arr1_1.length; _a++) {
-        var val = arr1_1[_a];
-        if (arr1.indexOf(val) < 0) {
-            output.push(val);
-        }
-    }
-    return output;
-}
-function isEmpty(map) {
-    if (map === null)
-        return false;
-    for (var key in map) {
-        return !map.hasOwnProperty(key);
-    }
-    return true;
-}
-function deepCopy(obj) {
-    var copy;
-    // Handle the 3 simple types, and null or undefined
-    if (null == obj || "object" != typeof obj)
-        return obj;
-    // Handle Date
-    if (obj instanceof Date) {
-        copy = new Date();
-        copy.setTime(obj.getTime());
-        return copy;
-    }
-    // Handle Array
-    if (obj instanceof Array) {
-        copy = [];
-        for (var i = 0, len = obj.length; i < len; i++) {
-            copy[i] = deepCopy(obj[i]);
-        }
-        return copy;
-    }
-    // Handle Object
-    if (obj instanceof Object) {
-        copy = {};
-        for (var attr in obj) {
-            if (obj.hasOwnProperty(attr))
-                copy[attr] = deepCopy(obj[attr]);
-        }
-        return copy;
-    }
-    throw new Error("Unable to copy obj! Its type isn't supported.");
-}
-function withoutFalsyProperties(value) {
-    var newValue = deepCopy(value);
-    deleteFalsyProperties(newValue);
-    return newValue;
-}
-function deleteFalsyProperties(value) {
-    if (Array.isArray(value)) {
-        for (var _i = 0, value_1 = value; _i < value_1.length; _i++) {
-            var item = value_1[_i];
-            deleteFalsyProperties(item);
-        }
-    }
-    else if (typeof value == "object") {
-        for (var key in value) {
-            if (!value[key]) {
-                delete value[key];
-            }
-            else {
-                deleteFalsyProperties(value[key]);
-            }
-        }
-    }
-}
-function camelToTitle(camel) {
-    camel = camel.trim();
-    var words = [];
-    var start = 0;
-    for (var end = 1; end < camel.length; end++) {
-        if ('A' <= camel[end] && camel[end] <= 'Z') {
-            words.push(camel.substring(start, end).toLowerCase());
-            start = end;
-        }
-    }
-    words.push(camel.substring(start, camel.length).toLowerCase());
-    return words.join(' ').replace(/[a-z]/i, function (ltr) { return ltr.toUpperCase(); });
-}
-function getByPath(value, path) {
-    if (path.length === 0)
-        return value;
-    var head = path[0], tail = path.slice(1);
-    if (Array.isArray(value)) {
-        return getByPath(value[indexFromPathElement(head)], tail);
-    }
-    else if (typeof value === 'object') {
-        return getByPath(value[head], tail);
-    }
-    else {
-        return undefined;
-    }
-}
-function setByPath(target, path, value) {
-    if (path.length === 0)
-        throw ("path too short to set");
-    if (target === undefined)
-        throw ("path does not exist on target");
-    var head = path[0], tail = path.slice(1);
-    if (Array.isArray(value)) {
-        if (tail.length === 0) {
-            target[indexFromPathElement(head)] = value;
-        }
-        else {
-            setByPath(target[indexFromPathElement(head)], tail, value);
-        }
-    }
-    else if (typeof value === 'object') {
-        if (tail.length === 0) {
-            target[head] = value;
-        }
-        else {
-            setByPath(target[head], tail, value);
-        }
-    }
-    else {
-        throw ("path does not exist on target");
-    }
-}
-function indexFromPathElement(pathEl) {
-    if (!/^\[[0-9]+\]$/.test(pathEl))
-        throw ("value at path is array but path element is " + pathEl);
-    var idx = parseInt(pathEl.substring(1, pathEl.length - 1));
-    return idx;
-}
-
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 function unwrapExports (x) {
@@ -7293,55 +7148,149 @@ function setLogger(self) {
 
 function noop() {}
 
-var ErrorObject = /** @class */ (function () {
-    function ErrorObject() {
+function intersection(arr0, arr1) {
+    var output = new Array();
+    for (var _i = 0, arr0_1 = arr0; _i < arr0_1.length; _i++) {
+        var val = arr0_1[_i];
+        if (arr1.indexOf(val) >= 0) {
+            output.push(val);
+        }
     }
-    return ErrorObject;
-}());
-function getAjv() {
-    var ajv$1 = new ajv({ allErrors: true });
-    ajv$1.addFormat("password", function (val) { return true; });
-    return ajv$1;
+    return output;
 }
-function rectifyErrorPaths(errors) {
-    return errors.map(function (e) { return (__assign({}, e, { dataPath: e.params['missingProperty']
-            ? e.dataPath.replace('[', '.[') + '.' + e.params['missingProperty']
-            : e.dataPath.replace('[', '.[') })); });
-}
-function errorPathsToObject(errors) {
-    var errorObj = new ErrorObject();
-    for (var _i = 0, errors_1 = errors; _i < errors_1.length; _i++) {
-        var error = errors_1[_i];
-        var wasAttached = attachError(errorObj, error.dataPath.split('.').slice(1), error);
-        if (!wasAttached)
-            attachError(errorObj, ['.'], error);
+function union(arr0, arr1) {
+    var output = new Array();
+    for (var _i = 0, arr0_2 = arr0; _i < arr0_2.length; _i++) {
+        var val = arr0_2[_i];
+        output.push(val);
     }
-    return errorObj;
+    for (var _a = 0, arr1_1 = arr1; _a < arr1_1.length; _a++) {
+        var val = arr1_1[_a];
+        if (arr1.indexOf(val) < 0) {
+            output.push(val);
+        }
+    }
+    return output;
 }
-function attachError(errorObj, path, error) {
-    if (path.length === 0)
+function isEmpty(map) {
+    if (map === null)
         return false;
-    var errorObjVal = errorObj[path[0]];
-    var wasAttached = false;
-    if (path.length === 1) {
-        if (errorObjVal && Array.isArray(errorObj[path[0]])) {
-            errorObjVal.push(error);
+    for (var key in map) {
+        return !map.hasOwnProperty(key);
+    }
+    return true;
+}
+function deepCopy(obj) {
+    var copy;
+    // Handle the 3 simple types, and null or undefined
+    if (null == obj || "object" != typeof obj)
+        return obj;
+    // Handle Date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+    // Handle Array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = deepCopy(obj[i]);
+        }
+        return copy;
+    }
+    // Handle Object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr))
+                copy[attr] = deepCopy(obj[attr]);
+        }
+        return copy;
+    }
+    throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+function withoutFalsyProperties(value) {
+    var newValue = deepCopy(value);
+    deleteFalsyProperties(newValue);
+    return newValue;
+}
+function deleteFalsyProperties(value) {
+    if (Array.isArray(value)) {
+        for (var _i = 0, value_1 = value; _i < value_1.length; _i++) {
+            var item = value_1[_i];
+            deleteFalsyProperties(item);
+        }
+    }
+    else if (typeof value == "object") {
+        for (var key in value) {
+            if (!value[key]) {
+                delete value[key];
+            }
+            else {
+                deleteFalsyProperties(value[key]);
+            }
+        }
+    }
+}
+function camelToTitle(camel) {
+    camel = camel.trim();
+    var words = [];
+    var start = 0;
+    for (var end = 1; end < camel.length; end++) {
+        if ('A' <= camel[end] && camel[end] <= 'Z') {
+            words.push(camel.substring(start, end).toLowerCase());
+            start = end;
+        }
+    }
+    words.push(camel.substring(start, camel.length).toLowerCase());
+    return words.join(' ').replace(/[a-z]/i, function (ltr) { return ltr.toUpperCase(); });
+}
+function getByPath(value, path) {
+    if (path.length === 0)
+        return value;
+    var head = path[0], tail = path.slice(1);
+    if (Array.isArray(value)) {
+        return getByPath(value[indexFromPathElement(head)], tail);
+    }
+    else if (typeof value === 'object') {
+        return getByPath(value[head], tail);
+    }
+    else {
+        return undefined;
+    }
+}
+function setByPath(target, path, value) {
+    if (path.length === 0)
+        throw ("path too short to set");
+    if (target === undefined)
+        throw ("path does not exist on target");
+    var head = path[0], tail = path.slice(1);
+    if (Array.isArray(value)) {
+        if (tail.length === 0) {
+            target[indexFromPathElement(head)] = value;
         }
         else {
-            errorObj[path[0]] = [error];
-        }
-        wasAttached = true;
-    }
-    else if (path.length > 1) {
-        if (!errorObjVal) {
-            errorObjVal = new ErrorObject();
-            errorObj[path[0]] = errorObjVal;
-        }
-        if (errorObjVal instanceof ErrorObject) {
-            wasAttached = attachError(errorObjVal, path.slice(1), error);
+            setByPath(target[indexFromPathElement(head)], tail, value);
         }
     }
-    return wasAttached;
+    else if (typeof value === 'object') {
+        if (tail.length === 0) {
+            target[head] = value;
+        }
+        else {
+            setByPath(target[head], tail, value);
+        }
+    }
+    else {
+        throw ("path does not exist on target");
+    }
+}
+function indexFromPathElement(pathEl) {
+    if (!/^\[[0-9]+\]$/.test(pathEl))
+        throw ("value at path is array but path element is " + pathEl);
+    var idx = parseInt(pathEl.substring(1, pathEl.length - 1));
+    return idx;
 }
 
 function fieldType(schema) {
@@ -7709,6 +7658,63 @@ function applyOrder(items, selector, order) {
     return result;
 }
 
+var ErrorObject = /** @class */ (function () {
+    function ErrorObject() {
+    }
+    return ErrorObject;
+}());
+function validate$2(schema, value) {
+    var ajv = getAjv();
+    ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
+    var errors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
+    return errors;
+}
+function getAjv() {
+    var ajv$1 = new ajv({ allErrors: true });
+    ajv$1.addFormat("password", function (val) { return true; });
+    return ajv$1;
+}
+function rectifyErrorPaths(errors) {
+    return errors.map(function (e) { return (__assign({}, e, { dataPath: e.params['missingProperty']
+            ? e.dataPath.replace('[', '.[') + '.' + e.params['missingProperty']
+            : e.dataPath.replace('[', '.[') })); });
+}
+function errorPathsToObject(errors) {
+    var errorObj = new ErrorObject();
+    for (var _i = 0, errors_1 = errors; _i < errors_1.length; _i++) {
+        var error = errors_1[_i];
+        var wasAttached = attachError(errorObj, error.dataPath.split('.').slice(1), error);
+        if (!wasAttached)
+            attachError(errorObj, ['.'], error);
+    }
+    return errorObj;
+}
+function attachError(errorObj, path, error) {
+    if (path.length === 0)
+        return false;
+    var errorObjVal = errorObj[path[0]];
+    var wasAttached = false;
+    if (path.length === 1) {
+        if (errorObjVal && Array.isArray(errorObj[path[0]])) {
+            errorObjVal.push(error);
+        }
+        else {
+            errorObj[path[0]] = [error];
+        }
+        wasAttached = true;
+    }
+    else if (path.length > 1) {
+        if (!errorObjVal) {
+            errorObjVal = new ErrorObject();
+            errorObj[path[0]] = errorObjVal;
+        }
+        if (errorObjVal instanceof ErrorObject) {
+            wasAttached = attachError(errorObjVal, path.slice(1), error);
+        }
+    }
+    return wasAttached;
+}
+
 function SchemaFormComponent(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, caption = _a.caption;
     var name = path.join('.');
@@ -7725,7 +7731,7 @@ function SchemaFormComponent(_a) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
         var readOnly = schema['readOnly'] || false;
         var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: onBlur };
-        var commonProps = __assign({}, baseProps, { value: (value || '').toString(), onChange: handleChange });
+        var commonProps = __assign({}, baseProps, { value: (value || '').toString(), onInput: handleChange });
         switch (fieldType(schema)) {
             case "string":
                 return (React.createElement("input", __assign({}, commonProps, { type: "text", className: classes("sf-string") })));
@@ -7765,7 +7771,6 @@ function ComponentForType(props) {
     var container = props.context.containers[schema['type']];
     var condSchema = applyConditional(schema, value);
     var mergedSchema = condSchema || schema;
-    console.log("Merged schema: " + JSON.stringify(mergedSchema));
     if (container) {
         return container(__assign({}, props, { schema: mergedSchema })) || (React.createElement(React.Fragment, null));
     }
@@ -7894,7 +7899,7 @@ var defaultContainerMap = {
 function SchemaForm(_a) {
     var schema = _a.schema, value = _a.value, onChange = _a.onChange, onFocus = _a.onFocus, showErrors = _a.showErrors, className = _a.className, changeOnBlur = _a.changeOnBlur;
     var _b = useState(value), currentValue = _b[0], setValue = _b[1];
-    var initErrors = showErrors || showErrors == undefined ? validate(value) : new ErrorObject();
+    var initErrors = showErrors || showErrors == undefined ? validate$2(schema, value) : new ErrorObject();
     var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
     var _d = useState(null), lastPath = _d[0], setLastPath = _d[1];
     // feed value into state when props change
@@ -7903,21 +7908,15 @@ function SchemaForm(_a) {
     }, [value]);
     // update error state with new props
     useEffect(function () {
-        var newErrors = validate(value);
+        var newErrors = validate$2(schema, value);
         if (showErrors || showErrors == undefined) {
             setErrors(newErrors);
         }
     }, [value, showErrors]);
-    function validate(newValue) {
-        var ajv = getAjv();
-        ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(newValue));
-        var newErrors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
-        return newErrors;
-    }
     function handleChange(newValue, path, action) {
         setValue(newValue);
         setLastPath(path);
-        var newErrors = validate(newValue);
+        var newErrors = validate$2(schema, newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }
@@ -7958,11 +7957,13 @@ function SchemaSubmitForm(props) {
     }
     function onSubmit() {
         setSubmitted(true);
-        if (props.onSubmit && isEmpty(errors))
+        var newErrors = validate$2(props.schema, value);
+        setErrors(newErrors);
+        if (props.onSubmit && isEmpty(newErrors))
             props.onSubmit(value);
     }
     return (React.createElement("form", { className: "sf-submit-form" },
-        React.createElement(SchemaForm, __assign({}, props, { onChange: onChange, showErrors: submitted })),
+        React.createElement(SchemaForm, __assign({}, props, { value: value, onChange: onChange, showErrors: submitted })),
         React.createElement("div", { className: "sf-buttons" },
             React.createElement("div", { className: "sf-submit" }, props.makeSubmitLink(onSubmit)))));
 }
@@ -7980,7 +7981,6 @@ function SchemaPagedForm(props) {
     useEffect(function () {
         setEntered(false);
         setPageValue(props.value['page' + props.page]);
-        console.log('entered -> false');
     }, [props.page]);
     function onChange(newPageValue, path, errors) {
         var _a;
@@ -7993,7 +7993,6 @@ function SchemaPagedForm(props) {
     }
     function onPage(page) {
         setEntered(true);
-        console.log('entered -> true');
         if (props.onPage && isEmpty(errors))
             props.onPage(value, page);
     }

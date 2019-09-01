@@ -14,7 +14,7 @@ export function SchemaFormComponent({
 }: ISchemaComponentProps): React.ReactElement {
     const name = path.join('.');
 
-    function handleChange(ev: React.ChangeEvent) {
+    function handleChange(ev: React.FormEvent) {
         onChange(ev.target['value'], path);
     }
 
@@ -30,7 +30,7 @@ export function SchemaFormComponent({
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur };
-        const commonProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
+        const commonProps = { ...baseProps, value: (value || '').toString(), onInput: handleChange };
 
         switch (fieldType(schema)) {
             case "string":

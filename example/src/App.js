@@ -4,6 +4,22 @@ import "./App.css";
 import "schema-form/build/index.css";
 import SchemaForm, { SchemaSubmitForm, SchemaPagedForm } from "schema-form";
 
+const loginSchema = {
+  type: "object",
+  title: "Log In",
+  properties: {
+      email: {
+          type: "string",
+          format: "email"
+      },
+      password: {
+          type: "string",
+          format: "password"
+      }
+  },
+  required: [ "email", "password" ]
+}
+
 const schema = {
   type: "object",
   properties: {
@@ -159,11 +175,11 @@ function Form(props) {
           setErrors(e);
         }}
         onFocus={(p) => setFocus(p.join('.'))} />}
-      {props.type === "submit" && <SchemaSubmitForm schema={schema} value={value}
+      {props.type === "submit" && <SchemaSubmitForm schema={loginSchema} value={{}}
         onSubmit={(v) => {
           setValue(v);
         }}
-        onFocus={(p) => setFocus(p.join('.'))}
+        //onFocus={(p) => setFocus(p.join('.'))}
         makeSubmitLink={(onClick) => (
           <div onClick={onClick}>Submit</div>
         )} />}

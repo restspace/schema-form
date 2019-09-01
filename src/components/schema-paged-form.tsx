@@ -27,7 +27,6 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     useEffect(() => {
         setEntered(false);
         setPageValue(props.value['page' + props.page]);
-        console.log('entered -> false');
     }, [props.page]);
 
 
@@ -42,7 +41,6 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
 
     function onPage(page: number) {
         setEntered(true);
-        console.log('entered -> true');
         if (props.onPage && isEmpty(errors))
             props.onPage(value, page);
     }

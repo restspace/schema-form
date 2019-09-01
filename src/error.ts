@@ -1,7 +1,16 @@
 import Ajv from "ajv"
+import { nullOptionalsAllowed } from "schema/schema";
+import { withoutFalsyProperties } from "utility"
 
 export class ErrorObject {
     [ errorName: string ]: Ajv.ErrorObject[] | ErrorObject
+}
+
+export function validate(schema: object, value: object) {
+    let ajv = getAjv();
+    ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
+    const errors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
+    return errors;
 }
 
 export function getAjv(): Ajv.Ajv {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SchemaForm from 'components/schema-form';
 import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject } from 'error';
+import { ErrorObject, validate } from 'error';
 import { isEmpty } from 'utility';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
@@ -27,13 +27,15 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
 
     function onSubmit() {
         setSubmitted(true);
-        if (props.onSubmit && isEmpty(errors))
+        const newErrors = validate(props.schema, value);
+        setErrors(newErrors);
+        if (props.onSubmit && isEmpty(newErrors))
             props.onSubmit(value);
     }
 
     return (
         <form className="sf-submit-form">
-            <SchemaForm {...props} onChange={onChange} showErrors={submitted}/>
+            <SchemaForm {...props} value={value} onChange={onChange} showErrors={submitted}/>
             <div className="sf-buttons">
                 <div className="sf-submit">
                     {props.makeSubmitLink(onSubmit)}
