@@ -1,3 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces";
-export declare function SchemaFormComponent({ schema, path, value, errors, onChange, onFocus, onBlur, caption }: ISchemaComponentProps): React.ReactElement;
+export declare const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps>;
+export declare function SchemaFormComponent(props: ISchemaComponentProps): React.ReactElement;

@@ -2,7 +2,7 @@ import React, { Component, useState } from "react";
 import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
-import SchemaForm, { SchemaSubmitForm, SchemaPagedForm } from "schema-form";
+import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "schema-form";
 
 const loginSchema = {
   type: "object",
@@ -50,6 +50,10 @@ const schema = {
       type: "string",
       editor: "textarea"
     },
+    files: {
+      type: "string",
+      editor: "upload"
+    },
     things: {
       type: "array",
       items: {
@@ -77,7 +81,7 @@ const schema = {
       required: [ "postcode" ]
     }
   },
-  order: [ "salutation", "firstName", "lastName", "canContact", "dateOfBirth", "password", "comments", "things", "address" ],
+  order: [ "salutation", "firstName", "lastName", "canContact", "dateOfBirth", "password", "comments", "files", "things", "address" ],
   if: {
     type: "object",
     properties: {
@@ -165,6 +169,11 @@ function Form(props) {
   const [focus, setFocus] = useState('');
   const [page, setPage] = useState(0);
 
+  const componentContext = {
+    getFileUrl: (file, path, schema) => `http://localhost:3100/upload/${file.name}`,
+    sendFile: sendFileAsBody
+  }
+
   return (
     <>
     <div className="App">
@@ -174,7 +183,8 @@ function Form(props) {
           setPath(p.join('.'));
           setErrors(e);
         }}
-        onFocus={(p) => setFocus(p.join('.'))} />}
+        onFocus={(p) => setFocus(p.join('.'))}
+        componentContext={componentContext} />}
       {props.type === "submit" && <SchemaSubmitForm schema={loginSchema} value={{}}
         onSubmit={(v) => {
           setValue(v);

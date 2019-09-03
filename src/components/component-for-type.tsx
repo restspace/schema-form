@@ -23,7 +23,8 @@ function SchemaFormComponentWrapper({
     const componentProps: ISchemaComponentProps = {
         schema, path, value, onChange, onFocus, onBlur,
         errors: (errors || []) as Ajv.ErrorObject[],
-        caption: fieldCaption(schema, path)
+        caption: fieldCaption(schema, path),
+        context: context.componentContext
     }
 
     const component: React.FC<ISchemaComponentProps> = context.components[fieldType(schema)];

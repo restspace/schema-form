@@ -24,7 +24,8 @@ export interface ISchemaComponentProps {
     onChange(value: any, path: string[]): void,
     onFocus(path: string[]): void,
     onBlur(): void,
-    caption: string
+    caption: string,
+    context?: object
 }
 
 export interface IComponentMap {
@@ -37,5 +38,6 @@ export interface IContainerMap {
 
 export interface ISchemaFormContext {
     components: IComponentMap,
-    containers: IContainerMap
+    containers: IContainerMap,
+    componentContext?: object
 }

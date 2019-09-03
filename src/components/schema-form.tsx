@@ -5,6 +5,7 @@ import { SchemaFormArray } from "components/schema-form-array"
 import { SchemaFormObject } from "components/schema-form-object"
 import { ComponentForType } from "components/component-for-type"
 import { IComponentMap, IContainerMap, ISchemaFormContext, ActionType } from "components/schema-form-interfaces"
+import { UploadEditor } from "editors/upload-editor";
 
 
 export interface ISchemaFormProps {
@@ -16,7 +17,8 @@ export interface ISchemaFormProps {
     components?: IComponentMap,
     containers?: IContainerMap,
     className?: string,
-    changeOnBlur?: boolean
+    changeOnBlur?: boolean,
+    componentContext?: object
 }
 
 const defaultComponentMap: IComponentMap = {
@@ -27,7 +29,8 @@ const defaultComponentMap: IComponentMap = {
     "email": SchemaFormComponent,
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,
-    "textarea": SchemaFormComponent
+    "textarea": SchemaFormComponent,
+    "upload": UploadEditor
 }
 
 const defaultContainerMap: IContainerMap = {
@@ -42,7 +45,8 @@ export default function SchemaForm({
     onFocus,
     showErrors,
     className,
-    changeOnBlur
+    changeOnBlur,
+    componentContext
 }: ISchemaFormProps): React.ReactElement {
     const [currentValue, setValue] = useState(value);
     const initErrors = showErrors || showErrors == undefined ? validate(schema, value) : new ErrorObject();
@@ -84,7 +88,8 @@ export default function SchemaForm({
     const formClass = `sf-form ${className}`;
     const context: ISchemaFormContext = {
         components: defaultComponentMap,
-        containers: defaultContainerMap
+        containers: defaultContainerMap,
+        componentContext
     }
 
     return (

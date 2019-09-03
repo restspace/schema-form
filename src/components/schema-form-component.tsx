@@ -1,17 +1,35 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces"
 import { fieldType } from "schema/schema"
 
-export function SchemaFormComponent({
-    schema,
-    path,
-    value,
-    errors,
-    onChange,
-    onFocus,
-    onBlur,
-    caption
-}: ISchemaComponentProps): React.ReactElement {
+export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children }) => {
+    const isError = errors.length > 0;
+    return (
+    <>
+        <div className="sf-row">
+            {caption && <label htmlFor={name} className={"sf-caption " + (isError && "sf-has-error")}>{caption}</label>}
+            {children}
+        </div>
+        {isError && <div className="sf-row sf-error-row">
+            <label className="sf-caption"></label>
+            {errors.map((err, idx) => (
+                <label key={idx} className="sf-error" htmlFor={name}>{err.message}</label>
+            ))}
+        </div>}
+    </>
+    );
+}
+
+export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactElement {
+    const {
+        schema,
+        path,
+        value,
+        errors,
+        onChange,
+        onFocus,
+        onBlur
+    } = props;
     const name = path.join('.');
 
     function handleChange(ev: React.FormEvent) {
@@ -30,7 +48,8 @@ export function SchemaFormComponent({
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur };
-        const commonProps = { ...baseProps, value: (value || '').toString(), onInput: handleChange };
+        const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
+        const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
 
         switch (fieldType(schema)) {
             case "string":
@@ -51,7 +70,7 @@ export function SchemaFormComponent({
                 return (<textarea {...commonProps} className={classes("sf-textarea")} />)
             case "enum":
                 return (
-                <select {...commonProps} className={classes("sf-enum")}>
+                <select {...selectProps} className={classes("sf-enum")}>
                     {schema['enum'].map((val: string) =>
                         (<option key={val} value={val}>{val}</option>))}
                 </select>
@@ -63,17 +82,8 @@ export function SchemaFormComponent({
 
     const isError = errors.length > 0;
     return (
-    <>
-        <div className="sf-row">
-            {caption && <label htmlFor={name} className={"sf-caption " + (isError && "sf-has-error")}>{caption}</label>}
+        <SchemaFormComponentWrapper {...props}>
             {schemaInput(isError)}
-        </div>
-        {isError && <div className="sf-row sf-error-row">
-            <label className="sf-caption"></label>
-            {errors.map((err, idx) => (
-                <label key={idx} className="sf-error" htmlFor={name}>{err.message}</label>
-            ))}
-        </div>}
-    </>
+        </SchemaFormComponentWrapper>
     );
 }

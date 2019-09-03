@@ -26,6 +26,7 @@ export interface ISchemaComponentProps {
     onFocus(path: string[]): void;
     onBlur(): void;
     caption: string;
+    context?: object;
 }
 export interface IComponentMap {
     [fieldType: string]: React.FC<ISchemaComponentProps>;
@@ -36,4 +37,5 @@ export interface IContainerMap {
 export interface ISchemaFormContext {
     components: IComponentMap;
     containers: IContainerMap;
+    componentContext?: object;
 }

@@ -104,3 +104,30 @@ fieldset {
     background-color: #ddd;
 }
 
+.sf-upload {
+    overflow: hidden;
+}
+
+.sf-upload.sf-drag-over {
+    background-color: #ddd;
+}
+
+.sf-progress {
+    width: 100%;
+    border: 1px solid #333;
+    position: relative;
+    margin-top: 4px;
+}
+
+.sf-progress-indicator {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    background-color:#b7cdd4;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.sf-upload-message {
+    margin: 0;
+}
+
