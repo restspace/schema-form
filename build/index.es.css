@@ -21,6 +21,10 @@
   text-align: left;
 }
 
+.sf-row .sf-description {
+  font-size: 11px;
+}
+
 .sf-row > .sf-control {
   flex: 2;
   border: 1px solid grey;

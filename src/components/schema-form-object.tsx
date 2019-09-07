@@ -2,7 +2,10 @@ import React from 'react'
 import { ComponentForType } from 'components/component-for-type'
 import { ErrorObject } from 'error'
 import { fieldCaption, applyOrder } from 'schema/schema'
-import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces'
+import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces';
+
+type NestedList = string | NestedListArray;
+interface NestedListArray extends Array<NestedList> {}
 
 export function SchemaFormObject({
     schema,
@@ -21,26 +24,41 @@ export function SchemaFormObject({
         onChange({ ...value, [key]: newValue }, path, action);
     }
 
+    function renderSection(order: NestedList, properties: [string, unknown][]) {
+        if (typeof order === 'string') {
+            const [key, subSchema] = properties.find(([key, _]) => key === order) || ['', null];
+            if (key) {
+                return (
+                    <ComponentForType
+                        schema={subSchema as object}
+                        path={[ ...path, key]}
+                        value={value && value[key]}
+                        errors={(errors instanceof ErrorObject) ? errors[key] : []}
+                        onChange={(value, path, action) => handleChange(key, value, path, action)}
+                        onFocus={onFocus}
+                        onBlur={onBlur}
+                        key={key}
+                        context={context}/>
+                )
+            }
+        } else {
+            return (
+                <section>
+                    {order.map((subOrder) => renderSection(subOrder, properties))}
+                </section>
+            )
+        }
+        return <></>;
+    }
+    
+    let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties']);
     let properties = Object.entries(schema['properties']);
-    if (schema['order'])
-        properties = applyOrder(properties, ([key, _]) => key, schema['order']);
 
     return (
         <div className={objectClass}>
             <div className="sf-title">{fieldCaption(schema, path) || '\u00A0'}</div>
             <fieldset className="sf-object-fieldset">
-            {properties.map(([key, subSchema]) => (
-                <ComponentForType
-                    schema={subSchema as object}
-                    path={[ ...path, key]}
-                    value={value && value[key]}
-                    errors={(errors instanceof ErrorObject) ? errors[key] : []}
-                    onChange={(value, path, action) => handleChange(key, value, path, action)}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                    key={key}
-                    context={context}/>
-            ))}
+                {topOrder.map((subOrder) => renderSection(subOrder, properties))}
             </fieldset>
         </div>
     )

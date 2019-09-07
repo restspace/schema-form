@@ -36,7 +36,10 @@ const schema = {
       readOnly: true
     },
     canContact: {
-      type: "boolean"
+      type: "string",
+      enum: [ "yes", "no" ],
+      editor: "radioButtons",
+      description: "Whether can contact"
     },
     dateOfBirth: {
       type: "string",
@@ -81,7 +84,7 @@ const schema = {
       required: [ "postcode" ]
     }
   },
-  order: [ "salutation", "firstName", "lastName", "canContact", "dateOfBirth", "password", "comments", "files", "things", "address" ],
+  order: [ "salutation", [ "firstName", "lastName" ], "canContact", "dateOfBirth", "password", "comments", "files", "things", "address" ],
   if: {
     type: "object",
     properties: {
@@ -100,6 +103,55 @@ const schema = {
     },
     order: [ "canContact", "isMedical" ]
   },
+}
+
+const schemaSelector = {
+  type: "object",
+  properties: {
+    selector: {
+      type: "string",
+      enum: [ "text", "checkbox", "nothing" ]
+    }
+  },
+  anyOf: [
+    {
+      type: "object",
+      properties: {
+        selector: { type: "string", const: "text" },
+        textInput: { type: "string" }
+      }
+    },{
+      type: "object",
+      properties: {
+        selector: { type: "string", const: "checkbox" },
+        checkboxInput: { type: "boolean" }
+      }
+    },{
+      type: "object",
+      properties: {
+        selector: { type: "string", const: "nothing" }
+      }
+    }
+  ]
+}
+
+const schemaSelector2 = {
+  type: "object",
+  anyOf: [
+    {
+      type: "object",
+      properties: {
+        number: { type: "string", pattern: "[0-9]+" },
+        sign: { type: "boolean" }
+      },
+      required: [ "number" ]
+    },{
+      type: "object",
+      properties: {
+        number: { type: "string", not: { pattern: "[0-9]+" } }
+      }
+    }
+  ]
 }
 
 const schemaPaged = {
@@ -126,10 +178,10 @@ const schemaPaged = {
       type: "object",
       properties: {
         abc: {
-          type: "string"
+          type: "number"
         },
         def: {
-          type: "string"
+          type: "number"
         }
       }
     }
@@ -164,6 +216,7 @@ const testValuePaged = {
 function Form(props) {
   const [value, setValue] = useState(testValue);
   const [valuePaged, setValuePaged] = useState(testValuePaged);
+  const [valueSel, setValueSel] = useState({});
   const [errors, setErrors] = useState([]);
   const [path, setPath] = useState('');
   const [focus, setFocus] = useState('');
@@ -180,6 +233,14 @@ function Form(props) {
       {props.type === "no submit" && <SchemaForm schema={schema} value={value}
         onChange={(v, p, e) => {
           setValue(v);
+          setPath(p.join('.'));
+          setErrors(e);
+        }}
+        onFocus={(p) => setFocus(p.join('.'))}
+        componentContext={componentContext} />}
+      {props.type === "selector" && <SchemaForm schema={schemaSelector2} value={valueSel}
+        onChange={(v, p, e) => {
+          setValueSel(v);
           setPath(p.join('.'));
           setErrors(e);
         }}
@@ -215,9 +276,10 @@ function Form(props) {
         />}
     </div>
     <div>
-      {props.type !== "paged" && <div>Value: {JSON.stringify(value)}</div>}
+      {(props.type === "submit" || props.type === "no submit") && <div>Value: {JSON.stringify(value)}</div>}
+      {props.type === "selector" && <div>Value: {JSON.stringify(valueSel)}</div>}
       {props.type === "paged" && <div>Value: {JSON.stringify(valuePaged)}</div>}
-      {props.type === "no submit" && <div>Errors: {JSON.stringify(errors)}</div>}
+      {(props.type === "no submit" || props.type === "selector") && <div>Errors: {JSON.stringify(errors)}</div>}
       <div>Path: {path}</div>
       <div>Focus: {focus}</div>
     </div>
@@ -235,6 +297,9 @@ class App extends Component {
               <Link to="/">No Form</Link>
             </li>
             <li>
+              <Link to="/selector">Selector</Link>
+            </li>
+            <li>
               <Link to="/single-form">Single Form</Link>
             </li>
             <li>
@@ -244,6 +309,7 @@ class App extends Component {
         </div>
         <Router>
           <Form path="/" type="no submit"/>
+          <Form path="/selector" type="selector"/>
           <Form path="/single-form" type="submit"/>
           <Form path="/paged-form" type="paged"/>
         </Router>

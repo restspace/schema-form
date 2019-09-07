@@ -6,6 +6,7 @@ import { SchemaFormObject } from "components/schema-form-object"
 import { ComponentForType } from "components/component-for-type"
 import { IComponentMap, IContainerMap, ISchemaFormContext, ActionType } from "components/schema-form-interfaces"
 import { UploadEditor } from "editors/upload-editor";
+import { RadioButtonsEditor } from "editors/radio-buttons-editor";
 
 
 export interface ISchemaFormProps {
@@ -23,6 +24,7 @@ export interface ISchemaFormProps {
 
 const defaultComponentMap: IComponentMap = {
     "string": SchemaFormComponent,
+    "number": SchemaFormComponent,
     "enum": SchemaFormComponent,
     "boolean": SchemaFormComponent,
     "date": SchemaFormComponent,
@@ -30,7 +32,8 @@ const defaultComponentMap: IComponentMap = {
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,
     "textarea": SchemaFormComponent,
-    "upload": UploadEditor
+    "upload": UploadEditor,
+    "radioButtons": RadioButtonsEditor
 }
 
 const defaultContainerMap: IContainerMap = {
@@ -46,7 +49,9 @@ export default function SchemaForm({
     showErrors,
     className,
     changeOnBlur,
-    componentContext
+    componentContext,
+    components,
+    containers
 }: ISchemaFormProps): React.ReactElement {
     const [currentValue, setValue] = useState(value);
     const initErrors = showErrors || showErrors == undefined ? validate(schema, value) : new ErrorObject();
@@ -87,8 +92,8 @@ export default function SchemaForm({
 
     const formClass = `sf-form ${className}`;
     const context: ISchemaFormContext = {
-        components: defaultComponentMap,
-        containers: defaultContainerMap,
+        components: Object.assign(defaultComponentMap, components || {}),
+        containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext
     }
 

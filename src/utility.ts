@@ -126,29 +126,6 @@ export function getByPath(value: object, path: string[]): any {
     }
 }
 
-export function setByPath(target: object, path: string[], value: object) {
-    if (path.length === 0) throw(`path too short to set`);
-    if (target === undefined) throw(`path does not exist on target`);
-
-    const [head, ...tail] = path;
-
-    if (Array.isArray(value)) {
-        if (tail.length === 0) {
-            target[indexFromPathElement(head)] = value;
-        } else {
-            setByPath(target[indexFromPathElement(head)], tail, value);
-        }  
-    } else if (typeof value === 'object') {
-        if (tail.length === 0) {
-            target[head] = value;
-        } else {
-            setByPath(target[head], tail, value);
-        }
-    } else {
-        throw(`path does not exist on target`);
-    }
-}
-
 function indexFromPathElement(pathEl: string): number {
     if (!/^\[[0-9]+\]$/.test(pathEl)) throw(`value at path is array but path element is ${pathEl}`);
     const idx = parseInt(pathEl.substring(1, pathEl.length - 1));

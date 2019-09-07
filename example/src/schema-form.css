@@ -16,10 +16,20 @@ fieldset {
 
 .sf-row > label.sf-caption {
     max-width: 9rem;
+    min-width: 7rem;
+}
+
+.sf-row .sf-description {
+    font-size: 11px;
 }
 
 .sf-row {
     padding: 0.25rem 0;
+    flex-grow: 1;
+}
+
+.sf-object-fieldset section {
+    display: flex;
 }
 
 .sf-object {

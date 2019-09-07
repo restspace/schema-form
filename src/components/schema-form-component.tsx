@@ -2,12 +2,18 @@ import React, { FunctionComponent } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces"
 import { fieldType } from "schema/schema"
 
-export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children }) => {
+export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema }) => {
     const isError = errors.length > 0;
+    const errorClass = isError ? "sf-has-error" : "";
     return (
     <>
         <div className="sf-row">
-            {caption && <label htmlFor={name} className={"sf-caption " + (isError && "sf-has-error")}>{caption}</label>}
+            {caption && <label htmlFor={name} className={"sf-caption " + errorClass}>
+                {caption}
+                {schema['description'] && (<><br/><span className={"sf-description " + errorClass}>
+                    {schema['description']}
+                </span></>)}
+            </label>}
             {children}
         </div>
         {isError && <div className="sf-row sf-error-row">
@@ -36,6 +42,13 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         onChange(ev.target['value'], path);
     }
 
+    function handleChangeNumber(ev: React.FormEvent) {
+        const num = parseFloat(ev.target['value']);
+        if (!isNaN(num)) {
+            onChange(num, path);
+        }
+    }
+
     function handleCheckChange(ev: React.ChangeEvent) {
         onChange(ev.target['checked'], path);
     }
@@ -57,7 +70,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "boolean":
                 return (<input {...baseProps} type="checkbox" checked={(value || false) as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
             case "number":
-                return (<input {...commonProps} type="number" className={classes("sf-number")} />)
+                return (<input {...commonProps} type="number" className={classes("sf-number")} onInput={handleChangeNumber} />)
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "email":
@@ -75,7 +88,6 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                         (<option key={val} value={val}>{val}</option>))}
                 </select>
                 )
-
         }
         return (<div>No such type</div>)
     }

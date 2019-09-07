@@ -1,13 +1,13 @@
 import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility";
 import { getAjv } from "error";
-import { string } from "prop-types";
+import _ from "lodash";
 
 export function fieldType(schema: object): string {
     let type = schema['type'];
-    if (schema['format'])
-        type += "-" + schema['format'];
     if (schema['enum'])
         type = "enum";
+    if (schema['format'])
+        type += "-" + schema['format'];
     if (schema['hidden'])
         type = "hidden";
     if (schema['editor'])
@@ -140,7 +140,11 @@ export function conjoin(schema0: object | null, schema1: object | null): object 
                 }
                 break;
             case 'required':
-                schema[prop] = union<string>(<string[]>schema[prop], <string[]>schema1[prop]);
+                if (!schema[prop]) {
+                    schema[prop] = schema1[prop];
+                } else {
+                    schema[prop] = union<string>(<string[]>schema[prop], <string[]>schema1[prop]);
+                }
                 break;
             case 'maximum':
             case 'exclusiveMaximum':
@@ -342,10 +346,15 @@ export function applyConditional(schema: object, val: object): object | null {
         }
     }
     if (schema['anyOf']) {
+        // We only select and apply subschemas which when added to the parent schema will
+        // validate against the current value
         let ajv = getAjv();
         let disjunction = null;
         for (let subSchema of <object[]>schema['anyOf']) {
-            let validate = ajv.compile(nullOptionalsAllowed(subSchema));
+            const schemaWithSubSchema = conjoin(_.omit(schema, 'anyOf'), subSchema);
+            if (schemaWithSubSchema === null) continue;
+
+            let validate = ajv.compile(nullOptionalsAllowed(schemaWithSubSchema));
             if (validate(val)) {
                 let apply = applyConditional(subSchema, val) || subSchema;
                 disjunction = disjoin(disjunction, apply);

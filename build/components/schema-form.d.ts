@@ -13,4 +13,4 @@ export interface ISchemaFormProps {
     changeOnBlur?: boolean;
     componentContext?: object;
 }
-export default function SchemaForm({ schema, value, onChange, onFocus, showErrors, className, changeOnBlur, componentContext }: ISchemaFormProps): React.ReactElement;
+export default function SchemaForm({ schema, value, onChange, onFocus, showErrors, className, changeOnBlur, componentContext, components, containers }: ISchemaFormProps): React.ReactElement;

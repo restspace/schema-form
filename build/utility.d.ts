@@ -6,4 +6,3 @@ export declare function copySetPath(value: object, path: string[], valueAtPath: 
 export declare function withoutFalsyProperties(value: object): object;
 export declare function camelToTitle(camel: string): string;
 export declare function getByPath(value: object, path: string[]): any;
-export declare function setByPath(target: object, path: string[], value: object): void;
