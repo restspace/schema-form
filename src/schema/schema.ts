@@ -27,7 +27,8 @@ export function fieldType(schema: object): string {
 export function fieldCaption(schema: object, path: string[]): string {
     const pathEl = path && path.length ? path[path.length - 1] : '';
     const title = schema['title'];
-    const idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
+    let idx: number | null = parseInt(pathEl[0]);
+    idx = isNaN(idx) ? null : idx + 1;
     return idx
         ? (title ? title.replace('##', idx) : '')
         : (title || camelToTitle(pathEl));

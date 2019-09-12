@@ -24452,7 +24452,8 @@ function fieldType(schema) {
 function fieldCaption(schema, path) {
     var pathEl = path && path.length ? path[path.length - 1] : '';
     var title = schema['title'];
-    var idx = pathEl[0] === '[' ? (parseInt(pathEl.substring(1, pathEl.length - 1)) + 1) : null;
+    var idx = parseInt(pathEl[0]);
+    idx = isNaN(idx) ? null : idx + 1;
     return idx
         ? (title ? title.replace('##', idx) : '')
         : (title || camelToTitle(pathEl));
@@ -24862,12 +24863,18 @@ function SchemaFormComponent(props) {
     var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur;
     var name = path.join('.');
     function handleChange(ev) {
-        onChange(ev.target['value'], path);
+        var val = ev.target['value'];
+        onChange(val === '' ? null : val, path);
     }
     function handleChangeNumber(ev) {
-        var num = parseFloat(ev.target['value']);
-        if (!isNaN(num)) {
-            onChange(num, path);
+        var str = ev.target['value'];
+        if (str === '')
+            onChange(null, path);
+        else {
+            var num = parseFloat(str);
+            if (!isNaN(num)) {
+                onChange(num, path);
+            }
         }
     }
     function handleCheckChange(ev) {
@@ -24891,6 +24898,8 @@ function SchemaFormComponent(props) {
                 return (React.createElement("input", __assign({}, commonProps, { type: "number", className: classes("sf-number"), onInput: handleChangeNumber })));
             case "date":
                 return (React.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
+            case "date-time":
+                return (React.createElement("input", __assign({}, commonProps, { type: "datetime-local", className: classes("sf-datetime") })));
             case "email":
                 return (React.createElement("input", __assign({}, commonProps, { type: "email", className: classes("sf-email") })));
             case "password":
@@ -24922,22 +24931,36 @@ function ComponentForType(props) {
         return (React.createElement(SchemaFormComponentWrapper$1, __assign({}, props, { schema: mergedSchema })));
     }
 }
-function SchemaFormComponentWrapper$1(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
+// Memoize on the basis of full equality
+//export const ComponentForType = React.memo(ComponentForTypeInner, isEqual);
+function isEqual(p0, p1) {
+    return lodash.isEqual(p0.value, p1.value)
+        && p0.onChange === p1.onChange
+        && lodash.isEqual(p0.errors, p1.errors)
+        && p0.onBlur === p1.onBlur
+        && p0.onFocus === p1.onFocus
+        && p0.onEditor === p1.onEditor;
+}
+function SchemaFormComponentWrapperInner(_a) {
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var componentProps = {
-        schema: schema, path: path, value: value, onChange: onChange, onFocus: onFocus, onBlur: onBlur,
+        schema: schema, path: path, value: value, onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
         errors: (errors || []),
         caption: fieldCaption(schema, path),
         context: context.componentContext
     };
     var component = context.components[fieldType(schema)];
+    console.log('> rendering ' + schema['type'] + ' at ' + path.join('.'));
     if (component) {
+        // memoize on the basis of full depth equality of props
         return component(componentProps) || (React.createElement(React.Fragment, null));
     }
     else {
         return (React.createElement(React.Fragment, null));
     }
 }
+// Memoize on the basis of full equality
+var SchemaFormComponentWrapper$1 = React.memo(SchemaFormComponentWrapperInner, isEqual);
 
 var ActionType;
 (function (ActionType) {
@@ -24948,52 +24971,52 @@ var ActionType;
 })(ActionType || (ActionType = {}));
 
 function SchemaFormArray(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var itemSchema = schema['items'];
     var valueArray = (value || []);
     var pathEl = path.length ? path[path.length - 1] : '';
     var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
     var updatable = !(schema['readOnly'] || false);
-    function handleChange(i, newValue, path, action) {
-        var newValueArray = __spreadArrays(valueArray);
-        newValueArray[i] = newValue;
-        onChange(newValueArray, path, action);
-    }
-    function handleDelete(i, path) {
+    // const handleChange = useCallback(
+    // (i: number) => (newValue: object, path: string[], action?: ActionType) => {
+    //     const newValueArray = [ ...valueArray ];
+    //     newValueArray[i] = newValue;
+    //     onChange(newValueArray, path, action);
+    // }, [valueArray, onChange]);
+    var handleDelete = function (i, path) {
         return function () {
             var newValueArray = __spreadArrays(valueArray);
             newValueArray.splice(i, 1);
-            onChange(newValueArray, path, ActionType.Delete);
+            onChange(newValueArray, path.slice(0, -1), ActionType.Delete);
         };
-    }
-    function handleUp(i, path) {
+    };
+    var handleUp = function (i, path) {
         return function () {
             var newValueArray = __spreadArrays(valueArray);
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i - 1];
             newValueArray[i - 1] = mover;
-            onChange(newValueArray, path, ActionType.Up);
+            onChange(newValueArray, path.slice(0, -1), ActionType.Up);
         };
-    }
-    function handleDown(i, path) {
+    };
+    var handleDown = function (i, path) {
         return function () {
             var newValueArray = __spreadArrays(valueArray);
             var mover = newValueArray[i];
             newValueArray[i] = newValueArray[i + 1];
             newValueArray[i + 1] = mover;
-            onChange(newValueArray, path, ActionType.Down);
+            onChange(newValueArray, path.slice(0, -1), ActionType.Down);
         };
-    }
-    function handleAdd() {
-        onChange(__spreadArrays(valueArray, [null]), __spreadArrays(path, ["[" + valueArray.length + "]"]), ActionType.Create);
-    }
+    };
+    var handleAdd = function () {
+        onChange(__spreadArrays(valueArray, [{}]), path, ActionType.Create);
+    };
     function arrayElement(v, i) {
-        var newPath = __spreadArrays(path, ["[" + i + "]"]);
-        var newErrors = (errors instanceof ErrorObject) ? errors["[" + i + "]"] : [];
-        var onChange = function (value, path, action) { return handleChange(i, value, path, action); };
+        var newPath = __spreadArrays(path, ["" + i]);
+        var newErrors = (errors instanceof ErrorObject) ? errors["" + i] : [];
         return (React.createElement("div", { className: "sf-element", key: i },
-            React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onChange: onChange, onFocus: onFocus, onBlur: onBlur, context: context }),
+            React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
                 React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(i, newPath) }, "x"),
                 i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(i, newPath) }, "^"),
@@ -25006,25 +25029,30 @@ function SchemaFormArray(_a) {
 }
 
 function SchemaFormObject(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var pathEl = path.length ? path[path.length - 1] : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
-    function handleChange(key, newValue, path, action) {
-        var _a;
-        onChange(__assign(__assign({}, value), (_a = {}, _a[key] = newValue, _a)), path, action);
-    }
-    function renderSection(order, properties) {
+    // const handleChange = useCallback((newValue: object, path: string[], action?: ActionType) => {
+    //     const key = _.last(path) || '';
+    //     const newObject = { ...rValue.current };
+    //     if (newValue === null)
+    //         delete newObject[key];
+    //     else
+    //         newObject[key] = newValue;
+    //     onChange(newObject, path, action);
+    // }, [onChange]);
+    function renderSection(order, properties, i) {
         if (typeof order === 'string') {
             var _a = properties.find(function (_a) {
                 var key = _a[0], _ = _a[1];
                 return key === order;
-            }) || ['', null], key_1 = _a[0], subSchema = _a[1];
-            if (key_1) {
-                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key_1]), value: value && value[key_1], errors: (errors instanceof ErrorObject) ? errors[key_1] : [], onChange: function (value, path, action) { return handleChange(key_1, value, path, action); }, onFocus: onFocus, onBlur: onBlur, key: key_1, context: context }));
+            }) || ['', null], key = _a[0], subSchema = _a[1];
+            if (key) {
+                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
             }
         }
         else {
-            return (React.createElement("section", null, order.map(function (subOrder) { return renderSection(subOrder, properties); })));
+            return (React.createElement("section", { key: i || 0 }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, i); })));
         }
         return React.createElement(React.Fragment, null);
     }
@@ -27387,85 +27415,103 @@ var defaultContainerMap = {
     "object": SchemaFormObject
 };
 function SchemaForm(_a) {
-    var schema = _a.schema, value = _a.value, onChange = _a.onChange, onFocus = _a.onFocus, showErrors = _a.showErrors, className = _a.className, changeOnBlur = _a.changeOnBlur, componentContext = _a.componentContext, components = _a.components, containers = _a.containers;
-    var _b = useState(value), currentValue = _b[0], setValue = _b[1];
+    var schema = _a.schema, value = _a.value, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, showErrors = _a.showErrors, className = _a.className, changeOnBlur = _a.changeOnBlur, componentContext = _a.componentContext, components = _a.components, containers = _a.containers;
+    var _b = useState(value), currentValue = _b[0], setCurrentValue = _b[1];
+    var refValue = useRef(value);
     var initErrors = showErrors || showErrors == undefined ? validate$2(schema, value) : new ErrorObject();
     var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
-    var _d = useState(null), lastPath = _d[0], setLastPath = _d[1];
-    // feed value into state when props change
+    var refShowErrors = useRef(showErrors);
+    // The use of refValue here allows the stored callback handleChange to get access to the current value
+    // without needing to be recreated with a different closure, i.e. without needing to add
+    // a dependency
+    refValue.current = currentValue;
+    // This updates the internal state currentValue with an external change of the value prop
     useEffect(function () {
-        setValue(value);
+        if (!lodash.isEqual(refValue.current, value)) {
+            console.log("CH: useEffect1 setCurrentValue");
+            setCurrentValue(value);
+        }
     }, [value]);
     // update error state with new props
     useEffect(function () {
-        var newErrors = validate$2(schema, value);
         if (showErrors || showErrors == undefined) {
+            if (lodash.isEqual(refValue.current, value) && refShowErrors.current === showErrors)
+                return;
+            var newErrors = validate$2(schema, value);
+            if (lodash.isEqual(errors, newErrors) && refShowErrors.current === showErrors)
+                return;
+            console.log("CH: useEffect2 setErrors");
             setErrors(newErrors);
         }
-    }, [value, showErrors]);
-    function handleChange(newValue, path, action) {
-        setValue(newValue);
-        setLastPath(path);
+        refShowErrors.current = showErrors;
+    }, [value, schema, showErrors]);
+    var handleChange = useCallback(function (newPathValue, path, action) {
+        var newValue = lodash.cloneDeep(refValue.current);
+        lodash.set(newValue, path, newPathValue);
+        console.log("setting - " + JSON.stringify(newPathValue) + " at path " + path.join('.') + " produces " + JSON.stringify(newValue));
+        console.log("CH: handleChange setCurrentValue");
+        setCurrentValue(newValue);
         var newErrors = validate$2(schema, newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }
         if (onChange && (action !== undefined || !changeOnBlur))
             onChange(newValue, path, newErrors, action);
-    }
-    function handleFocus(path) {
-        setLastPath(null);
+    }, [schema, onChange, changeOnBlur]);
+    var handleFocus = useCallback(function (path) {
         if (onFocus)
             onFocus(path);
-    }
-    function handleBlur() {
-        if (onChange && changeOnBlur && lastPath)
-            onChange(currentValue, lastPath, errors);
-    }
+    }, [onFocus]);
+    var handleBlur = useCallback(function () {
+        if (onBlur)
+            onBlur();
+    }, [onBlur]);
     var formClass = "sf-form " + className;
     var context = {
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext: componentContext
     };
+    console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (React.createElement("div", { className: formClass },
-        React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, context: context })));
+        React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context })));
 }
 
 function SchemaSubmitForm(props) {
-    var _a = useState(props.value), value = _a[0], setValue = _a[1];
+    var onDirty = props.onDirty, onChange = props.onChange, schema = props.schema, value = props.value;
+    var _a = useState(value), currentValue = _a[0], setCurrentValue = _a[1];
     var _b = useState(false), submitted = _b[0], setSubmitted = _b[1];
     var _c = useState(false), dirty = _c[0], setDirty = _c[1];
     // feed value into state when props change
     useEffect(function () {
-        if (value !== props.value) {
-            if (props.onDirty)
-                props.onDirty(false);
+        if (currentValue !== value) {
+            if (onDirty)
+                onDirty(false);
             setDirty(false);
-            setValue(props.value);
+            setCurrentValue(value);
             console.log('value changed, set clean');
         }
     }, [props.value]);
-    function onChange(value, path, errors) {
-        setValue(value);
-        if (!dirty && props.onDirty)
-            props.onDirty(true);
+    var handleChange = useCallback(function (value, path, errors) {
+        setCurrentValue(value);
+        if (!dirty && onDirty)
+            onDirty(true);
         if (!dirty) {
             setDirty(true);
             console.log('-> dirty');
         }
-        if (props.onChange)
-            props.onChange(value, path, errors);
-    }
+        if (onChange)
+            onChange(value, path, errors);
+    }, [onDirty, onChange]);
     function onSubmit() {
         setSubmitted(true);
-        var newErrors = validate$2(props.schema, value);
+        var newErrors = validate$2(schema, currentValue);
         if (props.onSubmit && isEmpty(newErrors)) {
-            props.onSubmit(value)
+            props.onSubmit(currentValue)
                 .then(function (submitted) {
                 if (submitted) {
-                    if (props.onDirty)
-                        props.onDirty(false);
+                    if (onDirty)
+                        onDirty(false);
                     setDirty(false);
                 }
             });
@@ -27473,13 +27519,14 @@ function SchemaSubmitForm(props) {
     }
     var classes = "sf-submit-form " + (dirty ? "sf-dirty" : "");
     return (React.createElement("form", { className: classes },
-        React.createElement(SchemaForm, __assign({}, props, { value: value, onChange: onChange, showErrors: submitted })),
+        React.createElement(SchemaForm, __assign({}, props, { value: currentValue, onChange: handleChange, showErrors: submitted })),
         React.createElement("div", { className: "sf-buttons" },
             React.createElement("div", { className: "sf-submit" }, props.makeSubmitLink(onSubmit)))));
 }
 
 function SchemaPagedForm(props) {
     var _a = useState(props.value), value = _a[0], setValue = _a[1];
+    var refValue = useRef(value);
     var _b = useState(props.value['page' + props.page]), pageValue = _b[0], setPageValue = _b[1];
     var _c = useState({}), errors = _c[0], setErrors = _c[1];
     var _d = useState(false), entered = _d[0], setEntered = _d[1];
@@ -27492,19 +27539,21 @@ function SchemaPagedForm(props) {
         setEntered(false);
         setPageValue(props.value['page' + props.page]);
     }, [props.page]);
-    function onChange(newPageValue, path, errors) {
+    refValue.current = value;
+    var onChange = useCallback(function (newPageValue, path, errors) {
         var _a;
-        var newValue = __assign(__assign({}, value), (_a = {}, _a['page' + props.page] = newPageValue, _a));
+        var rValue = lodash.cloneDeep(refValue.current);
+        var newValue = __assign(__assign({}, rValue), (_a = {}, _a['page' + props.page] = newPageValue, _a));
         setValue(newValue);
         setPageValue(newPageValue);
         setErrors(errors);
         if (props.onChange)
             props.onChange(newValue, path, errors);
-    }
+    }, [props.onChange, props.page]);
     function onPage(page) {
         setEntered(true);
         if (props.onPage && isEmpty(errors))
-            props.onPage(value, page);
+            props.onPage(value, page, props.page);
     }
     function onSubmit() {
         setEntered(true);
@@ -27530,5 +27579,5 @@ function SchemaPagedForm(props) {
 }
 
 export default SchemaForm;
-export { ActionType, ErrorObject, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, getByPath, sendFileAsBody };
+export { ActionType, ErrorObject, SchemaFormComponent, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, getByPath, sendFileAsBody };
 //# sourceMappingURL=index.es.js.map

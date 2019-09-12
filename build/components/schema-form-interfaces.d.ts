@@ -16,6 +16,7 @@ export interface ISchemaContainerProps {
     onChange(value: object, path: string[], action?: ActionType): void;
     onFocus(path: string[]): void;
     onBlur(): void;
+    onEditor?(data: object, path: string[]): any;
 }
 export interface ISchemaComponentProps {
     schema: object;
@@ -25,6 +26,7 @@ export interface ISchemaComponentProps {
     onChange(value: any, path: string[]): void;
     onFocus(path: string[]): void;
     onBlur(): void;
+    onEditor?(data: object, path: string[]): any;
     caption: string;
     context?: object;
 }

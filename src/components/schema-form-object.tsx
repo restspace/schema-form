@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useCallback, useRef } from 'react'
 import { ComponentForType } from 'components/component-for-type'
 import { ErrorObject } from 'error'
 import { fieldCaption, applyOrder } from 'schema/schema'
 import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces';
+import _ from 'lodash';
 
 type NestedList = string | NestedListArray;
 interface NestedListArray extends Array<NestedList> {}
@@ -15,36 +16,44 @@ export function SchemaFormObject({
     onChange,
     onFocus,
     onBlur,
+    onEditor,
     context
 }: ISchemaContainerProps): React.ReactElement {
     const pathEl = path.length ? path[path.length - 1] : '';
     const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
 
-    function handleChange(key: string, newValue: object, path: string[], action?: ActionType) {
-        onChange({ ...value, [key]: newValue }, path, action);
-    }
+    // const handleChange = useCallback((newValue: object, path: string[], action?: ActionType) => {
+    //     const key = _.last(path) || '';
+    //     const newObject = { ...rValue.current };
+    //     if (newValue === null)
+    //         delete newObject[key];
+    //     else
+    //         newObject[key] = newValue;
+    //     onChange(newObject, path, action);
+    // }, [onChange]);
 
-    function renderSection(order: NestedList, properties: [string, unknown][]) {
+    function renderSection(order: NestedList, properties: [string, unknown][], i?: number) {
         if (typeof order === 'string') {
             const [key, subSchema] = properties.find(([key, _]) => key === order) || ['', null];
             if (key) {
                 return (
                     <ComponentForType
                         schema={subSchema as object}
-                        path={[ ...path, key]}
+                        path={[ ...path, key ]}
                         value={value && value[key]}
                         errors={(errors instanceof ErrorObject) ? errors[key] : []}
-                        onChange={(value, path, action) => handleChange(key, value, path, action)}
+                        onChange={onChange}
                         onFocus={onFocus}
                         onBlur={onBlur}
+                        onEditor={onEditor}
                         key={key}
                         context={context}/>
                 )
             }
         } else {
             return (
-                <section>
-                    {order.map((subOrder) => renderSection(subOrder, properties))}
+                <section key={i || 0}>
+                    {order.map((subOrder, i) => renderSection(subOrder, properties, i))}
                 </section>
             )
         }

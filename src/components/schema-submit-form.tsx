@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SchemaForm from 'components/schema-form';
 import { ISchemaFormProps } from 'components/schema-form';
 import { ErrorObject, validate } from 'error';
@@ -11,39 +11,42 @@ export interface ISchemaSubmitFormProps extends ISchemaFormProps {
 }
 
 export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
-    const [value, setValue] = useState(props.value);
+    const { onDirty, onChange, schema, value } = props;
+    const [ currentValue, setCurrentValue] = useState(value);
     const [submitted, setSubmitted] = useState(false);
     const [dirty, setDirty] = useState(false);
+
     // feed value into state when props change
     useEffect(() => {
-        if (value !== props.value) {
-            if (props.onDirty) props.onDirty(false);
+        if (currentValue !== value) {
+            if (onDirty) onDirty(false);
             setDirty(false);
-            setValue(props.value);
+            setCurrentValue(value);
             console.log('value changed, set clean');
         }
     }, [props.value]);
 
-    function onChange(value: object, path: string[], errors: ErrorObject) {
-        setValue(value);
-        if (!dirty && props.onDirty)
-            props.onDirty(true);
+    const handleChange = useCallback(
+    (value: object, path: string[], errors: ErrorObject) => {
+        setCurrentValue(value);
+        if (!dirty && onDirty)
+            onDirty(true);
         if (!dirty) {
             setDirty(true);
             console.log('-> dirty');
         }
-        if (props.onChange)
-            props.onChange(value, path, errors);
-    }
+        if (onChange)
+            onChange(value, path, errors);
+    }, [ onDirty, onChange ]);
 
     function onSubmit() {
         setSubmitted(true);
-        const newErrors = validate(props.schema, value);
+        const newErrors = validate(schema, currentValue);
         if (props.onSubmit && isEmpty(newErrors)) {
-            props.onSubmit(value)
+            props.onSubmit(currentValue)
                 .then((submitted) => {
                     if (submitted) {
-                        if (props.onDirty) props.onDirty(false);
+                        if (onDirty) onDirty(false);
                         setDirty(false);
                     }
                 });
@@ -54,7 +57,7 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
 
     return (
         <form className={classes}>
-            <SchemaForm {...props} value={value} onChange={onChange} showErrors={submitted}/>
+            <SchemaForm {...props} value={currentValue} onChange={handleChange} showErrors={submitted}/>
             <div className="sf-buttons">
                 <div className="sf-submit">
                     {props.makeSubmitLink(onSubmit)}

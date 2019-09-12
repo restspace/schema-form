@@ -1,5 +1,6 @@
-import Ajv from 'ajv'
-import { ErrorObject } from 'error'
+import Ajv from 'ajv';
+import { ErrorObject } from 'error';
+import _ from 'lodash';
 
 export enum ActionType {
     Create, Delete, Up, Down
@@ -13,8 +14,17 @@ export interface ISchemaContainerProps {
     context: ISchemaFormContext,
     onChange(value: object, path: string[], action?: ActionType): void,
     onFocus(path: string[]): void,
-    onBlur(): void
+    onBlur(): void,
+    onEditor?(data: object, path: string[]): any
 }
+
+// export function containerPropsEqual(props0: ISchemaContainerProps, props1: ISchemaContainerProps): boolean {
+//     return _.isEqual(props0.value, props1.value)
+//         && props0.path === props1.path
+//         && props0.schema === props1.schema
+//         && props0.errors === props1.errors
+//         && props0.context === props1.context;
+// }
 
 export interface ISchemaComponentProps {
     schema: object,
@@ -24,6 +34,7 @@ export interface ISchemaComponentProps {
     onChange(value: any, path: string[]): void,
     onFocus(path: string[]): void,
     onBlur(): void,
+    onEditor?(data: object, path: string[]): any,
     caption: string,
     context?: object
 }

@@ -39,13 +39,19 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     const name = path.join('.');
 
     function handleChange(ev: React.FormEvent) {
-        onChange(ev.target['value'], path);
+        const val = ev.target['value'] as string;
+        onChange(val === '' ? null : val, path);
     }
 
     function handleChangeNumber(ev: React.FormEvent) {
-        const num = parseFloat(ev.target['value']);
-        if (!isNaN(num)) {
-            onChange(num, path);
+        const str = ev.target['value'] as string;
+        if (str === '')
+            onChange(null, path);
+        else { 
+            const num = parseFloat(str);
+            if (!isNaN(num)) {
+                onChange(num, path);
+            }
         }
     }
 
@@ -73,6 +79,8 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 return (<input {...commonProps} type="number" className={classes("sf-number")} onInput={handleChangeNumber} />)
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
+            case "date-time":
+                return (<input {...commonProps} type="datetime-local" className={classes("sf-datetime")} />)
             case "email":
                 return (<input {...commonProps} type="email" className={classes("sf-email")} />)
             case "password":

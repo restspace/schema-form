@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useCallback, useMemo } from "react";
 import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
@@ -8,16 +8,14 @@ const loginSchema = {
   type: "object",
   title: "Log In",
   properties: {
-      email: {
-          type: "string",
-          format: "email"
+      email_x: {
+          type: "string"
       },
-      password: {
-          type: "string",
-          format: "password"
+      password_x: {
+          type: "string"
       }
   },
-  required: [ "email", "password" ]
+  required: [ "email_x", "password_x" ]
 }
 
 const schema = {
@@ -222,21 +220,34 @@ function Form(props) {
   const [focus, setFocus] = useState('');
   const [page, setPage] = useState(0);
 
-  const componentContext = {
+  const componentContext = useMemo(() => ({
     getFileUrl: (file, path, schema) => `http://localhost:3100/upload/${file.name}`,
     sendFile: sendFileAsBody
-  }
+  }), []);
+
+  const noSubmitChange = useCallback((v, p, e) => {
+    setValue(v);
+    setPath(p.join('.'));
+    setErrors(e);
+  }, []);
+
+  const onFocus = useCallback((p) => setFocus(p.join('.')), []);
+
+  const loginOnSubmit = useCallback(async (v) => {
+    setValue(v);
+    return true;
+  }, []);
+
+  const loginMakeSubmitLink = useCallback((onClick) => (
+    <div onClick={onClick}>Submit</div>
+  ), []);
 
   return (
     <>
     <div className="App">
       {props.type === "no submit" && <SchemaForm schema={schema} value={value}
-        onChange={(v, p, e) => {
-          setValue(v);
-          setPath(p.join('.'));
-          setErrors(e);
-        }}
-        onFocus={(p) => setFocus(p.join('.'))}
+        onChange={noSubmitChange}
+        onFocus={onFocus}
         componentContext={componentContext} />}
       {props.type === "selector" && <SchemaForm schema={schemaSelector2} value={valueSel}
         onChange={(v, p, e) => {
@@ -247,13 +258,9 @@ function Form(props) {
         onFocus={(p) => setFocus(p.join('.'))}
         componentContext={componentContext} />}
       {props.type === "submit" && <SchemaSubmitForm schema={loginSchema} value={{}}
-        onSubmit={(v) => {
-          setValue(v);
-        }}
+        onSubmit={loginOnSubmit}
         //onFocus={(p) => setFocus(p.join('.'))}
-        makeSubmitLink={(onClick) => (
-          <div onClick={onClick}>Submit</div>
-        )} />}
+        makeSubmitLink={loginMakeSubmitLink} />}
       {props.type === "paged" && <SchemaPagedForm schema={schemaPaged} value={valuePaged} page={page}
         onPage={(v, p) => {
           setValuePaged(v);

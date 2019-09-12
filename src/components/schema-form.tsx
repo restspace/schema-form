@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import { ErrorObject, validate } from "error"
 import { SchemaFormComponent } from "components/schema-form-component"
 import { SchemaFormArray } from "components/schema-form-array"
@@ -7,6 +7,7 @@ import { ComponentForType } from "components/component-for-type"
 import { IComponentMap, IContainerMap, ISchemaFormContext, ActionType } from "components/schema-form-interfaces"
 import { UploadEditor } from "editors/upload-editor";
 import { RadioButtonsEditor } from "editors/radio-buttons-editor";
+import _ from "lodash";
 
 
 export interface ISchemaFormProps {
@@ -14,6 +15,8 @@ export interface ISchemaFormProps {
     value: object,
     onChange?(value: object, path: string[], errors: ErrorObject, action?: ActionType): void,
     onFocus?(path: string[]): void,
+    onBlur?(): void,
+    onEditor?(data: object, path: string[]): any,
     showErrors?: boolean,
     components?: IComponentMap,
     containers?: IContainerMap,
@@ -46,6 +49,8 @@ export default function SchemaForm({
     value,
     onChange,
     onFocus,
+    onBlur,
+    onEditor,
     showErrors,
     className,
     changeOnBlur,
@@ -53,42 +58,60 @@ export default function SchemaForm({
     components,
     containers
 }: ISchemaFormProps): React.ReactElement {
-    const [currentValue, setValue] = useState(value);
+    const [currentValue, setCurrentValue] = useState(value);
+    const refValue = useRef(value);
     const initErrors = showErrors || showErrors == undefined ? validate(schema, value) : new ErrorObject();
     const [errors, setErrors] = useState(initErrors);
-    const [lastPath, setLastPath] = useState(null as string[] | null);
+    const refShowErrors = useRef(showErrors);
 
-    // feed value into state when props change
+    // The use of refValue here allows the stored callback handleChange to get access to the current value
+    // without needing to be recreated with a different closure, i.e. without needing to add
+    // a dependency
+    refValue.current = currentValue;
+
+    // This updates the internal state currentValue with an external change of the value prop
     useEffect(() => {
-        setValue(value);
+        if (!_.isEqual(refValue.current, value)) {
+            console.log("CH: useEffect1 setCurrentValue");
+            setCurrentValue(value);
+        }
     }, [value]);
 
     // update error state with new props
     useEffect(() => {
-        const newErrors = validate(schema, value);
         if (showErrors || showErrors == undefined) {
+            if (_.isEqual(refValue.current, value) && refShowErrors.current === showErrors) return;
+            const newErrors = validate(schema, value);
+            if (_.isEqual(errors, newErrors) && refShowErrors.current === showErrors) return;
+            console.log("CH: useEffect2 setErrors");
             setErrors(newErrors);
         }
-    }, [value, showErrors]);
+        refShowErrors.current = showErrors;
+    }, [value, schema, showErrors]);
 
-    function handleChange(newValue: object, path: string[], action?: ActionType) {
-        setValue(newValue);
-        setLastPath(path);
+    const handleChange = useCallback(
+    (newPathValue: object, path: string[], action?: ActionType) => {
+        const newValue = _.cloneDeep(refValue.current);
+        _.set(newValue, path, newPathValue);
+        console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
+        console.log("CH: handleChange setCurrentValue");
+        setCurrentValue(newValue);
         let newErrors = validate(schema, newValue);
         if (showErrors || showErrors === undefined) {
             setErrors(newErrors);
         }
         if (onChange && (action !== undefined || !changeOnBlur)) onChange(newValue, path, newErrors, action);
-    }
+    }, [schema, onChange, changeOnBlur]);
 
-    function handleFocus(path: string[]) {
-        setLastPath(null);
+    const handleFocus = useCallback(
+    (path: string[]) => {
         if (onFocus) onFocus(path);
-    }
+    }, [onFocus]);
 
-    function handleBlur() {
-        if (onChange && changeOnBlur && lastPath) onChange(currentValue, lastPath, errors);
-    }
+    const handleBlur = useCallback(
+    () => {
+        if (onBlur) onBlur();
+    }, [onBlur]);
 
     const formClass = `sf-form ${className}`;
     const context: ISchemaFormContext = {
@@ -97,10 +120,11 @@ export default function SchemaForm({
         componentContext
     }
 
+    console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (
         <div className={formClass}>
             <ComponentForType schema={schema} path={[]} value={currentValue} errors={errors}
-                onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur}
+                onChange={handleChange} onFocus={handleFocus} onBlur={handleBlur} onEditor={onEditor}
                 context={context}/>
         </div>
     )
