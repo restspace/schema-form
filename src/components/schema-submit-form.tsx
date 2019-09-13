@@ -3,6 +3,7 @@ import SchemaForm from 'components/schema-form';
 import { ISchemaFormProps } from 'components/schema-form';
 import { ErrorObject, validate } from 'error';
 import { isEmpty } from 'utility';
+import _ from 'lodash';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): Promise<boolean>,
@@ -18,9 +19,11 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
 
     // feed value into state when props change
     useEffect(() => {
-        if (currentValue !== value) {
-            if (onDirty) onDirty(false);
-            setDirty(false);
+        if (!_.isEqual(currentValue, value)) {
+            if (onDirty) {
+                onDirty(false);
+                setDirty(false);
+            }
             setCurrentValue(value);
             console.log('value changed, set clean');
         }

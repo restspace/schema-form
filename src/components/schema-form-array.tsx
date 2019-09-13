@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { ComponentForType } from 'components/component-for-type'
 import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces'
 import { ErrorObject } from 'error'
-import { fieldCaption } from 'schema/schema'
+import { fieldCaption, emptyValue } from 'schema/schema'
 
 export function SchemaFormArray({
     schema,
@@ -59,7 +59,7 @@ export function SchemaFormArray({
 
     const handleAdd = () => {
         onChange(
-            [ ...valueArray, {} ],
+            [ ...valueArray, emptyValue(itemSchema) ],
             path,
             ActionType.Create
         );

@@ -24456,6 +24456,13 @@ function fieldType(schema) {
             return type;
     }
 }
+function emptyValue(schema) {
+    switch (schema['type'] || '') {
+        case 'object': return {};
+        case 'array': return [];
+        default: return null;
+    }
+}
 function fieldCaption(schema, path) {
     var pathEl = path && path.length ? path[path.length - 1] : '';
     var title = schema['title'];
@@ -25016,7 +25023,7 @@ function SchemaFormArray(_a) {
         };
     };
     var handleAdd = function () {
-        onChange(__spreadArrays(valueArray, [{}]), path, exports.ActionType.Create);
+        onChange(__spreadArrays(valueArray, [emptyValue(itemSchema)]), path, exports.ActionType.Create);
     };
     function arrayElement(v, i) {
         var newPath = __spreadArrays(path, ["" + i]);
@@ -27454,7 +27461,7 @@ function SchemaForm(_a) {
     var handleChange = React.useCallback(function (newPathValue, path, action) {
         var newValue = lodash.cloneDeep(refValue.current);
         lodash.set(newValue, path, newPathValue);
-        console.log("setting - " + JSON.stringify(newPathValue) + " at path " + path.join('.') + " produces " + JSON.stringify(newValue));
+        //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
         console.log("CH: handleChange setCurrentValue");
         setCurrentValue(newValue);
         var newErrors = validate$2(schema, newValue);
@@ -27478,7 +27485,7 @@ function SchemaForm(_a) {
         containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext: componentContext
     };
-    console.log('FORM rendering ' + JSON.stringify(currentValue));
+    //console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (React__default.createElement("div", { className: formClass },
         React__default.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context })));
 }
@@ -27490,10 +27497,11 @@ function SchemaSubmitForm(props) {
     var _c = React.useState(false), dirty = _c[0], setDirty = _c[1];
     // feed value into state when props change
     React.useEffect(function () {
-        if (currentValue !== value) {
-            if (onDirty)
+        if (!lodash.isEqual(currentValue, value)) {
+            if (onDirty) {
                 onDirty(false);
-            setDirty(false);
+                setDirty(false);
+            }
             setCurrentValue(value);
             console.log('value changed, set clean');
         }
@@ -27531,19 +27539,26 @@ function SchemaSubmitForm(props) {
 }
 
 function SchemaPagedForm(props) {
+    var pageSchema = props.schema['properties']['page' + props.page];
     var _a = React.useState(props.value), value = _a[0], setValue = _a[1];
     var refValue = React.useRef(value);
-    var _b = React.useState(props.value['page' + props.page]), pageValue = _b[0], setPageValue = _b[1];
+    var _b = React.useState(props.value['page' + props.page] || emptyValue(pageSchema)), pageValue = _b[0], setPageValue = _b[1];
     var _c = React.useState({}), errors = _c[0], setErrors = _c[1];
     var _d = React.useState(false), entered = _d[0], setEntered = _d[1];
     // feed value into state when props change
     React.useEffect(function () {
         setValue(props.value);
-        setPageValue(props.value['page' + props.page]);
+        var pageKey = 'page' + props.page;
+        if (!props.value[pageKey])
+            props.value[pageKey] = emptyValue(pageSchema);
+        setPageValue(props.value[pageKey]);
     }, [props.value]);
     React.useEffect(function () {
         setEntered(false);
-        setPageValue(props.value['page' + props.page]);
+        var pageKey = 'page' + props.page;
+        if (!props.value[pageKey])
+            props.value[pageKey] = emptyValue(pageSchema);
+        setPageValue(props.value[pageKey]);
     }, [props.page]);
     refValue.current = value;
     var onChange = React.useCallback(function (newPageValue, path, errors) {
@@ -27566,7 +27581,6 @@ function SchemaPagedForm(props) {
         if (props.onSubmit && isEmpty(errors))
             props.onSubmit(value);
     }
-    var pageSchema = props.schema['properties']['page' + props.page];
     var pageLast = Object.keys(props.schema['properties']).reduce(function (currCount, key) {
         var val = 0;
         if (key.substr(0, 4) === 'page')

@@ -93,7 +93,7 @@ export default function SchemaForm({
     (newPathValue: object, path: string[], action?: ActionType) => {
         const newValue = _.cloneDeep(refValue.current);
         _.set(newValue, path, newPathValue);
-        console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
+        //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
         console.log("CH: handleChange setCurrentValue");
         setCurrentValue(newValue);
         let newErrors = validate(schema, newValue);
@@ -120,7 +120,7 @@ export default function SchemaForm({
         componentContext
     }
 
-    console.log('FORM rendering ' + JSON.stringify(currentValue));
+    //console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (
         <div className={formClass}>
             <ComponentForType schema={schema} path={[]} value={currentValue} errors={errors}

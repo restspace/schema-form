@@ -3,6 +3,7 @@ import SchemaForm from 'components/schema-form';
 import { ISchemaFormProps } from 'components/schema-form';
 import { ErrorObject } from 'error';
 import { isEmpty } from 'utility';
+import { emptyValue } from 'schema/schema';
 import _ from "lodash";
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
@@ -15,20 +16,26 @@ export interface ISchemaPagedFormProps extends ISchemaFormProps {
 }
 
 export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
+    const pageSchema = props.schema['properties']['page' + props.page];
+
     const [value, setValue] = useState(props.value);
     const refValue = useRef(value);
-    const [pageValue, setPageValue] = useState(props.value['page' + props.page]);
+    const [pageValue, setPageValue] = useState(props.value['page' + props.page] || emptyValue(pageSchema));
     const [errors, setErrors] = useState({} as ErrorObject);
     const [entered, setEntered] = useState(false);
     // feed value into state when props change
     useEffect(() => {
         setValue(props.value);
-        setPageValue(props.value['page' + props.page]);
+        const pageKey = 'page' + props.page;
+        if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+        setPageValue(props.value[pageKey]);
     }, [props.value]);
 
     useEffect(() => {
         setEntered(false);
-        setPageValue(props.value['page' + props.page]);
+        const pageKey = 'page' + props.page;
+        if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+        setPageValue(props.value[pageKey]);
     }, [props.page]);
 
 
@@ -56,7 +63,6 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
             props.onSubmit(value);
     }
 
-    const pageSchema = props.schema['properties']['page' + props.page];
     const pageLast = Object.keys(props.schema['properties']).reduce((currCount, key) => {
         let val = 0;
         if (key.substr(0, 4) === 'page') val = parseInt(key.substr(4));

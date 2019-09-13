@@ -24,6 +24,14 @@ export function fieldType(schema: object): string {
     }
 }
 
+export function emptyValue(schema: object): any {
+    switch (schema['type'] || '') {
+        case 'object': return {};
+        case 'array': return [];
+        default: return null;
+    }
+}
+
 export function fieldCaption(schema: object, path: string[]): string {
     const pathEl = path && path.length ? path[path.length - 1] : '';
     const title = schema['title'];
