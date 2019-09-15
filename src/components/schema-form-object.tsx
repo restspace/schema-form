@@ -1,8 +1,8 @@
-import React, { useCallback, useRef } from 'react'
+import React from 'react'
 import { ComponentForType } from 'components/component-for-type'
 import { ErrorObject } from 'error'
-import { fieldCaption, applyOrder } from 'schema/schema'
-import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces';
+import { fieldCaption } from 'schema/schema'
+import { ISchemaContainerProps } from 'components/schema-form-interfaces';
 import _ from 'lodash';
 
 type NestedList = string | NestedListArray;
@@ -13,7 +13,6 @@ export function SchemaFormObject({
     path,
     value,
     errors,
-    onChange,
     onFocus,
     onBlur,
     onEditor,
@@ -21,16 +20,6 @@ export function SchemaFormObject({
 }: ISchemaContainerProps): React.ReactElement {
     const pathEl = path.length ? path[path.length - 1] : '';
     const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
-
-    // const handleChange = useCallback((newValue: object, path: string[], action?: ActionType) => {
-    //     const key = _.last(path) || '';
-    //     const newObject = { ...rValue.current };
-    //     if (newValue === null)
-    //         delete newObject[key];
-    //     else
-    //         newObject[key] = newValue;
-    //     onChange(newObject, path, action);
-    // }, [onChange]);
 
     function renderSection(order: NestedList, properties: [string, unknown][], i?: number) {
         if (typeof order === 'string') {
@@ -42,7 +31,6 @@ export function SchemaFormObject({
                         path={[ ...path, key ]}
                         value={value && value[key]}
                         errors={(errors instanceof ErrorObject) ? errors[key] : []}
-                        onChange={onChange}
                         onFocus={onFocus}
                         onBlur={onBlur}
                         onEditor={onEditor}

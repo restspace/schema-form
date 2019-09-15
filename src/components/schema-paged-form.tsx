@@ -15,21 +15,28 @@ export interface ISchemaPagedFormProps extends ISchemaFormProps {
     page: number
 }
 
+window['invokeCtr'] = 0;
+
 export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     const pageSchema = props.schema['properties']['page' + props.page];
 
     const [value, setValue] = useState(props.value);
+    const refLastPropsValue = useRef(props.value);
     const refValue = useRef(value);
     const [pageValue, setPageValue] = useState(props.value['page' + props.page] || emptyValue(pageSchema));
     const [errors, setErrors] = useState({} as ErrorObject);
     const [entered, setEntered] = useState(false);
+
     // feed value into state when props change
     useEffect(() => {
-        setValue(props.value);
-        const pageKey = 'page' + props.page;
-        if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
-        setPageValue(props.value[pageKey]);
-    }, [props.value]);
+        if (!_.isEqual(props.value, refLastPropsValue.current)) {
+            setValue(props.value);
+            const pageKey = 'page' + props.page;
+            if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+            setPageValue(props.value[pageKey]);
+        }
+        refLastPropsValue.current = props.value;
+    }, [props.value, refLastPropsValue, props.page]);
 
     useEffect(() => {
         setEntered(false);
@@ -38,18 +45,25 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
         setPageValue(props.value[pageKey]);
     }, [props.page]);
 
+    const invk = window['invokeCtr']++;
+    console.log('Paged form invk ' + window['invokeCtr'] + ' page ' + props.page);
 
-    refValue.current = value;
     const onChange = useCallback(
     (newPageValue: object, path: string[], errors: ErrorObject) => {
         const rValue = _.cloneDeep(refValue.current);
+        console.log('onchange invk ' + invk + ' page ' + props.page);
         const newValue = { ...rValue, ['page' + props.page]: newPageValue };
         setValue(newValue);
         setPageValue(newPageValue);
         setErrors(errors);
         if (props.onChange)
             props.onChange(newValue, path, errors);
-    }, [ props.onChange, props.page ]);
+        refValue.current = newValue;
+    }, [ props.onChange, props.page, refValue ]);
+    //debug
+    const refOnChange = useRef(onChange);
+    if (refOnChange.current !== onChange) console.log('onchange updated');
+    refOnChange.current = onChange;
 
     function onPage(page: number) {
         setEntered(true);

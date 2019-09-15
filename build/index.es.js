@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, Fragment, useRef, useReducer, useCallback, useState, useMemo } from 'react';
+import React, { useContext, forwardRef, useEffect, Fragment, useRef, useReducer, useCallback, useState, useMemo } from 'react';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -24850,6 +24850,97 @@ function attachError(errorObj, path, error) {
     return wasAttached;
 }
 
+var ValueDispatch = React.createContext(function () { });
+var ActionType;
+(function (ActionType) {
+    ActionType[ActionType["Create"] = 0] = "Create";
+    ActionType[ActionType["Delete"] = 1] = "Delete";
+    ActionType[ActionType["Up"] = 2] = "Up";
+    ActionType[ActionType["Down"] = 3] = "Down";
+})(ActionType || (ActionType = {}));
+var ValueActionType;
+(function (ValueActionType) {
+    ValueActionType[ValueActionType["Replace"] = 0] = "Replace";
+    ValueActionType[ValueActionType["Up"] = 1] = "Up";
+    ValueActionType[ValueActionType["Down"] = 2] = "Down";
+    ValueActionType[ValueActionType["Create"] = 3] = "Create";
+    ValueActionType[ValueActionType["Delete"] = 4] = "Delete";
+    ValueActionType[ValueActionType["Set"] = 5] = "Set";
+})(ValueActionType || (ValueActionType = {}));
+var ValueAction = /** @class */ (function () {
+    function ValueAction() {
+        this.path = [];
+        this.value = null;
+    }
+    ValueAction.replace = function (value) {
+        return { type: ValueActionType.Replace, value: value };
+    };
+    ValueAction.up = function (path) {
+        return { type: ValueActionType.Up, path: path };
+    };
+    ValueAction.down = function (path) {
+        return { type: ValueActionType.Down, path: path };
+    };
+    ValueAction.delete = function (path) {
+        return { type: ValueActionType.Delete, path: path };
+    };
+    ValueAction.create = function (path, value) {
+        return { type: ValueActionType.Create, path: path, value: value };
+    };
+    ValueAction.set = function (path, value) {
+        return { type: ValueActionType.Set, path: path, value: value };
+    };
+    return ValueAction;
+}());
+function valueReducer(oldValue, action) {
+    if (action.type === ValueActionType.Replace) {
+        return lodash.cloneDeep(action.value);
+    }
+    var value = lodash.cloneDeep(oldValue); // unless we clone before we will mutate the value used for matching by memo
+    var parentPath = action.path.slice(0, -1);
+    var idx = parseInt(lodash.last(action.path) || '');
+    switch (action.type) {
+        case ValueActionType.Up: {
+            var newValueArray = lodash.get(value, parentPath);
+            if (!isNaN(idx) && idx > 0) {
+                var mover = newValueArray[idx];
+                newValueArray[idx] = newValueArray[idx - 1];
+                newValueArray[idx - 1] = mover;
+            }
+            lodash.set(value, parentPath, newValueArray);
+            break;
+        }
+        case ValueActionType.Down: {
+            var newValueArray = lodash.get(value, parentPath);
+            if (!isNaN(idx) && idx < newValueArray.length - 1) {
+                var mover = newValueArray[idx];
+                newValueArray[idx] = newValueArray[idx + 1];
+                newValueArray[idx + 1] = mover;
+            }
+            lodash.set(value, parentPath, newValueArray);
+            break;
+        }
+        case ValueActionType.Delete: {
+            var newValueArray = lodash.get(value, parentPath);
+            if (!isNaN(idx) && idx < newValueArray.length) {
+                newValueArray.splice(idx, 1);
+            }
+            lodash.set(value, parentPath, newValueArray);
+            break;
+        }
+        case ValueActionType.Create: {
+            var newValueArray = lodash.get(value, action.path);
+            lodash.set(value, action.path, __spreadArrays(newValueArray, [action.value]));
+            break;
+        }
+        case ValueActionType.Set: {
+            lodash.set(value, action.path, action.value);
+            break;
+        }
+    }
+    return value;
+}
+
 var SchemaFormComponentWrapper = function (_a) {
     var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema;
     var isError = errors.length > 0;
@@ -24867,25 +24958,26 @@ var SchemaFormComponentWrapper = function (_a) {
             errors.map(function (err, idx) { return (React.createElement("label", { key: idx, className: "sf-error", htmlFor: name }, err.message)); }))));
 };
 function SchemaFormComponent(props) {
-    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur;
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
     var name = path.join('.');
+    var dispatch = useContext(ValueDispatch);
     function handleChange(ev) {
         var val = ev.target['value'];
-        onChange(val === '' ? null : val, path);
+        dispatch(ValueAction.set(path, val));
     }
     function handleChangeNumber(ev) {
         var str = ev.target['value'];
         if (str === '')
-            onChange(null, path);
+            dispatch(ValueAction.set(path, null));
         else {
             var num = parseFloat(str);
             if (!isNaN(num)) {
-                onChange(num, path);
+                dispatch(ValueAction.set(path, num));
             }
         }
     }
     function handleCheckChange(ev) {
-        onChange(ev.target['checked'], path);
+        dispatch(ValueAction.set(path, ev.target['checked']));
     }
     function handleFocus() {
         onFocus(path);
@@ -24926,7 +25018,7 @@ function SchemaFormComponent(props) {
     return (React.createElement(SchemaFormComponentWrapper, __assign({}, props), schemaInput(isError)));
 }
 
-function ComponentForType(props) {
+function ComponentForTypeInner(props) {
     var schema = props.schema, value = props.value;
     var container = props.context.containers[schema['type']];
     var condSchema = applyConditional(schema, value);
@@ -24939,19 +25031,20 @@ function ComponentForType(props) {
     }
 }
 // Memoize on the basis of full equality
-//export const ComponentForType = React.memo(ComponentForTypeInner, isEqual);
+var ComponentForType = React.memo(ComponentForTypeInner, isEqual);
 function isEqual(p0, p1) {
-    return lodash.isEqual(p0.value, p1.value)
-        && p0.onChange === p1.onChange
+    var equ = lodash.isEqual(p0.value, p1.value)
         && lodash.isEqual(p0.errors, p1.errors)
+        && p0.schema === p1.schema
         && p0.onBlur === p1.onBlur
         && p0.onFocus === p1.onFocus
         && p0.onEditor === p1.onEditor;
+    return equ;
 }
 function SchemaFormComponentWrapperInner(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var componentProps = {
-        schema: schema, path: path, value: value, onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
+        schema: schema, path: path, value: value, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
         errors: (errors || []),
         caption: fieldCaption(schema, path),
         context: context.componentContext
@@ -24969,65 +25062,28 @@ function SchemaFormComponentWrapperInner(_a) {
 // Memoize on the basis of full equality
 var SchemaFormComponentWrapper$1 = React.memo(SchemaFormComponentWrapperInner, isEqual);
 
-var ActionType;
-(function (ActionType) {
-    ActionType[ActionType["Create"] = 0] = "Create";
-    ActionType[ActionType["Delete"] = 1] = "Delete";
-    ActionType[ActionType["Up"] = 2] = "Up";
-    ActionType[ActionType["Down"] = 3] = "Down";
-})(ActionType || (ActionType = {}));
-
 function SchemaFormArray(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var dispatch = useContext(ValueDispatch);
     var itemSchema = schema['items'];
     var valueArray = (value || []);
     var pathEl = path.length ? path[path.length - 1] : '';
     var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
     var updatable = !(schema['readOnly'] || false);
-    // const handleChange = useCallback(
-    // (i: number) => (newValue: object, path: string[], action?: ActionType) => {
-    //     const newValueArray = [ ...valueArray ];
-    //     newValueArray[i] = newValue;
-    //     onChange(newValueArray, path, action);
-    // }, [valueArray, onChange]);
-    var handleDelete = function (i, path) {
-        return function () {
-            var newValueArray = __spreadArrays(valueArray);
-            newValueArray.splice(i, 1);
-            onChange(newValueArray, path.slice(0, -1), ActionType.Delete);
-        };
-    };
-    var handleUp = function (i, path) {
-        return function () {
-            var newValueArray = __spreadArrays(valueArray);
-            var mover = newValueArray[i];
-            newValueArray[i] = newValueArray[i - 1];
-            newValueArray[i - 1] = mover;
-            onChange(newValueArray, path.slice(0, -1), ActionType.Up);
-        };
-    };
-    var handleDown = function (i, path) {
-        return function () {
-            var newValueArray = __spreadArrays(valueArray);
-            var mover = newValueArray[i];
-            newValueArray[i] = newValueArray[i + 1];
-            newValueArray[i + 1] = mover;
-            onChange(newValueArray, path.slice(0, -1), ActionType.Down);
-        };
-    };
-    var handleAdd = function () {
-        onChange(__spreadArrays(valueArray, [emptyValue(itemSchema)]), path, ActionType.Create);
-    };
+    var handleDelete = function (path) { return function () { return dispatch(ValueAction.delete(path)); }; };
+    var handleUp = function (path) { return function () { return dispatch(ValueAction.up(path)); }; };
+    var handleDown = function (path) { return function () { return dispatch(ValueAction.down(path)); }; };
+    var handleAdd = function () { return dispatch(ValueAction.create(path, emptyValue(itemSchema))); };
     function arrayElement(v, i) {
         var newPath = __spreadArrays(path, ["" + i]);
         var newErrors = (errors instanceof ErrorObject) ? errors["" + i] : [];
         return (React.createElement("div", { className: "sf-element", key: i },
-            React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
+            React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
-                React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(i, newPath) }, "x"),
-                i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(i, newPath) }, "^"),
-                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(i, newPath) }, "v"))));
+                React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(newPath) }, "x"),
+                i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(newPath) }, "^"),
+                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath) }, "v"))));
     }
     return (React.createElement("div", { className: arrayClass },
         React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
@@ -25036,18 +25092,9 @@ function SchemaFormArray(_a) {
 }
 
 function SchemaFormObject(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var pathEl = path.length ? path[path.length - 1] : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
-    // const handleChange = useCallback((newValue: object, path: string[], action?: ActionType) => {
-    //     const key = _.last(path) || '';
-    //     const newObject = { ...rValue.current };
-    //     if (newValue === null)
-    //         delete newObject[key];
-    //     else
-    //         newObject[key] = newValue;
-    //     onChange(newObject, path, action);
-    // }, [onChange]);
     function renderSection(order, properties, i) {
         if (typeof order === 'string') {
             var _a = properties.find(function (_a) {
@@ -25055,7 +25102,7 @@ function SchemaFormObject(_a) {
                 return key === order;
             }) || ['', null], key = _a[0], subSchema = _a[1];
             if (key) {
-                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onChange: onChange, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
+                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
             }
         }
         else {
@@ -27379,10 +27426,11 @@ function UploadEditor(props) {
 }
 
 function RadioButtonsEditor(props) {
-    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur;
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
     var name = path.join('.');
+    var dispatch = useContext(ValueDispatch);
     function handleCheckChange(ev) {
-        onChange(ev.target['value'], path);
+        dispatch(ValueAction.set(path, ev.target['value']));
     }
     function handleFocus() {
         onFocus(path);
@@ -27421,50 +27469,52 @@ var defaultContainerMap = {
     "array": SchemaFormArray,
     "object": SchemaFormObject
 };
-function SchemaForm(_a) {
-    var schema = _a.schema, value = _a.value, onChange = _a.onChange, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, showErrors = _a.showErrors, className = _a.className, changeOnBlur = _a.changeOnBlur, componentContext = _a.componentContext, components = _a.components, containers = _a.containers;
-    var _b = useState(value), currentValue = _b[0], setCurrentValue = _b[1];
-    var refValue = useRef(value);
-    var initErrors = showErrors || showErrors == undefined ? validate$2(schema, value) : new ErrorObject();
-    var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
+function SchemaForm(props) {
+    var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, componentContext = props.componentContext, components = props.components, containers = props.containers;
+    var _a = useReducer(valueReducer, value), currentValue = _a[0], dispatch = _a[1];
+    var refLastCurrentValue = useRef(currentValue);
+    var refLastPropValue = useRef(value);
+    var initErrors = function () { return showErrors || showErrors == undefined ? validate$2(schema, currentValue) : new ErrorObject(); };
+    var _b = useState(initErrors), errors = _b[0], setErrors = _b[1];
     var refShowErrors = useRef(showErrors);
-    // The use of refValue here allows the stored callback handleChange to get access to the current value
-    // without needing to be recreated with a different closure, i.e. without needing to add
-    // a dependency
-    refValue.current = currentValue;
-    // This updates the internal state currentValue with an external change of the value prop
-    useEffect(function () {
-        if (!lodash.isEqual(refValue.current, value)) {
-            console.log("CH: useEffect1 setCurrentValue");
-            setCurrentValue(value);
-        }
-    }, [value]);
+    var refOnChange = useRef(onChange);
     // update error state with new props
     useEffect(function () {
         if (showErrors || showErrors == undefined) {
-            if (lodash.isEqual(refValue.current, value) && refShowErrors.current === showErrors)
+            // check if value changed since last render
+            if (lodash.isEqual(refLastCurrentValue.current, currentValue) && refShowErrors.current === showErrors)
                 return;
-            var newErrors = validate$2(schema, value);
+            var newErrors = validate$2(schema, currentValue);
             if (lodash.isEqual(errors, newErrors) && refShowErrors.current === showErrors)
                 return;
             console.log("CH: useEffect2 setErrors");
             setErrors(newErrors);
         }
         refShowErrors.current = showErrors;
-    }, [value, schema, showErrors]);
-    var handleChange = useCallback(function (newPathValue, path, action) {
-        var newValue = lodash.cloneDeep(refValue.current);
-        lodash.set(newValue, path, newPathValue);
+        refLastCurrentValue.current = currentValue;
+    }, [currentValue, schema, showErrors, refShowErrors, refLastCurrentValue]);
+    // This updates the internal state currentValue with an external change of the value prop
+    useEffect(function () {
+        if (!lodash.isEqual(refLastPropValue.current, value)) {
+            console.log("CH: useEffect1 replace with value");
+            dispatch(ValueAction.replace(value));
+        }
+        refLastPropValue.current = value;
+    }, [value, changeOnBlur, refLastPropValue]);
+    useEffect(function () {
+        refOnChange.current = onChange;
+    }, [onChange, refOnChange]);
+    var dispatchChange = useCallback(function (action) {
         //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
         console.log("CH: handleChange setCurrentValue");
-        setCurrentValue(newValue);
-        var newErrors = validate$2(schema, newValue);
-        if (showErrors || showErrors === undefined) {
-            setErrors(newErrors);
+        dispatch(action);
+        var onChange = refOnChange.current;
+        if (onChange && (action !== undefined || !changeOnBlur)) {
+            var newValue = valueReducer(refLastCurrentValue.current, action);
+            var newErrors = validate$2(schema, newValue);
+            onChange(newValue, action.path, newErrors, action.type);
         }
-        if (onChange && (action !== undefined || !changeOnBlur))
-            onChange(newValue, path, newErrors, action);
-    }, [schema, onChange, changeOnBlur]);
+    }, [dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur]);
     var handleFocus = useCallback(function (path) {
         if (onFocus)
             onFocus(path);
@@ -27480,8 +27530,9 @@ function SchemaForm(_a) {
         componentContext: componentContext
     };
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
-    return (React.createElement("div", { className: formClass },
-        React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onChange: handleChange, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context })));
+    return (React.createElement(ValueDispatch.Provider, { value: dispatchChange },
+        React.createElement("div", { className: formClass },
+            React.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context }))));
 }
 
 function SchemaSubmitForm(props) {
@@ -27532,21 +27583,26 @@ function SchemaSubmitForm(props) {
             React.createElement("div", { className: "sf-submit" }, props.makeSubmitLink(onSubmit)))));
 }
 
+window['invokeCtr'] = 0;
 function SchemaPagedForm(props) {
     var pageSchema = props.schema['properties']['page' + props.page];
     var _a = useState(props.value), value = _a[0], setValue = _a[1];
+    var refLastPropsValue = useRef(props.value);
     var refValue = useRef(value);
     var _b = useState(props.value['page' + props.page] || emptyValue(pageSchema)), pageValue = _b[0], setPageValue = _b[1];
     var _c = useState({}), errors = _c[0], setErrors = _c[1];
     var _d = useState(false), entered = _d[0], setEntered = _d[1];
     // feed value into state when props change
     useEffect(function () {
-        setValue(props.value);
-        var pageKey = 'page' + props.page;
-        if (!props.value[pageKey])
-            props.value[pageKey] = emptyValue(pageSchema);
-        setPageValue(props.value[pageKey]);
-    }, [props.value]);
+        if (!lodash.isEqual(props.value, refLastPropsValue.current)) {
+            setValue(props.value);
+            var pageKey = 'page' + props.page;
+            if (!props.value[pageKey])
+                props.value[pageKey] = emptyValue(pageSchema);
+            setPageValue(props.value[pageKey]);
+        }
+        refLastPropsValue.current = props.value;
+    }, [props.value, refLastPropsValue, props.page]);
     useEffect(function () {
         setEntered(false);
         var pageKey = 'page' + props.page;
@@ -27554,17 +27610,25 @@ function SchemaPagedForm(props) {
             props.value[pageKey] = emptyValue(pageSchema);
         setPageValue(props.value[pageKey]);
     }, [props.page]);
-    refValue.current = value;
+    var invk = window['invokeCtr']++;
+    console.log('Paged form invk ' + window['invokeCtr'] + ' page ' + props.page);
     var onChange = useCallback(function (newPageValue, path, errors) {
         var _a;
         var rValue = lodash.cloneDeep(refValue.current);
+        console.log('onchange invk ' + invk + ' page ' + props.page);
         var newValue = __assign(__assign({}, rValue), (_a = {}, _a['page' + props.page] = newPageValue, _a));
         setValue(newValue);
         setPageValue(newPageValue);
         setErrors(errors);
         if (props.onChange)
             props.onChange(newValue, path, errors);
-    }, [props.onChange, props.page]);
+        refValue.current = newValue;
+    }, [props.onChange, props.page, refValue]);
+    //debug
+    var refOnChange = useRef(onChange);
+    if (refOnChange.current !== onChange)
+        console.log('onchange updated');
+    refOnChange.current = onChange;
     function onPage(page) {
         setEntered(true);
         if (props.onPage && isEmpty(errors))
@@ -27593,5 +27657,5 @@ function SchemaPagedForm(props) {
 }
 
 export default SchemaForm;
-export { ActionType, ErrorObject, SchemaFormComponent, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, getByPath, sendFileAsBody };
+export { ErrorObject, SchemaFormComponent, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, getByPath, sendFileAsBody };
 //# sourceMappingURL=index.es.js.map

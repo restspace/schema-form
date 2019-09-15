@@ -13,9 +13,9 @@ export interface ISchemaSubmitFormProps extends ISchemaFormProps {
 
 export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
     const { onDirty, onChange, schema, value } = props;
-    const [ currentValue, setCurrentValue] = useState(value);
-    const [submitted, setSubmitted] = useState(false);
-    const [dirty, setDirty] = useState(false);
+    const [ currentValue, setCurrentValue ] = useState(value);
+    const [ submitted, setSubmitted ] = useState(false);
+    const [ dirty, setDirty ] = useState(false);
 
     // feed value into state when props change
     useEffect(() => {

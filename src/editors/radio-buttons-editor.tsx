@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces"
 import { SchemaFormComponentWrapper } from "components/schema-form-component";
+import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
 
 export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactElement {
     const {
@@ -8,14 +9,14 @@ export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactEle
         path,
         value,
         errors,
-        onChange,
         onFocus,
         onBlur
     } = props;
     const name = path.join('.');
+    const dispatch = useContext(ValueDispatch);
 
     function handleCheckChange(ev: React.ChangeEvent) {
-        onChange(ev.target['value'], path);
+        dispatch(ValueAction.set(path, ev.target['value']));
     }
 
     function handleFocus() {

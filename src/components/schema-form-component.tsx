@@ -1,6 +1,7 @@
-import React, { FunctionComponent } from "react";
-import { ISchemaComponentProps } from "components/schema-form-interfaces"
-import { fieldType } from "schema/schema"
+import React, { FunctionComponent, useContext } from "react";
+import { ISchemaComponentProps } from "components/schema-form-interfaces";
+import { fieldType } from "schema/schema";
+import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
 
 export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema }) => {
     const isError = errors.length > 0;
@@ -32,31 +33,31 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         path,
         value,
         errors,
-        onChange,
         onFocus,
         onBlur
     } = props;
     const name = path.join('.');
+    const dispatch = useContext(ValueDispatch);
 
     function handleChange(ev: React.FormEvent) {
         const val = ev.target['value'] as string;
-        onChange(val === '' ? null : val, path);
+        dispatch(ValueAction.set(path, val));
     }
 
     function handleChangeNumber(ev: React.FormEvent) {
         const str = ev.target['value'] as string;
         if (str === '')
-            onChange(null, path);
+            dispatch(ValueAction.set(path, null));
         else { 
             const num = parseFloat(str);
             if (!isNaN(num)) {
-                onChange(num, path);
+                dispatch(ValueAction.set(path, num));
             }
         }
     }
 
     function handleCheckChange(ev: React.ChangeEvent) {
-        onChange(ev.target['checked'], path);
+        dispatch(ValueAction.set(path, ev.target['checked']));
     }
 
     function handleFocus() {

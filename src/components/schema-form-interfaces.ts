@@ -1,18 +1,14 @@
 import Ajv from 'ajv';
 import { ErrorObject } from 'error';
 import _ from 'lodash';
-
-export enum ActionType {
-    Create, Delete, Up, Down
-}
+import { ActionType } from 'components/schema-form-value-context';
 
 export interface ISchemaContainerProps {
     schema: object,
     path: string[],
     value: object,
     errors: ErrorObject | Ajv.ErrorObject[],
-    context: ISchemaFormContext,
-    onChange(value: object, path: string[], action?: ActionType): void,
+    context: ISchemaFormContext
     onFocus(path: string[]): void,
     onBlur(): void,
     onEditor?(data: object, path: string[]): any
@@ -30,8 +26,7 @@ export interface ISchemaComponentProps {
     schema: object,
     path: string[],
     value: any,
-    errors: Ajv.ErrorObject[],
-    onChange(value: any, path: string[]): void,
+    errors: Ajv.ErrorObject[]
     onFocus(path: string[]): void,
     onBlur(): void,
     onEditor?(data: object, path: string[]): any,

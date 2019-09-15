@@ -3,6 +3,7 @@ import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
 import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "schema-form";
+import { SIGBREAK } from "constants";
 
 const loginSchema = {
   type: "object",
@@ -206,8 +207,8 @@ const testValuePaged = {
     lastName: "Smith"
   },
   page1: {
-    abc: "hello",
-    def: "goodbye"
+    abc: "1",
+    def: "2"
   }
 }
 
@@ -215,6 +216,7 @@ function Form(props) {
   const [value, setValue] = useState(testValue);
   const [valuePaged, setValuePaged] = useState(testValuePaged);
   const [valueSel, setValueSel] = useState({});
+  const [valueSubmit, setValueSubmit] = useState({});
   const [errors, setErrors] = useState([]);
   const [path, setPath] = useState('');
   const [focus, setFocus] = useState('');
@@ -234,7 +236,7 @@ function Form(props) {
   const onFocus = useCallback((p) => setFocus(p.join('.')), []);
 
   const loginOnSubmit = useCallback(async (v) => {
-    setValue(v);
+    setValueSubmit(v);
     return true;
   }, []);
 
@@ -257,9 +259,9 @@ function Form(props) {
         }}
         onFocus={(p) => setFocus(p.join('.'))}
         componentContext={componentContext} />}
-      {props.type === "submit" && <SchemaSubmitForm schema={loginSchema} value={{}}
+      {props.type === "submit" && <SchemaSubmitForm schema={loginSchema} value={valueSubmit}
         onSubmit={loginOnSubmit}
-        //onFocus={(p) => setFocus(p.join('.'))}
+        onFocus={(p) => setFocus(p.join('.'))}
         makeSubmitLink={loginMakeSubmitLink} />}
       {props.type === "paged" && <SchemaPagedForm schema={schemaPaged} value={valuePaged} page={page}
         onPage={(v, p) => {
@@ -270,7 +272,10 @@ function Form(props) {
           setValuePaged(v);
           alert('submitted ' + JSON.stringify(v));
         }}
-        onFocus={(p) => setFocus(p.join('.'))}
+        onFocus={(p) => {
+          setFocus(p.join('.'));
+          console.log('page in set focus ' + page);
+        }}
         makePreviousLink={(previousPage, onClick) => (
           <div onClick={() => onClick(previousPage)}>Previous</div>
         )}
@@ -283,7 +288,8 @@ function Form(props) {
         />}
     </div>
     <div>
-      {(props.type === "submit" || props.type === "no submit") && <div>Value: {JSON.stringify(value)}</div>}
+      {(props.type === "no submit") && <div>Value: {JSON.stringify(value)}</div>}
+      {(props.type === "submit") && <div>Value: {JSON.stringify(valueSubmit)}</div>}
       {props.type === "selector" && <div>Value: {JSON.stringify(valueSel)}</div>}
       {props.type === "paged" && <div>Value: {JSON.stringify(valuePaged)}</div>}
       {(props.type === "no submit" || props.type === "selector") && <div>Errors: {JSON.stringify(errors)}</div>}

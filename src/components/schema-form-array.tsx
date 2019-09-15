@@ -1,20 +1,21 @@
-import React, { useCallback } from 'react';
+import React, { useContext } from 'react';
 import { ComponentForType } from 'components/component-for-type'
-import { ISchemaContainerProps, ActionType } from 'components/schema-form-interfaces'
+import { ISchemaContainerProps } from 'components/schema-form-interfaces'
 import { ErrorObject } from 'error'
-import { fieldCaption, emptyValue } from 'schema/schema'
+import { fieldCaption, emptyValue } from 'schema/schema';
+import { ValueDispatch, ValueAction } from 'components/schema-form-value-context';
 
 export function SchemaFormArray({
     schema,
     path,
     value,
     errors,
-    onChange,
     onFocus,
     onBlur,
     onEditor,
     context
 }: ISchemaContainerProps): React.ReactElement {
+    const dispatch = useContext(ValueDispatch);
     const itemSchema = schema['items'];
     const valueArray = (value || []) as object[];
     const pathEl = path.length ? path[path.length - 1] : '';
@@ -22,48 +23,10 @@ export function SchemaFormArray({
     const count = valueArray.length;
     const updatable = !(schema['readOnly'] || false);
 
-    // const handleChange = useCallback(
-    // (i: number) => (newValue: object, path: string[], action?: ActionType) => {
-    //     const newValueArray = [ ...valueArray ];
-    //     newValueArray[i] = newValue;
-    //     onChange(newValueArray, path, action);
-    // }, [valueArray, onChange]);
-
-    const handleDelete = (i: number, path: string[]) => {
-        return () => {
-            const newValueArray = [ ...valueArray ];
-            newValueArray.splice(i, 1);
-            onChange(newValueArray, path.slice(0, -1), ActionType.Delete);
-        }
-    };
-
-    const handleUp = (i: number, path: string[]) => {
-        return () => {
-            const newValueArray = [ ...valueArray ];
-            const mover = newValueArray[i];
-            newValueArray[i] = newValueArray[i - 1];
-            newValueArray[i - 1] = mover;
-            onChange(newValueArray, path.slice(0, -1), ActionType.Up);
-        }
-    };
-
-    const handleDown = (i: number, path: string[]) => {
-        return () => {
-            const newValueArray = [ ...valueArray ];
-            const mover = newValueArray[i];
-            newValueArray[i] = newValueArray[i + 1];
-            newValueArray[i + 1] = mover;
-            onChange(newValueArray, path.slice(0, -1), ActionType.Down);
-        }
-    };
-
-    const handleAdd = () => {
-        onChange(
-            [ ...valueArray, emptyValue(itemSchema) ],
-            path,
-            ActionType.Create
-        );
-    };
+    const handleDelete = (path: string[]) => () => dispatch(ValueAction.delete(path));
+    const handleUp = (path: string[]) => () => dispatch(ValueAction.up(path));
+    const handleDown = (path: string[]) => () => dispatch(ValueAction.down(path));
+    const handleAdd = () => dispatch(ValueAction.create(path, emptyValue(itemSchema)));
 
     function arrayElement(v: object, i: number) {
         const newPath = [ ...path, `${i}` ];
@@ -76,16 +39,15 @@ export function SchemaFormArray({
                 path={newPath}
                 value={v}
                 errors={newErrors}
-                onChange={onChange}
                 onFocus={onFocus}
                 onBlur={onBlur}
                 onEditor={onEditor}
                 context={context}
             />
             {updatable && <div className="sf-array-buttons">
-                <span className="sf-control-button sf-delete-button oi" onClick={handleDelete(i, newPath)}>x</span>
-                {i > 0 && <span className="sf-control-button sf-up-button oi" onClick={handleUp(i, newPath)}>^</span>}
-                {i < count - 1 && <span className="sf-control-button sf-down-button oi" onClick={handleDown(i, newPath)}>v</span>}
+                <span className="sf-control-button sf-delete-button oi" onClick={handleDelete(newPath)}>x</span>
+                {i > 0 && <span className="sf-control-button sf-up-button oi" onClick={handleUp(newPath)}>^</span>}
+                {i < count - 1 && <span className="sf-control-button sf-down-button oi" onClick={handleDown(newPath)}>v</span>}
             </div>}
         </div>);
     }

@@ -1,10 +1,10 @@
 import React from "react"
 import { fieldType, fieldCaption, applyConditional } from "schema/schema"
 import Ajv from "ajv"
-import { ISchemaContainerProps, ISchemaComponentProps, ActionType } from "components/schema-form-interfaces"
+import { ISchemaContainerProps, ISchemaComponentProps } from "components/schema-form-interfaces"
 import _ from 'lodash';
 
-export function ComponentForType(props: ISchemaContainerProps): React.ReactElement {
+function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement {
     const { schema, value } = props;
     const container: React.FC<ISchemaContainerProps> = props.context.containers[schema['type']];
 
@@ -19,23 +19,24 @@ export function ComponentForType(props: ISchemaContainerProps): React.ReactEleme
 }
 
 // Memoize on the basis of full equality
-//export const ComponentForType = React.memo(ComponentForTypeInner, isEqual);
+export const ComponentForType = React.memo(ComponentForTypeInner, isEqual);
 
 function isEqual(p0: ISchemaContainerProps, p1: ISchemaContainerProps) {
-    return _.isEqual(p0.value, p1.value)
-    && p0.onChange === p1.onChange
+    const equ =  _.isEqual(p0.value, p1.value)
     && _.isEqual(p0.errors, p1.errors)
+    && p0.schema === p1.schema
     && p0.onBlur === p1.onBlur
     && p0.onFocus === p1.onFocus
     && p0.onEditor === p1.onEditor;
+    return equ;
 }
 
 function SchemaFormComponentWrapperInner({
-    schema, path, value, errors, onChange, onFocus, onBlur, onEditor, context
+    schema, path, value, errors, onFocus, onBlur, onEditor, context
 }: ISchemaContainerProps): React.ReactElement {
 
     const componentProps: ISchemaComponentProps = {
-        schema, path, value, onChange, onFocus, onBlur, onEditor,
+        schema, path, value, onFocus, onBlur, onEditor,
         errors: (errors || []) as Ajv.ErrorObject[],
         caption: fieldCaption(schema, path),
         context: context.componentContext
