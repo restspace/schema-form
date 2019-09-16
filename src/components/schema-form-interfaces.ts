@@ -8,10 +8,10 @@ export interface ISchemaContainerProps {
     path: string[],
     value: object,
     errors: ErrorObject | Ajv.ErrorObject[],
-    context: ISchemaFormContext
     onFocus(path: string[]): void,
     onBlur(): void,
-    onEditor?(data: object, path: string[]): any
+    onEditor?(data: object, path: string[]): any,
+    context: ISchemaFormContext
 }
 
 // export function containerPropsEqual(props0: ISchemaContainerProps, props1: ISchemaContainerProps): boolean {

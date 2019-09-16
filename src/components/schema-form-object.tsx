@@ -30,7 +30,7 @@ export function SchemaFormObject({
                         schema={subSchema as object}
                         path={[ ...path, key ]}
                         value={value && value[key]}
-                        errors={(errors instanceof ErrorObject) ? errors[key] : []}
+                        errors={ErrorObject.forKey(errors, key)}
                         onFocus={onFocus}
                         onBlur={onBlur}
                         onEditor={onEditor}

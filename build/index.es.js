@@ -24449,6 +24449,12 @@ function fieldType(schema) {
             return type;
     }
 }
+function containerType(schema) {
+    var type = schema['type'];
+    if (schema['editor'])
+        type = schema['editor'];
+    return type;
+}
 function emptyValue(schema) {
     switch (schema['type'] || '') {
         case 'object': return {};
@@ -24796,6 +24802,15 @@ function mergeOrders(order0, order1) {
 var ErrorObject = /** @class */ (function () {
     function ErrorObject() {
     }
+    ErrorObject.forKey = function (errors, key) {
+        return (errors instanceof ErrorObject && errors[key]) || [];
+    };
+    ErrorObject.attachError = function (errors, message) {
+        if (errors instanceof ErrorObject)
+            throw 'Attaching error to parent error object';
+        var errorList = errors;
+        return __spreadArrays(errorList, [{ message: message }]);
+    };
     return ErrorObject;
 }());
 function validate$2(schema, value) {
@@ -24894,6 +24909,8 @@ var ValueAction = /** @class */ (function () {
 }());
 function valueReducer(oldValue, action) {
     if (action.type === ValueActionType.Replace) {
+        console.log('VALUE update:');
+        console.log(JSON.parse(JSON.stringify(action.value)));
         return lodash.cloneDeep(action.value);
     }
     var value = lodash.cloneDeep(oldValue); // unless we clone before we will mutate the value used for matching by memo
@@ -24938,6 +24955,8 @@ function valueReducer(oldValue, action) {
             break;
         }
     }
+    console.log('VALUE update:');
+    console.log(JSON.parse(JSON.stringify(value)));
     return value;
 }
 
@@ -25020,7 +25039,7 @@ function SchemaFormComponent(props) {
 
 function ComponentForTypeInner(props) {
     var schema = props.schema, value = props.value;
-    var container = props.context.containers[schema['type']];
+    var container = props.context.containers[containerType(schema)];
     var condSchema = applyConditional(schema, value);
     var mergedSchema = condSchema || schema;
     if (container) {
@@ -25077,7 +25096,7 @@ function SchemaFormArray(_a) {
     var handleAdd = function () { return dispatch(ValueAction.create(path, emptyValue(itemSchema))); };
     function arrayElement(v, i) {
         var newPath = __spreadArrays(path, ["" + i]);
-        var newErrors = (errors instanceof ErrorObject) ? errors["" + i] : [];
+        var newErrors = ErrorObject.forKey(errors, "" + i);
         return (React.createElement("div", { className: "sf-element", key: i },
             React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
@@ -25102,7 +25121,7 @@ function SchemaFormObject(_a) {
                 return key === order;
             }) || ['', null], key = _a[0], subSchema = _a[1];
             if (key) {
-                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: (errors instanceof ErrorObject) ? errors[key] : [], onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
+                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: ErrorObject.forKey(errors, key), onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
             }
         }
         else {
@@ -27478,7 +27497,7 @@ function SchemaForm(props) {
     var _b = useState(initErrors), errors = _b[0], setErrors = _b[1];
     var refShowErrors = useRef(showErrors);
     var refOnChange = useRef(onChange);
-    // update error state with new props
+    // update error state with new current
     useEffect(function () {
         if (showErrors || showErrors == undefined) {
             // check if value changed since last render
@@ -27487,7 +27506,8 @@ function SchemaForm(props) {
             var newErrors = validate$2(schema, currentValue);
             if (lodash.isEqual(errors, newErrors) && refShowErrors.current === showErrors)
                 return;
-            console.log("CH: useEffect2 setErrors");
+            console.log("CH: useEffect1 setErrors:");
+            console.log(JSON.parse(JSON.stringify(newErrors)));
             setErrors(newErrors);
         }
         refShowErrors.current = showErrors;
@@ -27496,7 +27516,7 @@ function SchemaForm(props) {
     // This updates the internal state currentValue with an external change of the value prop
     useEffect(function () {
         if (!lodash.isEqual(refLastPropValue.current, value)) {
-            console.log("CH: useEffect1 replace with value");
+            console.log("CH: useEffect2 replace with value");
             dispatch(ValueAction.replace(value));
         }
         refLastPropValue.current = value;
@@ -27506,7 +27526,7 @@ function SchemaForm(props) {
     }, [onChange, refOnChange]);
     var dispatchChange = useCallback(function (action) {
         //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
-        console.log("CH: handleChange setCurrentValue");
+        console.log("CH: handleChange setCurrentValue:");
         dispatch(action);
         var onChange = refOnChange.current;
         if (onChange && (action !== undefined || !changeOnBlur)) {
@@ -27590,8 +27610,7 @@ function SchemaPagedForm(props) {
     var refLastPropsValue = useRef(props.value);
     var refValue = useRef(value);
     var _b = useState(props.value['page' + props.page] || emptyValue(pageSchema)), pageValue = _b[0], setPageValue = _b[1];
-    var _c = useState({}), errors = _c[0], setErrors = _c[1];
-    var _d = useState(false), entered = _d[0], setEntered = _d[1];
+    var _c = useState(false), entered = _c[0], setEntered = _c[1];
     // feed value into state when props change
     useEffect(function () {
         if (!lodash.isEqual(props.value, refLastPropsValue.current)) {
@@ -27599,6 +27618,7 @@ function SchemaPagedForm(props) {
             var pageKey = 'page' + props.page;
             if (!props.value[pageKey])
                 props.value[pageKey] = emptyValue(pageSchema);
+            refValue.current = props.value;
             setPageValue(props.value[pageKey]);
         }
         refLastPropsValue.current = props.value;
@@ -27619,25 +27639,27 @@ function SchemaPagedForm(props) {
         var newValue = __assign(__assign({}, rValue), (_a = {}, _a['page' + props.page] = newPageValue, _a));
         setValue(newValue);
         setPageValue(newPageValue);
-        setErrors(errors);
         if (props.onChange)
-            props.onChange(newValue, path, errors);
+            props.onChange(lodash.cloneDeep(newValue), path, errors);
         refValue.current = newValue;
     }, [props.onChange, props.page, refValue]);
-    //debug
-    var refOnChange = useRef(onChange);
-    if (refOnChange.current !== onChange)
-        console.log('onchange updated');
-    refOnChange.current = onChange;
     function onPage(page) {
         setEntered(true);
+        var pageKey = 'page' + props.page;
+        var errors = validate$2(props.schema['properties'][pageKey], value[pageKey]);
         if (props.onPage && isEmpty(errors))
             props.onPage(value, page, props.page);
     }
     function onSubmit() {
         setEntered(true);
-        if (props.onSubmit && isEmpty(errors))
+        var errors = validate$2(props.schema, value);
+        if (props.onSubmit && isEmpty(errors)) {
             props.onSubmit(value);
+        }
+        else if (props.onSubmit) {
+            console.log('+ Blocked page change from error:');
+            console.log(JSON.parse(JSON.stringify(errors)));
+        }
     }
     var pageLast = Object.keys(props.schema['properties']).reduce(function (currCount, key) {
         var val = 0;
@@ -27657,5 +27679,5 @@ function SchemaPagedForm(props) {
 }
 
 export default SchemaForm;
-export { ErrorObject, SchemaFormComponent, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, getByPath, sendFileAsBody };
+export { ErrorObject, SchemaFormComponent, SchemaFormComponentWrapper, SchemaPagedForm, SchemaSubmitForm, ValueAction, ValueDispatch, getByPath, sendFileAsBody };
 //# sourceMappingURL=index.es.js.map

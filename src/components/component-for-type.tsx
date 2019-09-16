@@ -1,12 +1,12 @@
 import React from "react"
-import { fieldType, fieldCaption, applyConditional } from "schema/schema"
+import { fieldType, fieldCaption, containerType, applyConditional } from "schema/schema"
 import Ajv from "ajv"
 import { ISchemaContainerProps, ISchemaComponentProps } from "components/schema-form-interfaces"
 import _ from 'lodash';
 
 function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement {
     const { schema, value } = props;
-    const container: React.FC<ISchemaContainerProps> = props.context.containers[schema['type']];
+    const container: React.FC<ISchemaContainerProps> = props.context.containers[containerType(schema)];
 
     let condSchema = applyConditional(schema, value);
     let mergedSchema = condSchema || schema;

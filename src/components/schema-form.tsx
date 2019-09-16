@@ -68,14 +68,15 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     const refShowErrors = useRef(showErrors);
     const refOnChange = useRef(onChange);
 
-    // update error state with new props
+    // update error state with new current
     useEffect(() => {
         if (showErrors || showErrors == undefined) {
             // check if value changed since last render
             if (_.isEqual(refLastCurrentValue.current, currentValue) && refShowErrors.current === showErrors) return;
             const newErrors = validate(schema, currentValue);
             if (_.isEqual(errors, newErrors) && refShowErrors.current === showErrors) return;
-            console.log("CH: useEffect2 setErrors");
+            console.log("CH: useEffect1 setErrors:");
+            console.log(JSON.parse(JSON.stringify(newErrors)));
             setErrors(newErrors);
         }
         refShowErrors.current = showErrors;
@@ -85,11 +86,11 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     // This updates the internal state currentValue with an external change of the value prop
     useEffect(() => {
         if (!_.isEqual(refLastPropValue.current, value)) {
-            console.log("CH: useEffect1 replace with value");
+            console.log("CH: useEffect2 replace with value");
             dispatch(ValueAction.replace(value));
         }
         refLastPropValue.current = value;
-    }, [value, changeOnBlur, refLastPropValue ]);
+    }, [value, changeOnBlur, refLastPropValue]);
 
     useEffect(() => {
         refOnChange.current = onChange;
@@ -97,7 +98,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
 
     const dispatchChange = useCallback((action: ValueAction) => {
         //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
-        console.log("CH: handleChange setCurrentValue");
+        console.log("CH: handleChange setCurrentValue:");
         dispatch(action);
         const onChange = refOnChange.current;
         if (onChange && (action !== undefined || !changeOnBlur)) {

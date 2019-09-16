@@ -30,7 +30,7 @@ export function SchemaFormArray({
 
     function arrayElement(v: object, i: number) {
         const newPath = [ ...path, `${i}` ];
-        const newErrors = (errors instanceof ErrorObject) ? errors[`${i}`] : [];
+        const newErrors = ErrorObject.forKey(errors, `${i}`);
 
         return (
         <div className="sf-element" key={i}>

@@ -4,6 +4,15 @@ import { withoutFalsyProperties } from "utility"
 
 export class ErrorObject {
     [ errorName: string ]: Ajv.ErrorObject[] | ErrorObject
+
+    static forKey(errors: any, key: string) {
+        return (errors instanceof ErrorObject && errors[key]) || [];
+    }
+    static attachError(errors: ErrorObject, message: string) {
+        if (errors instanceof ErrorObject) throw 'Attaching error to parent error object';
+        const errorList = errors as Ajv.ErrorObject[];
+        return [ ...errorList, { message } as Ajv.ErrorObject ];
+    }
 }
 
 export function validate(schema: object, value: object) {

@@ -24,6 +24,12 @@ export function fieldType(schema: object): string {
     }
 }
 
+export function containerType(schema: object): string {
+    let type = schema['type'];
+    if (schema['editor']) type = schema['editor'];
+    return type;
+}
+
 export function emptyValue(schema: object): any {
     switch (schema['type'] || '') {
         case 'object': return {};

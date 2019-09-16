@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SchemaForm from 'components/schema-form';
 import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject } from 'error';
+import { ErrorObject, validate } from 'error';
 import { isEmpty } from 'utility';
 import { emptyValue } from 'schema/schema';
 import _ from "lodash";
@@ -24,7 +24,6 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     const refLastPropsValue = useRef(props.value);
     const refValue = useRef(value);
     const [pageValue, setPageValue] = useState(props.value['page' + props.page] || emptyValue(pageSchema));
-    const [errors, setErrors] = useState({} as ErrorObject);
     const [entered, setEntered] = useState(false);
 
     // feed value into state when props change
@@ -33,6 +32,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
             setValue(props.value);
             const pageKey = 'page' + props.page;
             if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+            refValue.current = props.value;
             setPageValue(props.value[pageKey]);
         }
         refLastPropsValue.current = props.value;
@@ -55,26 +55,28 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
         const newValue = { ...rValue, ['page' + props.page]: newPageValue };
         setValue(newValue);
         setPageValue(newPageValue);
-        setErrors(errors);
         if (props.onChange)
-            props.onChange(newValue, path, errors);
+            props.onChange(_.cloneDeep(newValue), path, errors);
         refValue.current = newValue;
     }, [ props.onChange, props.page, refValue ]);
-    //debug
-    const refOnChange = useRef(onChange);
-    if (refOnChange.current !== onChange) console.log('onchange updated');
-    refOnChange.current = onChange;
 
     function onPage(page: number) {
         setEntered(true);
+        const pageKey = 'page' + props.page;
+        const errors = validate(props.schema['properties'][pageKey], value[pageKey]);
         if (props.onPage && isEmpty(errors))
             props.onPage(value, page, props.page);
     }
 
     function onSubmit() {
         setEntered(true);
-        if (props.onSubmit && isEmpty(errors))
+        const errors = validate(props.schema, value);
+        if (props.onSubmit && isEmpty(errors)) {
             props.onSubmit(value);
+        } else if (props.onSubmit) {
+            console.log('+ Blocked page change from error:');
+            console.log(JSON.parse(JSON.stringify(errors)));
+        }
     }
 
     const pageLast = Object.keys(props.schema['properties']).reduce((currCount, key) => {
