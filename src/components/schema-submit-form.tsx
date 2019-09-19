@@ -27,7 +27,7 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
             setCurrentValue(value);
             console.log('value changed, set clean');
         }
-    }, [props.value]);
+    }, [value]);
 
     const handleChange = useCallback(
     (value: object, path: string[], errors: ErrorObject) => {

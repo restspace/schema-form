@@ -81,7 +81,7 @@ export function valueReducer(oldValue: object, action: ValueAction) {
             break;
         }
         case ValueActionType.Create: {
-            const newValueArray = _.get(value, action.path);
+            const newValueArray = _.get(value, action.path) || [];
             _.set(value, action.path, [ ...newValueArray, action.value ]);
             break;
         }

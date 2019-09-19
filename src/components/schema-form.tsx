@@ -68,37 +68,40 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     const refShowErrors = useRef(showErrors);
     const refOnChange = useRef(onChange);
 
+    // This updates the internal state currentValue with an external change of the value prop
+    useEffect(() => {
+        if (!_.isEqual(refLastPropValue.current, value)) {
+            console.log("PROPS Update from props value:");
+            console.log(_.cloneDeep(value));
+            dispatch(ValueAction.replace(value));
+        }
+        refLastPropValue.current = value;
+    }, [value, changeOnBlur, refLastPropValue]);
+
     // update error state with new current
+    // TODO substitute with useDeepEqualEffect
     useEffect(() => {
         if (showErrors || showErrors == undefined) {
             // check if value changed since last render
             if (_.isEqual(refLastCurrentValue.current, currentValue) && refShowErrors.current === showErrors) return;
             const newErrors = validate(schema, currentValue);
             if (_.isEqual(errors, newErrors) && refShowErrors.current === showErrors) return;
-            console.log("CH: useEffect1 setErrors:");
-            console.log(JSON.parse(JSON.stringify(newErrors)));
+            console.log("ER Updating errors:");
+            console.log(_.cloneDeep(newErrors));
             setErrors(newErrors);
         }
         refShowErrors.current = showErrors;
         refLastCurrentValue.current = currentValue;
     }, [currentValue, schema, showErrors, refShowErrors, refLastCurrentValue ]);
 
-    // This updates the internal state currentValue with an external change of the value prop
-    useEffect(() => {
-        if (!_.isEqual(refLastPropValue.current, value)) {
-            console.log("CH: useEffect2 replace with value");
-            dispatch(ValueAction.replace(value));
-        }
-        refLastPropValue.current = value;
-    }, [value, changeOnBlur, refLastPropValue]);
-
+    // used to isolate dispatchChange from changes to onChange prop which can be caused by client code
     useEffect(() => {
         refOnChange.current = onChange;
     }, [onChange, refOnChange]);
 
     const dispatchChange = useCallback((action: ValueAction) => {
         //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
-        console.log("CH: handleChange setCurrentValue:");
+        console.log("CH: internal value change:");
         dispatch(action);
         const onChange = refOnChange.current;
         if (onChange && (action !== undefined || !changeOnBlur)) {

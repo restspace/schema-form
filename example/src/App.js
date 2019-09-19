@@ -3,7 +3,6 @@ import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
 import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "schema-form";
-import { SIGBREAK } from "constants";
 
 const loginSchema = {
   type: "object",
@@ -268,7 +267,7 @@ function Form(props) {
           setValuePaged(v);
           setPage(p);
         }}
-        onSubmit={(v) => {
+        onSubmit={(v, p) => {
           setValuePaged(v);
           alert('submitted ' + JSON.stringify(v));
         }}

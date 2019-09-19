@@ -7,7 +7,7 @@ import { emptyValue } from 'schema/schema';
 import _ from "lodash";
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
-    onSubmit?(value: object): void,
+    onSubmit?(value: object, page: number): void,
     onPage?(value: object, page: number, previousPage: number): void,
     makeNextLink(nextPage: number, onClick: (page: number) => void): React.ReactNode,
     makePreviousLink(previousPage: number, onClick: (page: number) => void): React.ReactNode,
@@ -15,15 +15,12 @@ export interface ISchemaPagedFormProps extends ISchemaFormProps {
     page: number
 }
 
-window['invokeCtr'] = 0;
-
 export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     const pageSchema = props.schema['properties']['page' + props.page];
-
     const [value, setValue] = useState(props.value);
     const refLastPropsValue = useRef(props.value);
     const refValue = useRef(value);
-    const [pageValue, setPageValue] = useState(props.value['page' + props.page] || emptyValue(pageSchema));
+    const [pageValue, setPageValue] = useState(props.value['page' + props.page] || {});
     const [entered, setEntered] = useState(false);
 
     // feed value into state when props change
@@ -31,7 +28,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
         if (!_.isEqual(props.value, refLastPropsValue.current)) {
             setValue(props.value);
             const pageKey = 'page' + props.page;
-            if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+            if (!props.value[pageKey]) props.value[pageKey] = {};
             refValue.current = props.value;
             setPageValue(props.value[pageKey]);
         }
@@ -41,17 +38,17 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     useEffect(() => {
         setEntered(false);
         const pageKey = 'page' + props.page;
-        if (!props.value[pageKey]) props.value[pageKey] = emptyValue(pageSchema);
+        if (!props.value[pageKey]) props.value[pageKey] = {};
         setPageValue(props.value[pageKey]);
     }, [props.page]);
 
-    const invk = window['invokeCtr']++;
-    console.log('Paged form invk ' + window['invokeCtr'] + ' page ' + props.page);
+    // if (!pageSchema) return (
+    //     <></>
+    // );
 
     const onChange = useCallback(
     (newPageValue: object, path: string[], errors: ErrorObject) => {
         const rValue = _.cloneDeep(refValue.current);
-        console.log('onchange invk ' + invk + ' page ' + props.page);
         const newValue = { ...rValue, ['page' + props.page]: newPageValue };
         setValue(newValue);
         setPageValue(newPageValue);
@@ -72,7 +69,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
         setEntered(true);
         const errors = validate(props.schema, value);
         if (props.onSubmit && isEmpty(errors)) {
-            props.onSubmit(value);
+            props.onSubmit(value, props.page);
         } else if (props.onSubmit) {
             console.log('+ Blocked page change from error:');
             console.log(JSON.parse(JSON.stringify(errors)));

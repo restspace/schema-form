@@ -24953,7 +24953,7 @@ function valueReducer(oldValue, action) {
             break;
         }
         case ValueActionType.Create: {
-            var newValueArray = lodash.get(value, action.path);
+            var newValueArray = lodash.get(value, action.path) || [];
             lodash.set(value, action.path, __spreadArrays(newValueArray, [action.value]));
             break;
         }
@@ -27393,13 +27393,23 @@ function reducer(state, action) {
 
 function sendFileAsBody(url, file, progress) {
     return new Promise(function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.upload.onprogress = function (ev) { return progress(ev.loaded / ev.total * 100.0); };
-        xhr.upload.onloadend = function (ev) { progress(xhr.status === 200 || xhr.status === 0 ? -1 : -xhr.status); resolve(); };
-        xhr.open('POST', url);
-        xhr.send(file);
+        try {
+            var xhr_1 = new XMLHttpRequest();
+            xhr_1.upload.onprogress = function (ev) { return progress(ev.loaded / ev.total * 100.0); };
+            xhr_1.upload.onloadend = function (ev) {
+                progress(xhr_1.status === 200 || xhr_1.status === 0 ? -1 : -xhr_1.status);
+                resolve();
+            };
+            xhr_1.withCredentials = true;
+            xhr_1.open('POST', url);
+            xhr_1.send(file);
+        }
+        catch (err) {
+            reject(err);
+        }
     });
 }
+var imageSpec = { extensions: ['jpg', 'gif', 'png', 'svg'] };
 function ProgressBar(_a) {
     var pc = _a.pc, filename = _a.filename;
     return (React__default.createElement("div", { className: "sf-progress" },
@@ -27421,11 +27431,12 @@ function uploadedReducer(state, action) {
     return __spreadArrays(state, [action]);
 }
 function UploadEditor(props) {
-    var context = props.context, schema = props.schema, path = props.path;
+    var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
     var uploadMsg = "Drag files here or click to select";
     var uploadContext = (context || {});
     var _a = React.useReducer(progressBarsReducer, {}), progressBars = _a[0], dispatchProgressBars = _a[1];
     var _b = React.useReducer(uploadedReducer, []), uploaded = _b[0], dispatchUploaded = _b[1];
+    var dispatch = React.useContext(ValueDispatch);
     var updateProgress = function (file, pc) {
         dispatchProgressBars([file.name, pc]);
         if (pc === -1) {
@@ -27433,19 +27444,32 @@ function UploadEditor(props) {
         }
     };
     var onDrop = function (acceptedFiles) {
-        acceptedFiles.forEach(function (file) {
-            var url = uploadContext.getFileUrl(file, path, schema);
-            uploadContext.sendFile(url, file, function (pc) { return updateProgress(file, pc); })
-                .then(function () { console.log('Uploaded ' + url); });
+        var sendFilePromises = acceptedFiles.map(function (file) {
+            var url = uploadContext.getFileUrl(file, path, schema).toLowerCase();
+            return uploadContext.sendFile(url, file, function (pc) { return updateProgress(file, pc); })
+                .then(function () { return url; });
         });
+        Promise.all(sendFilePromises)
+            .then(function (urls) { return dispatch(ValueAction.set(path, urls.join('|'))); }); // vbar character not allowed in urls unencoded
     };
     var message = uploaded.length ? uploaded.join('; ') : uploadMsg;
     var _c = useDropzone({ onDrop: onDrop }), getRootProps = _c.getRootProps, getInputProps = _c.getInputProps, isDragActive = _c.isDragActive;
+    var urls = value ? value.split('|') : [];
+    var images = function (urls) {
+        var imageUrls = urls.filter(function (url) {
+            var extn = lodash.last(url.toLowerCase().split('.')) || '';
+            return imageSpec.extensions.indexOf(extn) >= 0;
+        });
+        return (React__default.createElement("div", { className: "image-container" }, imageUrls.map(function (url) {
+            return React__default.createElement("img", { key: url, className: "upload-image", src: url });
+        })));
+    };
     return (React__default.createElement(SchemaFormComponentWrapper, __assign({}, props),
         React__default.createElement("div", { className: "sf-control sf-upload " + (isDragActive ? "sf-drag-over" : "") + " " + (progressBars.length ? "sf-uploading" : "") },
             React__default.createElement("div", __assign({}, getRootProps()),
                 React__default.createElement("input", __assign({}, getInputProps())),
-                React__default.createElement("p", { className: 'sf-upload-message' }, message)),
+                urls.length ? images(urls)
+                    : (React__default.createElement("p", { className: 'sf-upload-message' }, message))),
             Object.keys(progressBars).map(function (name) {
                 return React__default.createElement(ProgressBar, { pc: progressBars[name], filename: name, key: name });
             }))));
@@ -27504,7 +27528,17 @@ function SchemaForm(props) {
     var _b = React.useState(initErrors), errors = _b[0], setErrors = _b[1];
     var refShowErrors = React.useRef(showErrors);
     var refOnChange = React.useRef(onChange);
+    // This updates the internal state currentValue with an external change of the value prop
+    React.useEffect(function () {
+        if (!lodash.isEqual(refLastPropValue.current, value)) {
+            console.log("PROPS Update from props value:");
+            console.log(lodash.cloneDeep(value));
+            dispatch(ValueAction.replace(value));
+        }
+        refLastPropValue.current = value;
+    }, [value, changeOnBlur, refLastPropValue]);
     // update error state with new current
+    // TODO substitute with useDeepEqualEffect
     React.useEffect(function () {
         if (showErrors || showErrors == undefined) {
             // check if value changed since last render
@@ -27513,27 +27547,20 @@ function SchemaForm(props) {
             var newErrors = validate$2(schema, currentValue);
             if (lodash.isEqual(errors, newErrors) && refShowErrors.current === showErrors)
                 return;
-            console.log("CH: useEffect1 setErrors:");
-            console.log(JSON.parse(JSON.stringify(newErrors)));
+            console.log("ER Updating errors:");
+            console.log(lodash.cloneDeep(newErrors));
             setErrors(newErrors);
         }
         refShowErrors.current = showErrors;
         refLastCurrentValue.current = currentValue;
     }, [currentValue, schema, showErrors, refShowErrors, refLastCurrentValue]);
-    // This updates the internal state currentValue with an external change of the value prop
-    React.useEffect(function () {
-        if (!lodash.isEqual(refLastPropValue.current, value)) {
-            console.log("CH: useEffect2 replace with value");
-            dispatch(ValueAction.replace(value));
-        }
-        refLastPropValue.current = value;
-    }, [value, changeOnBlur, refLastPropValue]);
+    // used to isolate dispatchChange from changes to onChange prop which can be caused by client code
     React.useEffect(function () {
         refOnChange.current = onChange;
     }, [onChange, refOnChange]);
     var dispatchChange = React.useCallback(function (action) {
         //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
-        console.log("CH: handleChange setCurrentValue:");
+        console.log("CH: internal value change:");
         dispatch(action);
         var onChange = refOnChange.current;
         if (onChange && (action !== undefined || !changeOnBlur)) {
@@ -27577,7 +27604,7 @@ function SchemaSubmitForm(props) {
             setCurrentValue(value);
             console.log('value changed, set clean');
         }
-    }, [props.value]);
+    }, [value]);
     var handleChange = React.useCallback(function (value, path, errors) {
         setCurrentValue(value);
         if (!dirty && onDirty)
@@ -27610,13 +27637,12 @@ function SchemaSubmitForm(props) {
             React__default.createElement("div", { className: "sf-submit" }, props.makeSubmitLink(onSubmit)))));
 }
 
-window['invokeCtr'] = 0;
 function SchemaPagedForm(props) {
     var pageSchema = props.schema['properties']['page' + props.page];
     var _a = React.useState(props.value), value = _a[0], setValue = _a[1];
     var refLastPropsValue = React.useRef(props.value);
     var refValue = React.useRef(value);
-    var _b = React.useState(props.value['page' + props.page] || emptyValue(pageSchema)), pageValue = _b[0], setPageValue = _b[1];
+    var _b = React.useState(props.value['page' + props.page] || {}), pageValue = _b[0], setPageValue = _b[1];
     var _c = React.useState(false), entered = _c[0], setEntered = _c[1];
     // feed value into state when props change
     React.useEffect(function () {
@@ -27624,7 +27650,7 @@ function SchemaPagedForm(props) {
             setValue(props.value);
             var pageKey = 'page' + props.page;
             if (!props.value[pageKey])
-                props.value[pageKey] = emptyValue(pageSchema);
+                props.value[pageKey] = {};
             refValue.current = props.value;
             setPageValue(props.value[pageKey]);
         }
@@ -27634,15 +27660,15 @@ function SchemaPagedForm(props) {
         setEntered(false);
         var pageKey = 'page' + props.page;
         if (!props.value[pageKey])
-            props.value[pageKey] = emptyValue(pageSchema);
+            props.value[pageKey] = {};
         setPageValue(props.value[pageKey]);
     }, [props.page]);
-    var invk = window['invokeCtr']++;
-    console.log('Paged form invk ' + window['invokeCtr'] + ' page ' + props.page);
+    // if (!pageSchema) return (
+    //     <></>
+    // );
     var onChange = React.useCallback(function (newPageValue, path, errors) {
         var _a;
         var rValue = lodash.cloneDeep(refValue.current);
-        console.log('onchange invk ' + invk + ' page ' + props.page);
         var newValue = __assign(__assign({}, rValue), (_a = {}, _a['page' + props.page] = newPageValue, _a));
         setValue(newValue);
         setPageValue(newPageValue);
@@ -27661,7 +27687,7 @@ function SchemaPagedForm(props) {
         setEntered(true);
         var errors = validate$2(props.schema, value);
         if (props.onSubmit && isEmpty(errors)) {
-            props.onSubmit(value);
+            props.onSubmit(value, props.page);
         }
         else if (props.onSubmit) {
             console.log('+ Blocked page change from error:');

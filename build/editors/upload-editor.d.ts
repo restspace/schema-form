@@ -5,4 +5,7 @@ export interface IUploadEditorContext {
     sendFile(url: string, file: File, progress: (pc: number) => void): Promise<void>;
 }
 export declare function sendFileAsBody(url: string, file: File, progress: (pc: number) => void): Promise<void>;
+export declare const imageSpec: {
+    extensions: string[];
+};
 export declare function UploadEditor(props: ISchemaComponentProps): JSX.Element;
