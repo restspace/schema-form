@@ -93,9 +93,11 @@ export function UploadEditor(props: ISchemaComponentProps) {
             return imageSpec.extensions.indexOf(extn) >= 0;
         });
         return (
-        <div className="image-container">
+        <div className="sf-image-container">
             {imageUrls.map((url) =>
-                <img key={url} className="upload-image" src={url}/>
+                <div className="sf-image-crop" key={url}>
+                    <img className="sf-upload-image" src={url}/>
+                </div>
             )}
         </div>
         );

@@ -24909,7 +24909,7 @@ var ValueAction = /** @class */ (function () {
 }());
 function valueReducer(oldValue, action) {
     if (action.type === ValueActionType.Replace) {
-        console.log('VALUE update:');
+        console.log('VALUE update (Replace):');
         console.log(JSON.parse(JSON.stringify(action.value)));
         return lodash.cloneDeep(action.value);
     }
@@ -24955,7 +24955,7 @@ function valueReducer(oldValue, action) {
             break;
         }
     }
-    console.log('VALUE update:');
+    console.log('VALUE update (' + ValueActionType[action.type] + '):');
     console.log(JSON.parse(JSON.stringify(value)));
     return value;
 }
@@ -25046,7 +25046,7 @@ function ComponentForTypeInner(props) {
         return container(__assign(__assign({}, props), { schema: mergedSchema })) || (React.createElement(React.Fragment, null));
     }
     else {
-        return (React.createElement(SchemaFormComponentWrapper$1, __assign({}, props, { schema: mergedSchema })));
+        return (React.createElement(SchemaFormComponentGeneric, __assign({}, props, { schema: mergedSchema })));
     }
 }
 // Memoize on the basis of full equality
@@ -25060,7 +25060,7 @@ function isEqual(p0, p1) {
         && p0.onEditor === p1.onEditor;
     return equ;
 }
-function SchemaFormComponentWrapperInner(_a) {
+function SchemaFormComponentGenericInner(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var componentProps = {
         schema: schema, path: path, value: value, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
@@ -25079,14 +25079,14 @@ function SchemaFormComponentWrapperInner(_a) {
     }
 }
 // Memoize on the basis of full equality
-var SchemaFormComponentWrapper$1 = React.memo(SchemaFormComponentWrapperInner, isEqual);
+var SchemaFormComponentGeneric = React.memo(SchemaFormComponentGenericInner, isEqual);
 
 function SchemaFormArray(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var dispatch = useContext(ValueDispatch);
     var itemSchema = schema['items'];
     var valueArray = (value || []);
-    var pathEl = path.length ? path[path.length - 1] : '';
+    var pathEl = path.length ? lodash.last(path) : '';
     var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
     var updatable = !(schema['readOnly'] || false);
@@ -25097,7 +25097,7 @@ function SchemaFormArray(_a) {
     function arrayElement(v, i) {
         var newPath = __spreadArrays(path, ["" + i]);
         var newErrors = ErrorObject.forKey(errors, "" + i);
-        return (React.createElement("div", { className: "sf-element", key: i },
+        return (React.createElement("div", { className: "sf-element" },
             React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
                 React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(newPath) }, "x"),
@@ -25106,13 +25106,13 @@ function SchemaFormArray(_a) {
     }
     return (React.createElement("div", { className: arrayClass },
         React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
-        React.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return arrayElement(v, i); })),
+        React.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return React.createElement(React.Fragment, { key: i }, arrayElement(v, i)); })),
         updatable && React.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
 }
 
 function SchemaFormObject(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
-    var pathEl = path.length ? path[path.length - 1] : '';
+    var pathEl = path.length ? lodash.last(path) : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
     function renderSection(order, properties, i) {
         if (typeof order === 'string') {
@@ -25124,7 +25124,7 @@ function SchemaFormObject(_a) {
                 return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: ErrorObject.forKey(errors, key), onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
             }
         }
-        else {
+        else { // recurse into a section list
             return (React.createElement("section", { key: i || 0 }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, i); })));
         }
         return React.createElement(React.Fragment, null);
@@ -27453,8 +27453,9 @@ function UploadEditor(props) {
             var extn = lodash.last(url.toLowerCase().split('.')) || '';
             return imageSpec.extensions.indexOf(extn) >= 0;
         });
-        return (React.createElement("div", { className: "image-container" }, imageUrls.map(function (url) {
-            return React.createElement("img", { key: url, className: "upload-image", src: url });
+        return (React.createElement("div", { className: "sf-image-container" }, imageUrls.map(function (url) {
+            return React.createElement("div", { className: "sf-image-crop", key: url },
+                React.createElement("img", { className: "sf-upload-image", src: url }));
         })));
     };
     return (React.createElement(SchemaFormComponentWrapper, __assign({}, props),
@@ -27521,15 +27522,6 @@ function SchemaForm(props) {
     var _b = useState(initErrors), errors = _b[0], setErrors = _b[1];
     var refShowErrors = useRef(showErrors);
     var refOnChange = useRef(onChange);
-    // This updates the internal state currentValue with an external change of the value prop
-    useEffect(function () {
-        if (!lodash.isEqual(refLastPropValue.current, value)) {
-            console.log("PROPS Update from props value:");
-            console.log(lodash.cloneDeep(value));
-            dispatch(ValueAction.replace(value));
-        }
-        refLastPropValue.current = value;
-    }, [value, changeOnBlur, refLastPropValue]);
     // update error state with new current
     // TODO substitute with useDeepEqualEffect
     useEffect(function () {
@@ -27547,6 +27539,15 @@ function SchemaForm(props) {
         refShowErrors.current = showErrors;
         refLastCurrentValue.current = currentValue;
     }, [currentValue, schema, showErrors, refShowErrors, refLastCurrentValue]);
+    // This updates the internal state currentValue with an external change of the value prop
+    useEffect(function () {
+        if (!lodash.isEqual(refLastCurrentValue.current, value)) {
+            console.log("PROPS Update from props value:");
+            console.log(lodash.cloneDeep(value));
+            dispatch(ValueAction.replace(value));
+        }
+        refLastCurrentValue.current = value;
+    }, [value, changeOnBlur, refLastPropValue]);
     // used to isolate dispatchChange from changes to onChange prop which can be caused by client code
     useEffect(function () {
         refOnChange.current = onChange;
@@ -27608,7 +27609,7 @@ function SchemaSubmitForm(props) {
         }
         if (onChange)
             onChange(value, path, errors);
-    }, [onDirty, onChange]);
+    }, [dirty, onDirty, onChange]);
     function onSubmit() {
         setSubmitted(true);
         var newErrors = validate$2(schema, currentValue);

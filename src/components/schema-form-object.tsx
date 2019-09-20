@@ -18,7 +18,7 @@ export function SchemaFormObject({
     onEditor,
     context
 }: ISchemaContainerProps): React.ReactElement {
-    const pathEl = path.length ? path[path.length - 1] : '';
+    const pathEl = path.length ? _.last(path) : '';
     const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
 
     function renderSection(order: NestedList, properties: [string, unknown][], i?: number) {
@@ -38,7 +38,7 @@ export function SchemaFormObject({
                         context={context}/>
                 )
             }
-        } else {
+        } else { // recurse into a section list
             return (
                 <section key={i || 0}>
                     {order.map((subOrder, i) => renderSection(subOrder, properties, i))}

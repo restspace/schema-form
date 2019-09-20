@@ -4,6 +4,7 @@ import { ISchemaContainerProps } from 'components/schema-form-interfaces'
 import { ErrorObject } from 'error'
 import { fieldCaption, emptyValue } from 'schema/schema';
 import { ValueDispatch, ValueAction } from 'components/schema-form-value-context';
+import _ from 'lodash';
 
 export function SchemaFormArray({
     schema,
@@ -18,7 +19,7 @@ export function SchemaFormArray({
     const dispatch = useContext(ValueDispatch);
     const itemSchema = schema['items'];
     const valueArray = (value || []) as object[];
-    const pathEl = path.length ? path[path.length - 1] : '';
+    const pathEl = path.length ? _.last(path) : '';
     const arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     const count = valueArray.length;
     const updatable = !(schema['readOnly'] || false);
@@ -33,7 +34,7 @@ export function SchemaFormArray({
         const newErrors = ErrorObject.forKey(errors, `${i}`);
 
         return (
-        <div className="sf-element" key={i}>
+        <div className="sf-element">
             <ComponentForType
                 schema={itemSchema as object}
                 path={newPath}
@@ -56,7 +57,7 @@ export function SchemaFormArray({
         <div className={arrayClass}>
             <div className="sf-title">{fieldCaption(schema, path) || '\u00A0'}</div>
             <fieldset className="sf-array-fieldset">
-                {valueArray.map((v, i) => arrayElement(v, i))}
+                {valueArray.map((v, i) => <React.Fragment key={i}>{arrayElement(v, i)}</React.Fragment>)}
             </fieldset>
             {updatable && <span className="sf-control-button sf-add-button" onClick={handleAdd}>+</span>}
         </div>

@@ -40,7 +40,7 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
         }
         if (onChange)
             onChange(value, path, errors);
-    }, [ onDirty, onChange ]);
+    }, [ dirty, onDirty, onChange ]);
 
     function onSubmit() {
         setSubmitted(true);

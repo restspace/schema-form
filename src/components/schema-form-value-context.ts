@@ -43,7 +43,7 @@ export class ValueAction {
 
 export function valueReducer(oldValue: object, action: ValueAction) {
     if (action.type === ValueActionType.Replace) {
-        console.log('VALUE update:');
+        console.log('VALUE update (Replace):');
         console.log(JSON.parse(JSON.stringify(action.value)));
         return _.cloneDeep(action.value);
     }
@@ -90,7 +90,7 @@ export function valueReducer(oldValue: object, action: ValueAction) {
             break;
         }
     }
-    console.log('VALUE update:');
+    console.log('VALUE update (' + ValueActionType[action.type] + '):');
     console.log(JSON.parse(JSON.stringify(value)));
     return value;
 }

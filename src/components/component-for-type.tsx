@@ -14,7 +14,7 @@ function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement
     if (container) {
         return container({ ...props, schema: mergedSchema }) || (<></>)
     } else {
-        return (<SchemaFormComponentWrapper {...props } schema={mergedSchema} />);
+        return (<SchemaFormComponentGeneric {...props } schema={mergedSchema} />);
     }
 }
 
@@ -31,7 +31,7 @@ function isEqual(p0: ISchemaContainerProps, p1: ISchemaContainerProps) {
     return equ;
 }
 
-function SchemaFormComponentWrapperInner({
+function SchemaFormComponentGenericInner({
     schema, path, value, errors, onFocus, onBlur, onEditor, context
 }: ISchemaContainerProps): React.ReactElement {
 
@@ -56,5 +56,5 @@ function SchemaFormComponentWrapperInner({
 }
 
 // Memoize on the basis of full equality
-export const SchemaFormComponentWrapper = React.memo(SchemaFormComponentWrapperInner, isEqual);
+export const SchemaFormComponentGeneric = React.memo(SchemaFormComponentGenericInner, isEqual);
 

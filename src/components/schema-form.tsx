@@ -68,16 +68,6 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     const refShowErrors = useRef(showErrors);
     const refOnChange = useRef(onChange);
 
-    // This updates the internal state currentValue with an external change of the value prop
-    useEffect(() => {
-        if (!_.isEqual(refLastPropValue.current, value)) {
-            console.log("PROPS Update from props value:");
-            console.log(_.cloneDeep(value));
-            dispatch(ValueAction.replace(value));
-        }
-        refLastPropValue.current = value;
-    }, [value, changeOnBlur, refLastPropValue]);
-
     // update error state with new current
     // TODO substitute with useDeepEqualEffect
     useEffect(() => {
@@ -93,6 +83,16 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         refShowErrors.current = showErrors;
         refLastCurrentValue.current = currentValue;
     }, [currentValue, schema, showErrors, refShowErrors, refLastCurrentValue ]);
+
+    // This updates the internal state currentValue with an external change of the value prop
+    useEffect(() => {
+        if (!_.isEqual(refLastCurrentValue.current, value)) {
+            console.log("PROPS Update from props value:");
+            console.log(_.cloneDeep(value));
+            dispatch(ValueAction.replace(value));
+        }
+        refLastCurrentValue.current = value;
+    }, [value, changeOnBlur, refLastPropValue]);
 
     // used to isolate dispatchChange from changes to onChange prop which can be caused by client code
     useEffect(() => {
