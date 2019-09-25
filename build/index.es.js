@@ -25075,6 +25075,7 @@ function SchemaFormComponentGenericInner(_a) {
         return component(componentProps) || (React.createElement(React.Fragment, null));
     }
     else {
+        console.log("Can't find editor for field type: " + fieldType(schema));
         return (React.createElement(React.Fragment, null));
     }
 }
@@ -25131,6 +25132,9 @@ function SchemaFormObject(_a) {
     }
     var topOrder = schema['order'] || Object.keys(schema['properties']);
     var properties = Object.entries(schema['properties']);
+    if (schema['order'] && lodash.flatten(schema['order']).length < properties.length) {
+        console.log('fewer items in order than properties at ' + path.join('.'));
+    }
     return (React.createElement("div", { className: objectClass },
         React.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
         React.createElement("fieldset", { className: "sf-object-fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
@@ -27496,6 +27500,40 @@ function RadioButtonsEditor(props) {
     return (React.createElement(SchemaFormComponentWrapper, __assign({}, props), radios(isError)));
 }
 
+function MultiSelectButtonsEditor(props) {
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
+    var name = path.join('.');
+    var dispatch = useContext(ValueDispatch);
+    var arrayValue = value || [];
+    var handleCheckChange = function (enumValue) { return function (ev) {
+        var newValue = (!!ev.target['checked'])
+            ? lodash.union(arrayValue, [enumValue])
+            : lodash.without(arrayValue, enumValue);
+        dispatch(ValueAction.set(path, newValue));
+    }; };
+    function handleFocus() {
+        onFocus(path);
+    }
+    function checks(isError) {
+        var classes = "sf-control sf-check-buttons " + (isError && 'sf-has-error');
+        var readOnly = schema['readOnly'] || false;
+        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: onBlur };
+        var enums = schema['items']['enum'];
+        if (!enums || schema['type'] !== 'array') {
+            throw ("In schema " + JSON.stringify(schema) + ", editor: checkButtons must be an array type with items an enum property");
+        }
+        return (React.createElement("div", { className: classes }, enums.map(function (enumValue, idx) {
+            return React.createElement("span", { className: "sf-multi-check", key: enumValue },
+                React.createElement("input", __assign({}, baseProps, { id: name + '_' + idx, type: "checkbox", checked: arrayValue && arrayValue.indexOf(enumValue) > -1, className: "sf-check-button", onChange: handleCheckChange(enumValue) })),
+                React.createElement("label", { htmlFor: name + '_' + idx }, enumValue));
+        })));
+    }
+    var isError = errors.length > 0;
+    var caption = fieldCaption(schema, path);
+    var convErrors = (errors || []);
+    return (React.createElement(SchemaFormComponentWrapper, __assign({}, props, { caption: caption, errors: convErrors }), checks(isError)));
+}
+
 var defaultComponentMap = {
     "string": SchemaFormComponent,
     "number": SchemaFormComponent,
@@ -27511,7 +27549,8 @@ var defaultComponentMap = {
 };
 var defaultContainerMap = {
     "array": SchemaFormArray,
-    "object": SchemaFormObject
+    "object": SchemaFormObject,
+    "multiCheck": MultiSelectButtonsEditor
 };
 function SchemaForm(props) {
     var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, componentContext = props.componentContext, components = props.components, containers = props.containers;

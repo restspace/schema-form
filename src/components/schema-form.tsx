@@ -8,6 +8,7 @@ import { IComponentMap, IContainerMap, ISchemaFormContext } from "components/sch
 import { ValueDispatch, ValueAction, valueReducer, ValueActionType } from "components/schema-form-value-context";
 import { UploadEditor } from "editors/upload-editor";
 import { RadioButtonsEditor } from "editors/radio-buttons-editor";
+import { MultiSelectButtonsEditor } from "editors/multi-select-buttons-editor";
 import _ from "lodash";
 
 
@@ -42,7 +43,8 @@ const defaultComponentMap: IComponentMap = {
 
 const defaultContainerMap: IContainerMap = {
     "array": SchemaFormArray,
-    "object": SchemaFormObject
+    "object": SchemaFormObject,
+    "multiCheck": MultiSelectButtonsEditor
 }
 
 export default function SchemaForm(props: ISchemaFormProps): React.ReactElement {

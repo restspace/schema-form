@@ -50,6 +50,9 @@ export function SchemaFormObject({
     
     let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties']);
     let properties = Object.entries(schema['properties']);
+    if (schema['order'] && _.flatten(schema['order']).length < properties.length) {
+        console.log('fewer items in order than properties at ' + path.join('.'));
+    }
 
     return (
         <div className={objectClass}>

@@ -3,8 +3,10 @@ import { ISchemaContainerProps } from "components/schema-form-interfaces"
 import { SchemaFormComponentWrapper } from "components/schema-form-component";
 import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
 import { fieldCaption } from "schema/schema";
+import Ajv from "ajv";
+import _ from "lodash";
 
-export function MultiSelectButtonEditor(props: ISchemaContainerProps): React.ReactElement {
+export function MultiSelectButtonsEditor(props: ISchemaContainerProps): React.ReactElement {
     const {
         schema,
         path,
@@ -15,10 +17,14 @@ export function MultiSelectButtonEditor(props: ISchemaContainerProps): React.Rea
     } = props;
     const name = path.join('.');
     const dispatch = useContext(ValueDispatch);
-    const arrayValue = value as string[];
+    const arrayValue = value as string[] || [];
 
-    function handleCheckChange(ev: React.ChangeEvent) {
-        dispatch(ValueAction.set(path, ev.target['value']));
+    const handleCheckChange = (enumValue: string) => (ev: React.ChangeEvent) => {
+        const newValue = (!!ev.target['checked'])
+            ? _.union(arrayValue, [ enumValue ])
+            : _.without(arrayValue, enumValue);
+
+        dispatch(ValueAction.set(path, newValue));
     }
 
     function handleFocus() {
@@ -42,10 +48,9 @@ export function MultiSelectButtonEditor(props: ISchemaContainerProps): React.Rea
                         {...baseProps}
                         id={name + '_' + idx}
                         type="checkbox"
-                        checked={arrayValue.indexOf(enumValue) > -1}
+                        checked={arrayValue && arrayValue.indexOf(enumValue) > -1}
                         className="sf-check-button"
-                        onChange={handleCheckChange}
-                        value={enumValue} />
+                        onChange={handleCheckChange(enumValue)} />
                     <label htmlFor={name + '_' + idx}>{enumValue}</label>
                 </span>
              )}
@@ -54,8 +59,9 @@ export function MultiSelectButtonEditor(props: ISchemaContainerProps): React.Rea
 
     const isError = errors.length > 0;
     const caption = fieldCaption(schema, path);
+    const convErrors = (errors || []) as Ajv.ErrorObject[];
     return (
-        <SchemaFormComponentWrapper {...props} caption={caption}>
+        <SchemaFormComponentWrapper {...props} caption={caption} errors={convErrors} >
             {checks(isError)}
         </SchemaFormComponentWrapper>
     );
