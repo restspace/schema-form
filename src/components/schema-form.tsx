@@ -24,6 +24,7 @@ export interface ISchemaFormProps {
     containers?: IContainerMap,
     className?: string,
     changeOnBlur?: boolean,
+    collapsible?: boolean,
     componentContext?: object
 }
 
@@ -58,6 +59,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         showErrors,
         className,
         changeOnBlur,
+        collapsible,
         componentContext,
         components,
         containers
@@ -127,7 +129,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     const context: ISchemaFormContext = {
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
-        componentContext
+        componentContext, collapsible
     }
 
     //console.log('FORM rendering ' + JSON.stringify(currentValue));

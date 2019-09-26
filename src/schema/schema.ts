@@ -41,8 +41,7 @@ export function emptyValue(schema: object): any {
 export function fieldCaption(schema: object, path: string[]): string {
     const pathEl = path && path.length ? path[path.length - 1] : '';
     const title = schema['title'];
-    let idx: number | null = parseInt(pathEl[0]);
-    idx = isNaN(idx) ? null : idx + 1;
+    let idx: number | null = pathEl && pathEl.match(/^\d+$/) ? parseInt(pathEl) + 1 : null;
     return idx
         ? (title ? title.replace('##', idx) : '')
         : (title || camelToTitle(pathEl));

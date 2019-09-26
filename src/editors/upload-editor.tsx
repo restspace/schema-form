@@ -80,23 +80,27 @@ export function UploadEditor(props: ISchemaComponentProps) {
                 .then(() => url);
         });
         Promise.all(sendFilePromises)
-            .then((urls) => dispatch(ValueAction.set(path, urls.join('|')))); // vbar character not allowed in urls unencoded
+            .then((urls) => dispatch(ValueAction.set(path, _.union(uploaded, urls).join('|')))); // vbar character not allowed in urls unencoded
     };
 
     const message = uploaded.length ? uploaded.join('; ') : uploadMsg;
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
     const urls = value ? (value as string).split('|') : [];
+    const getExtn = (url: string) => _.last(url.toLowerCase().split('.')) || '';
 
     const images = (urls: string[]) => {
-        const imageUrls = urls.filter(url => {
-            const extn = _.last(url.toLowerCase().split('.')) || '';
-            return imageSpec.extensions.indexOf(extn) >= 0;
-        });
+        const imageUrls = urls.filter(url => imageSpec.extensions.indexOf(getExtn(url)) >= 0);
+        const fileUrls = urls.filter(url => imageSpec.extensions.indexOf(getExtn(url)) < 0);
         return (
         <div className="sf-image-container">
             {imageUrls.map((url) =>
-                <div className="sf-image-crop" key={url}>
+                <div className="sf-upload-item sf-image-crop" key={url}>
                     <img className="sf-upload-image" src={url}/>
+                </div>
+            )}
+            {fileUrls.map((url) =>
+                <div className="sf-upload-item sf-file-crop" key={url} title={url}>
+                    {getExtn(url)}
                 </div>
             )}
         </div>

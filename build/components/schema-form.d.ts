@@ -14,6 +14,7 @@ export interface ISchemaFormProps {
     containers?: IContainerMap;
     className?: string;
     changeOnBlur?: boolean;
+    collapsible?: boolean;
     componentContext?: object;
 }
 export default function SchemaForm(props: ISchemaFormProps): React.ReactElement;

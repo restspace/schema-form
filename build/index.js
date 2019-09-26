@@ -24472,8 +24472,7 @@ function emptyValue(schema) {
 function fieldCaption(schema, path) {
     var pathEl = path && path.length ? path[path.length - 1] : '';
     var title = schema['title'];
-    var idx = parseInt(pathEl[0]);
-    idx = isNaN(idx) ? null : idx + 1;
+    var idx = pathEl && pathEl.match(/^\d+$/) ? parseInt(pathEl) + 1 : null;
     return idx
         ? (title ? title.replace('##', idx) : '')
         : (title || camelToTitle(pathEl));
@@ -25092,6 +25091,7 @@ var SchemaFormComponentGeneric = React__default.memo(SchemaFormComponentGenericI
 function SchemaFormArray(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var dispatch = React.useContext(ValueDispatch);
+    var _b = React.useState(false), collapsed = _b[0], setCollapsed = _b[1];
     var itemSchema = schema['items'];
     var valueArray = (value || []);
     var pathEl = path.length ? lodash.last(path) : '';
@@ -25112,14 +25112,21 @@ function SchemaFormArray(_a) {
                 i > 0 && React__default.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(newPath) }, "^"),
                 i < count - 1 && React__default.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath) }, "v"))));
     }
+    var collapsible = (context.collapsible && path.length > 0) || false;
+    var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
+    var collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
+    var showTitle = path.length > 0;
     return (React__default.createElement("div", { className: arrayClass },
-        React__default.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
-        React__default.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return React__default.createElement(React__default.Fragment, { key: i }, arrayElement(v, i)); })),
+        showTitle && React__default.createElement("div", { className: "sf-title" },
+            collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
+            fieldCaption(schema, path) || '\u00A0'),
+        !collapsed && React__default.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return React__default.createElement(React__default.Fragment, { key: i }, arrayElement(v, i)); })),
         updatable && React__default.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
 }
 
 function SchemaFormObject(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var _b = React.useState(false), collapsed = _b[0], setCollapsed = _b[1];
     var pathEl = path.length ? lodash.last(path) : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
     function renderSection(order, properties, i) {
@@ -25142,9 +25149,15 @@ function SchemaFormObject(_a) {
     if (schema['order'] && lodash.flatten(schema['order']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));
     }
+    var collapsible = (context.collapsible && path.length > 0) || false;
+    var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
+    var collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
+    var showTitle = path.length > 0;
     return (React__default.createElement("div", { className: objectClass },
-        React__default.createElement("div", { className: "sf-title" }, fieldCaption(schema, path) || '\u00A0'),
-        React__default.createElement("fieldset", { className: "sf-object-fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
+        showTitle && React__default.createElement("div", { className: "sf-title" },
+            collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
+            fieldCaption(schema, path) || '\u00A0'),
+        !collapsed && React__default.createElement("fieldset", { className: "sf-object-fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
 }
 
 var reactIs_production_min = createCommonjsModule(function (module, exports) {
@@ -27454,20 +27467,23 @@ function UploadEditor(props) {
                 .then(function () { return url; });
         });
         Promise.all(sendFilePromises)
-            .then(function (urls) { return dispatch(ValueAction.set(path, urls.join('|'))); }); // vbar character not allowed in urls unencoded
+            .then(function (urls) { return dispatch(ValueAction.set(path, lodash.union(uploaded, urls).join('|'))); }); // vbar character not allowed in urls unencoded
     };
     var message = uploaded.length ? uploaded.join('; ') : uploadMsg;
     var _c = useDropzone({ onDrop: onDrop }), getRootProps = _c.getRootProps, getInputProps = _c.getInputProps, isDragActive = _c.isDragActive;
     var urls = value ? value.split('|') : [];
+    var getExtn = function (url) { return lodash.last(url.toLowerCase().split('.')) || ''; };
     var images = function (urls) {
-        var imageUrls = urls.filter(function (url) {
-            var extn = lodash.last(url.toLowerCase().split('.')) || '';
-            return imageSpec.extensions.indexOf(extn) >= 0;
-        });
-        return (React__default.createElement("div", { className: "sf-image-container" }, imageUrls.map(function (url) {
-            return React__default.createElement("div", { className: "sf-image-crop", key: url },
-                React__default.createElement("img", { className: "sf-upload-image", src: url }));
-        })));
+        var imageUrls = urls.filter(function (url) { return imageSpec.extensions.indexOf(getExtn(url)) >= 0; });
+        var fileUrls = urls.filter(function (url) { return imageSpec.extensions.indexOf(getExtn(url)) < 0; });
+        return (React__default.createElement("div", { className: "sf-image-container" },
+            imageUrls.map(function (url) {
+                return React__default.createElement("div", { className: "sf-upload-item sf-image-crop", key: url },
+                    React__default.createElement("img", { className: "sf-upload-image", src: url }));
+            }),
+            fileUrls.map(function (url) {
+                return React__default.createElement("div", { className: "sf-upload-item sf-file-crop", key: url, title: url }, getExtn(url));
+            })));
     };
     return (React__default.createElement(SchemaFormComponentWrapper, __assign({}, props),
         React__default.createElement("div", { className: "sf-control sf-upload " + (isDragActive ? "sf-drag-over" : "") + " " + (progressBars.length ? "sf-uploading" : "") },
@@ -27560,7 +27576,7 @@ var defaultContainerMap = {
     "multiCheck": MultiSelectButtonsEditor
 };
 function SchemaForm(props) {
-    var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, componentContext = props.componentContext, components = props.components, containers = props.containers;
+    var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, collapsible = props.collapsible, componentContext = props.componentContext, components = props.components, containers = props.containers;
     var _a = React.useReducer(valueReducer, value), currentValue = _a[0], dispatch = _a[1];
     var refLastCurrentValue = React.useRef(currentValue);
     var refLastPropValue = React.useRef(value);
@@ -27621,7 +27637,7 @@ function SchemaForm(props) {
     var context = {
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
-        componentContext: componentContext
+        componentContext: componentContext, collapsible: collapsible
     };
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (React__default.createElement(ValueDispatch.Provider, { value: dispatchChange },

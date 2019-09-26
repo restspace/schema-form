@@ -45,5 +45,6 @@ export interface IContainerMap {
 export interface ISchemaFormContext {
     components: IComponentMap,
     containers: IContainerMap,
+    collapsible?: boolean,
     componentContext?: object
 }

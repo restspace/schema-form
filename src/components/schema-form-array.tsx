@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { ComponentForType } from 'components/component-for-type'
 import { ISchemaContainerProps } from 'components/schema-form-interfaces'
 import { ErrorObject } from 'error'
@@ -17,6 +17,7 @@ export function SchemaFormArray({
     context
 }: ISchemaContainerProps): React.ReactElement {
     const dispatch = useContext(ValueDispatch);
+    const [ collapsed, setCollapsed ] = useState(false);
     const itemSchema = schema['items'];
     const valueArray = (value || []) as object[];
     const pathEl = path.length ? _.last(path) : '';
@@ -53,12 +54,20 @@ export function SchemaFormArray({
         </div>);
     }
 
+    const collapsible = (context.collapsible && path.length > 0) || false;
+    const onCollapserClick = () => setCollapsed(collapsed => !collapsed);
+    const collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
+    const showTitle = path.length > 0;
+
     return (
         <div className={arrayClass}>
-            <div className="sf-title">{fieldCaption(schema, path) || '\u00A0'}</div>
-            <fieldset className="sf-array-fieldset">
+            {showTitle && <div className="sf-title">
+                {collapsible && <span className={collapserClasses} onClick={onCollapserClick}></span>}
+                {fieldCaption(schema, path) || '\u00A0'}
+            </div>}
+            {!collapsed && <fieldset className="sf-array-fieldset">
                 {valueArray.map((v, i) => <React.Fragment key={i}>{arrayElement(v, i)}</React.Fragment>)}
-            </fieldset>
+            </fieldset>}
             {updatable && <span className="sf-control-button sf-add-button" onClick={handleAdd}>+</span>}
         </div>
     );

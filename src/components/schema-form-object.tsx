@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ComponentForType } from 'components/component-for-type'
 import { ErrorObject } from 'error'
 import { fieldCaption } from 'schema/schema'
@@ -18,6 +18,7 @@ export function SchemaFormObject({
     onEditor,
     context
 }: ISchemaContainerProps): React.ReactElement {
+    const [ collapsed, setCollapsed ] = useState(false);
     const pathEl = path.length ? _.last(path) : '';
     const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
 
@@ -53,13 +54,20 @@ export function SchemaFormObject({
     if (schema['order'] && _.flatten(schema['order']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));
     }
+    const collapsible = (context.collapsible && path.length > 0) || false;
+    const onCollapserClick = () => setCollapsed(collapsed => !collapsed);
+    const collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
+    const showTitle = path.length > 0;
 
     return (
         <div className={objectClass}>
-            <div className="sf-title">{fieldCaption(schema, path) || '\u00A0'}</div>
-            <fieldset className="sf-object-fieldset">
+            {showTitle && <div className="sf-title">
+                {collapsible && <span className={collapserClasses} onClick={onCollapserClick}></span>}
+                {fieldCaption(schema, path) || '\u00A0'}
+            </div>}
+            {!collapsed && <fieldset className="sf-object-fieldset">
                 {topOrder.map((subOrder) => renderSection(subOrder, properties))}
-            </fieldset>
+            </fieldset>}
         </div>
     )
 }
