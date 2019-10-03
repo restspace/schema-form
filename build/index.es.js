@@ -24983,6 +24983,12 @@ function SchemaFormComponent(props) {
         var val = ev.target['value'];
         dispatch(ValueAction.set(path, val));
     }
+    function handleDateTimeChange(ev) {
+        if (!ev.target['validity'].valid)
+            return;
+        var val = ev.target['value'] + ':00Z';
+        dispatch(ValueAction.set(path, val));
+    }
     function handleChangeNumber(ev) {
         var str = ev.target['value'];
         if (str === '')
@@ -25004,6 +25010,7 @@ function SchemaFormComponent(props) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
         var readOnly = schema['readOnly'] || false;
         var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: onBlur };
+        var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
         var commonProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: function () { }, onInput: handleChange });
         var selectProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: handleChange });
         switch (fieldType(schema)) {
@@ -25016,7 +25023,7 @@ function SchemaFormComponent(props) {
             case "date":
                 return (React.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
             case "date-time":
-                return (React.createElement("input", __assign({}, commonProps, { type: "datetime-local", className: classes("sf-datetime") })));
+                return (React.createElement("input", __assign({}, dateTimeProps, { type: "datetime-local", className: classes("sf-datetime") })));
             case "email":
                 return (React.createElement("input", __assign({}, commonProps, { type: "email", className: classes("sf-email") })));
             case "password":
@@ -27556,6 +27563,7 @@ var defaultComponentMap = {
     "enum": SchemaFormComponent,
     "boolean": SchemaFormComponent,
     "date": SchemaFormComponent,
+    "date-time": SchemaFormComponent,
     "email": SchemaFormComponent,
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,

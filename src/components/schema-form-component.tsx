@@ -44,6 +44,12 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         dispatch(ValueAction.set(path, val));
     }
 
+    function handleDateTimeChange(ev: React.FormEvent) {
+        if (!ev.target['validity'].valid) return;
+        const val = ev.target['value'] + ':00Z';
+        dispatch(ValueAction.set(path, val));
+    }
+
     function handleChangeNumber(ev: React.FormEvent) {
         const str = ev.target['value'] as string;
         if (str === '')
@@ -68,6 +74,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur };
+        const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
         const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
         const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
 
@@ -81,7 +88,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "date-time":
-                return (<input {...commonProps} type="datetime-local" className={classes("sf-datetime")} />)
+                return (<input {...dateTimeProps} type="datetime-local" className={classes("sf-datetime")} />)
             case "email":
                 return (<input {...commonProps} type="email" className={classes("sf-email")} />)
             case "password":

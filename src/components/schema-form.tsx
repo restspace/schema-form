@@ -34,6 +34,7 @@ const defaultComponentMap: IComponentMap = {
     "enum": SchemaFormComponent,
     "boolean": SchemaFormComponent,
     "date": SchemaFormComponent,
+    "date-time": SchemaFormComponent,
     "email": SchemaFormComponent,
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,
