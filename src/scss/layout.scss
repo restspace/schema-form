@@ -43,3 +43,20 @@
 .sf-buttons {
     margin-top: 1.5em;
 }
+
+.sf-row .sf-upload {
+    overflow: hidden;
+    padding: 0;
+
+    & > div {
+        padding: 0.5em;
+    }
+
+    &.sf-drag-over {
+        background-color: #ddd;
+    }
+
+    .sf-image-crop {
+        vertical-align: middle;
+    }
+}

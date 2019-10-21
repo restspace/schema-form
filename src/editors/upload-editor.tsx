@@ -77,7 +77,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         const sendFilePromises = acceptedFiles.map(file => {
             const url = uploadContext.getFileUrl(file, path, schema).toLowerCase();
             return uploadContext.sendFile(url, file, (pc) => updateProgress(file, pc))
-                .then(() => url);
+                .then(() => encodeURI(url));
         });
         Promise.all(sendFilePromises)
             .then((urls) => dispatch(ValueAction.set(path, _.union(uploaded, urls).join('|')))); // vbar character not allowed in urls unencoded

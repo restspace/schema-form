@@ -24982,6 +24982,12 @@ var SchemaFormComponentWrapper = function (_a) {
             React__default.createElement("label", { className: "sf-caption" }),
             errors.map(function (err, idx) { return (React__default.createElement("label", { key: idx, className: "sf-error", htmlFor: name }, err.message)); }))));
 };
+var stringFilters = {
+    "html-newlines": {
+        toStore: function (uiVal) { return uiVal.replace(/\n/g, '<br/>'); },
+        toUi: function (storeVal) { return storeVal.replace(/<br\/>/g, '\n'); }
+    }
+};
 function SchemaFormComponent(props) {
     var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
     var name = path.join('.');
@@ -24989,6 +24995,18 @@ function SchemaFormComponent(props) {
     function handleChange(ev) {
         var val = ev.target['value'];
         dispatch(ValueAction.set(path, val));
+    }
+    function handleTextChange(ev) {
+        var val = ev.target['value'];
+        if (schema['filter']) {
+            val = stringFilters[schema['filter']].toStore(val);
+        }
+        dispatch(ValueAction.set(path, val));
+    }
+    function uiValue(storeVal) {
+        return schema['filter']
+            ? (storeVal ? stringFilters[schema['filter']].toUi(storeVal) : '')
+            : (storeVal || '').toString();
     }
     function handleDateTimeChange(ev) {
         if (!ev.target['validity'].valid)
@@ -25022,7 +25040,7 @@ function SchemaFormComponent(props) {
         var selectProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: handleChange });
         switch (fieldType(schema)) {
             case "string":
-                return (React__default.createElement("input", __assign({}, commonProps, { type: "text", className: classes("sf-string") })));
+                return (React__default.createElement("input", __assign({}, commonProps, { value: uiValue(value), onInput: handleTextChange, type: "text", className: classes("sf-string") })));
             case "boolean":
                 return (React__default.createElement("input", __assign({}, baseProps, { type: "checkbox", checked: (value || false), className: classes("sf-boolean sf-checkbox"), onChange: handleCheckChange })));
             case "number":
@@ -25038,7 +25056,7 @@ function SchemaFormComponent(props) {
             case "hidden":
                 return (React__default.createElement("input", __assign({}, commonProps, { type: "hidden", className: "sf-hidden" })));
             case "textarea":
-                return (React__default.createElement("textarea", __assign({}, commonProps, { className: classes("sf-textarea") })));
+                return (React__default.createElement("textarea", __assign({}, commonProps, { value: uiValue(value), onInput: handleTextChange, className: classes("sf-textarea") })));
             case "enum":
                 return (React__default.createElement("select", __assign({}, selectProps, { className: classes("sf-enum") }), schema['enum'].map(function (val) {
                     return (React__default.createElement("option", { key: val, value: val }, val));
@@ -27471,7 +27489,7 @@ function UploadEditor(props) {
         var sendFilePromises = acceptedFiles.map(function (file) {
             var url = uploadContext.getFileUrl(file, path, schema).toLowerCase();
             return uploadContext.sendFile(url, file, function (pc) { return updateProgress(file, pc); })
-                .then(function () { return url; });
+                .then(function () { return encodeURI(url); });
         });
         Promise.all(sendFilePromises)
             .then(function (urls) { return dispatch(ValueAction.set(path, lodash.union(uploaded, urls).join('|'))); }); // vbar character not allowed in urls unencoded

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext } from "react";
+import React, { FunctionComponent, useContext, useImperativeHandle } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces";
 import { fieldType } from "schema/schema";
 import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
@@ -27,6 +27,18 @@ export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps
     );
 }
 
+interface StringFilter {
+    toStore(uiVal: string): any;
+    toUi(storeVal: any): string;
+}
+
+const stringFilters: { [key: string]: StringFilter } = {
+    "html-newlines": {
+        toStore: (uiVal) => uiVal.replace(/\n/g, '<br/>'),
+        toUi: (storeVal) => storeVal.replace(/<br\/>/g, '\n')
+    }
+};
+
 export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactElement {
     const {
         schema,
@@ -42,6 +54,20 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     function handleChange(ev: React.FormEvent) {
         const val = ev.target['value'] as string;
         dispatch(ValueAction.set(path, val));
+    }
+
+    function handleTextChange(ev: React.FormEvent) {
+        let val = ev.target['value'];
+        if (schema['filter']) {
+            val = stringFilters[schema['filter'] as string].toStore(val);
+        }
+        dispatch(ValueAction.set(path, val));
+    }
+
+    function uiValue(storeVal: any): string {
+        return schema['filter']
+            ? (storeVal ? stringFilters[schema['filter']].toUi(storeVal) : '')
+            : (storeVal || '').toString();
     }
 
     function handleDateTimeChange(ev: React.FormEvent) {
@@ -80,7 +106,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
 
         switch (fieldType(schema)) {
             case "string":
-                return (<input {...commonProps} type="text" className={classes("sf-string")} />)
+                return (<input {...commonProps} value={uiValue(value)} onInput={handleTextChange} type="text" className={classes("sf-string")} />)
             case "boolean":
                 return (<input {...baseProps} type="checkbox" checked={(value || false) as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
             case "number":
@@ -96,7 +122,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "hidden":
                 return (<input {...commonProps} type="hidden" className="sf-hidden" />)
             case "textarea":
-                return (<textarea {...commonProps} className={classes("sf-textarea")} />)
+                return (<textarea {...commonProps} value={uiValue(value)} onInput={handleTextChange} className={classes("sf-textarea")} />)
             case "enum":
                 return (
                 <select {...selectProps} className={classes("sf-enum")}>
