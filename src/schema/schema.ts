@@ -38,7 +38,14 @@ export function emptyValue(schema: object): any {
     }
 }
 
-export function fieldCaption(schema: object, path: string[]): string {
+export function fieldCaption(schema: object, path: string[], value?: any): string {
+    if (value) {
+        let objectTitle = value && schema['objectTitle'] && value[schema['objectTitle']];
+        objectTitle = objectTitle || value['title'];
+        if (objectTitle) {
+            return objectTitle.toString();
+        }
+    }
     const pathEl = path && path.length ? path[path.length - 1] : '';
     const title = schema['title'];
     let idx: number | null = pathEl && pathEl.match(/^\d+$/) ? parseInt(pathEl) + 1 : null;

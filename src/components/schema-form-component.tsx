@@ -126,8 +126,8 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "enum":
                 return (
                 <select {...selectProps} className={classes("sf-enum")}>
-                    {schema['enum'].map((val: string) =>
-                        (<option key={val} value={val}>{val}</option>))}
+                    {schema['enum'].map((val: string, idx: number) =>
+                        (<option key={val || idx} value={val}>{val}</option>))}
                 </select>
                 )
         }
