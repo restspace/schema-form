@@ -40,6 +40,7 @@ const defaultComponentMap: IComponentMap = {
     "password": SchemaFormComponent,
     "textarea": SchemaFormComponent,
     "upload": UploadEditor,
+    "uploadMulti": UploadEditor,
     "radioButtons": RadioButtonsEditor
 }
 

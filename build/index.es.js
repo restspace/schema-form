@@ -27469,53 +27469,83 @@ function progressBarsReducer(state, action) {
         return __assign(__assign({}, state), (_a = {}, _a[filename] = progress, _a));
     }
 }
-function uploadedReducer(state, action) {
-    return __spreadArrays(state, [action]);
+function makeSiteRelative(url) {
+    return url.replace(/^http(s)?:\/\/[^/]+\//, '/');
+}
+function makeAbsolute(url, host) {
+    return (url.startsWith('/') ? host : '') + url;
+}
+function getHost(url) {
+    var match = url.match(/^http(s)?:\/\/[^/]+\//);
+    return match ? match[0].slice(0, -1) : '';
 }
 function UploadEditor(props) {
     var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
+    var isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     var uploadMsg = "Drag files here or click to select";
     var uploadContext = (context || {});
     var _a = useReducer(progressBarsReducer, {}), progressBars = _a[0], dispatchProgressBars = _a[1];
-    var _b = useReducer(uploadedReducer, []), uploaded = _b[0], dispatchUploaded = _b[1];
     var dispatch = useContext(ValueDispatch);
     var updateProgress = function (file, pc) {
         dispatchProgressBars([file.name, pc]);
-        if (pc === -1) {
-            dispatchUploaded(file.name);
-        }
     };
     var onDrop = function (acceptedFiles) {
+        if (!isMulti) {
+            acceptedFiles = [acceptedFiles[0]];
+        }
         var sendFilePromises = acceptedFiles.map(function (file) {
-            var url = uploadContext.getFileUrl(file, path, schema).toLowerCase();
-            return uploadContext.sendFile(url, file, function (pc) { return updateProgress(file, pc); })
-                .then(function () { return encodeURI(url); });
+            var absUrl = uploadContext.getFileUrl(file, path, schema).toLowerCase();
+            return uploadContext.sendFile(absUrl, file, function (pc) { return updateProgress(file, pc); })
+                .then(function () { return encodeURI(absUrl); });
         });
         Promise.all(sendFilePromises)
-            .then(function (urls) { return dispatch(ValueAction.set(path, lodash.union(uploaded, urls).join('|'))); }); // vbar character not allowed in urls unencoded
+            .then(function (absUrls) {
+            var saveUrls = absUrls.map(function (absUrl) { return uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl; });
+            if (isMulti) {
+                saveUrls = lodash.union(value.split('|'), saveUrls);
+            }
+            else if (value.length > 0 && uploadContext.deleteFile) {
+                var absUrl = makeAbsolute(value.split('|')[0], imageHost);
+                uploadContext.deleteFile(absUrl); // fire and forget delete request
+            }
+            dispatch(ValueAction.set(path, saveUrls.join('|')));
+        }); // vbar character not allowed in urls unencoded
     };
-    var message = uploaded.length ? uploaded.join('; ') : uploadMsg;
-    var _c = useDropzone({ onDrop: onDrop }), getRootProps = _c.getRootProps, getInputProps = _c.getInputProps, isDragActive = _c.isDragActive;
+    var _b = useDropzone({ onDrop: onDrop }), getRootProps = _b.getRootProps, getInputProps = _b.getInputProps, isDragActive = _b.isDragActive;
+    var onDelete = function (absUrl) { return function () {
+        uploadContext.deleteFile && uploadContext.deleteFile(absUrl);
+        dispatch(ValueAction.set(path, value.split('|')
+            .filter(function (v) { return makeAbsolute(v, imageHost) !== absUrl; }).join('|')));
+    }; };
     var urls = value ? value.split('|') : [];
     var getExtn = function (url) { return lodash.last(url.toLowerCase().split('.')) || ''; };
+    var imageHost = uploadContext.saveSiteRelative
+        ? getHost(uploadContext.getFileUrl(new File([], ''), path, schema))
+        : '';
     var images = function (urls) {
-        var imageUrls = urls.filter(function (url) { return imageSpec.extensions.indexOf(getExtn(url)) >= 0; });
+        var imageUrls = urls.filter(function (url) { return imageSpec.extensions.indexOf(getExtn(url)) >= 0; })
+            .map(function (url) { return makeAbsolute(url, imageHost); });
         var fileUrls = urls.filter(function (url) { return imageSpec.extensions.indexOf(getExtn(url)) < 0; });
         return (React.createElement("div", { className: "sf-image-container" },
-            imageUrls.map(function (url) {
-                return React.createElement("div", { className: "sf-upload-item sf-image-crop", key: url },
-                    React.createElement("img", { className: "sf-upload-image", src: url }));
+            imageUrls.map(function (absUrl) {
+                return React.createElement("div", { className: "sf-upload-container", key: absUrl },
+                    React.createElement("div", { className: "sf-upload-item sf-image-crop" },
+                        React.createElement("img", { className: "sf-upload-image", src: absUrl })),
+                    React.createElement("div", { className: "sf-upload-delete", onMouseDown: onDelete(absUrl) }, "x"));
             }),
             fileUrls.map(function (url) {
-                return React.createElement("div", { className: "sf-upload-item sf-file-crop", key: url, title: url }, getExtn(url));
+                return React.createElement("div", { className: "sf-upload-container", key: url },
+                    React.createElement("div", { className: "sf-upload-item sf-file-crop", key: url, title: url }, getExtn(url)),
+                    React.createElement("div", { className: "sf-upload-delete", onMouseDown: onDelete(makeAbsolute(url, imageHost)) }, "x"));
             })));
     };
     return (React.createElement(SchemaFormComponentWrapper, __assign({}, props),
         React.createElement("div", { className: "sf-control sf-upload " + (isDragActive ? "sf-drag-over" : "") + " " + (progressBars.length ? "sf-uploading" : "") },
-            React.createElement("div", __assign({}, getRootProps()),
-                React.createElement("input", __assign({}, getInputProps())),
-                urls.length ? images(urls)
-                    : (React.createElement("p", { className: 'sf-upload-message' }, message))),
+            React.createElement("div", { className: 'sf-upload-row' },
+                urls.length > 0 && images(urls),
+                React.createElement("div", __assign({}, getRootProps()),
+                    React.createElement("input", __assign({}, getInputProps())),
+                    React.createElement("p", { className: 'sf-upload-message' }, uploadMsg))),
             Object.keys(progressBars).map(function (name) {
                 return React.createElement(ProgressBar, { pc: progressBars[name], filename: name, key: name });
             }))));
@@ -27594,6 +27624,7 @@ var defaultComponentMap = {
     "password": SchemaFormComponent,
     "textarea": SchemaFormComponent,
     "upload": UploadEditor,
+    "uploadMulti": UploadEditor,
     "radioButtons": RadioButtonsEditor
 };
 var defaultContainerMap = {

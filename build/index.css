@@ -64,6 +64,38 @@
 .sf-row .sf-upload.sf-drag-over {
   background-color: #ddd;
 }
-.sf-row .sf-upload .sf-image-crop {
+.sf-row .sf-upload .sf-upload-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+.sf-row .sf-upload .sf-upload-row .sf-image-container {
+  display: flex;
+}
+.sf-row .sf-upload .sf-upload-row .sf-image-container .sf-upload-container {
+  display: flex;
+}
+.sf-row .sf-upload .sf-upload-row .sf-image-container .sf-upload-container .sf-upload-delete {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+  top: -7px;
+  left: 1px;
+}
+.sf-row .sf-upload .sf-upload-row .sf-image-container .sf-upload-container .sf-image-crop {
+  height: 40px;
+  max-width: 60px;
+  overflow: hidden;
+  display: inline-block;
   vertical-align: middle;
+}
+.sf-row .sf-upload .sf-upload-row .sf-image-container .sf-upload-container .sf-image-crop img {
+  height: 100%;
+  display: block;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.sf-row .sf-upload .sf-upload-row p {
+  margin: 0.5em;
 }

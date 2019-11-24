@@ -56,7 +56,44 @@
         background-color: #ddd;
     }
 
-    .sf-image-crop {
-        vertical-align: middle;
+    .sf-upload-row {
+        display: flex;
+        flex-wrap: wrap;
+
+        .sf-image-container {
+            display: flex;
+
+            .sf-upload-container {
+                display: flex;
+
+                .sf-upload-delete {
+                    display: inline-block;
+                    cursor: pointer;
+                    position: relative;
+                    top: -7px;
+                    left: 1px;
+                }
+
+                .sf-image-crop {
+                    height: 40px;
+                    max-width: 60px;
+                    overflow: hidden;
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                
+                .sf-image-crop img {
+                    height: 100%;
+                    display: block;
+                    position: relative;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
+            }
+        }
+        p {
+            margin: 0.5em;
+        }
     }
 }
