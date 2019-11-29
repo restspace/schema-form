@@ -25152,7 +25152,7 @@ function SchemaFormArray(_a) {
         showTitle && React__default.createElement("div", { className: "sf-title" },
             collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
             fieldCaption(schema, path) || '\u00A0'),
-        !collapsed && React__default.createElement("fieldset", { className: "sf-array-fieldset" }, valueArray.map(function (v, i) { return React__default.createElement(React__default.Fragment, { key: i }, arrayElement(v, i)); })),
+        !collapsed && React__default.createElement("div", { className: "sf-array-fieldset fieldset" }, valueArray.map(function (v, i) { return React__default.createElement(React__default.Fragment, { key: i }, arrayElement(v, i)); })),
         updatable && React__default.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
 }
 
@@ -25189,7 +25189,7 @@ function SchemaFormObject(_a) {
         showTitle && React__default.createElement("div", { className: "sf-title" },
             collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
             fieldCaption(schema, path, value) || '\u00A0'),
-        !collapsed && React__default.createElement("fieldset", { className: "sf-object-fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
+        !collapsed && React__default.createElement("div", { className: "sf-object-fieldset fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
 }
 
 var reactIs_production_min = createCommonjsModule(function (module, exports) {
@@ -27509,9 +27509,9 @@ function UploadEditor(props) {
             .then(function (absUrls) {
             var saveUrls = absUrls.map(function (absUrl) { return uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl; });
             if (isMulti) {
-                saveUrls = lodash.union(value.split('|'), saveUrls);
+                saveUrls = lodash.union((value || '').split('|'), saveUrls);
             }
-            else if (value.length > 0 && uploadContext.deleteFile) {
+            else if (value && value.length > 0 && uploadContext.deleteFile) {
                 var absUrl = makeAbsolute(value.split('|')[0], imageHost);
                 uploadContext.deleteFile(absUrl); // fire and forget delete request
             }
@@ -27521,7 +27521,7 @@ function UploadEditor(props) {
     var _b = useDropzone({ onDrop: onDrop }), getRootProps = _b.getRootProps, getInputProps = _b.getInputProps, isDragActive = _b.isDragActive;
     var onDelete = function (absUrl) { return function () {
         uploadContext.deleteFile && uploadContext.deleteFile(absUrl);
-        dispatch(ValueAction.set(path, value.split('|')
+        dispatch(ValueAction.set(path, (value || '').split('|')
             .filter(function (v) { return makeAbsolute(v, imageHost) !== absUrl; }).join('|')));
     }; };
     var urls = value ? value.split('|') : [];

@@ -65,9 +65,9 @@ export function SchemaFormObject({
                 {collapsible && <span className={collapserClasses} onClick={onCollapserClick}></span>}
                 {fieldCaption(schema, path, value) || '\u00A0'}
             </div>}
-            {!collapsed && <fieldset className="sf-object-fieldset">
+            {!collapsed && <div className="sf-object-fieldset fieldset">
                 {topOrder.map((subOrder) => renderSection(subOrder, properties))}
-            </fieldset>}
+            </div>}
         </div>
     )
 }

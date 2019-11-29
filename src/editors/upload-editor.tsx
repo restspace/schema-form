@@ -97,8 +97,8 @@ export function UploadEditor(props: ISchemaComponentProps) {
             .then((absUrls) => {
                 let saveUrls = absUrls.map(absUrl => uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl);
                 if (isMulti) {
-                    saveUrls = _.union(value.split('|'), saveUrls);
-                } else if (value.length > 0 && uploadContext.deleteFile) {
+                    saveUrls = _.union((value || '').split('|'), saveUrls);
+                } else if (value && value.length > 0 && uploadContext.deleteFile) {
                     let absUrl = makeAbsolute(value.split('|')[0], imageHost);
                     uploadContext.deleteFile(absUrl); // fire and forget delete request
                 }
@@ -110,7 +110,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
 
     const onDelete = (absUrl: string) => () => {
         uploadContext.deleteFile && uploadContext.deleteFile(absUrl);
-        dispatch(ValueAction.set(path, value.split('|')
+        dispatch(ValueAction.set(path, (value || '').split('|')
             .filter((v: string) => makeAbsolute(v, imageHost) !== absUrl).join('|'))
         );
     };

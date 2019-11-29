@@ -65,9 +65,9 @@ export function SchemaFormArray({
                 {collapsible && <span className={collapserClasses} onClick={onCollapserClick}></span>}
                 {fieldCaption(schema, path) || '\u00A0'}
             </div>}
-            {!collapsed && <fieldset className="sf-array-fieldset">
+            {!collapsed && <div className="sf-array-fieldset fieldset">
                 {valueArray.map((v, i) => <React.Fragment key={i}>{arrayElement(v, i)}</React.Fragment>)}
-            </fieldset>}
+            </div>}
             {updatable && <span className="sf-control-button sf-add-button" onClick={handleAdd}>+</span>}
         </div>
     );
