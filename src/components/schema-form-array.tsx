@@ -28,11 +28,12 @@ export function SchemaFormArray({
     const handleDelete = (path: string[]) => () => dispatch(ValueAction.delete(path));
     const handleUp = (path: string[]) => () => dispatch(ValueAction.up(path));
     const handleDown = (path: string[]) => () => dispatch(ValueAction.down(path));
+    const handleDuplicate = (path: string[]) => () => dispatch(ValueAction.duplicate(path));
     const handleAdd = () => dispatch(ValueAction.create(path, emptyValue(itemSchema)));
 
     function arrayElement(v: object, i: number) {
         const newPath = [ ...path, `${i}` ];
-        const newErrors = ErrorObject.forKey(errors, `${i}`);
+        const newErrors = ErrorObject.forKey(errors, `[${i}]`);
 
         return (
         <div className="sf-element">
@@ -50,6 +51,7 @@ export function SchemaFormArray({
                 <span className="sf-control-button sf-delete-button oi" onClick={handleDelete(newPath)}>x</span>
                 {i > 0 && <span className="sf-control-button sf-up-button oi" onClick={handleUp(newPath)}>^</span>}
                 {i < count - 1 && <span className="sf-control-button sf-down-button oi" onClick={handleDown(newPath)}>v</span>}
+                <span className="sf-control-button sf-duplication-button oi" onClick={handleDuplicate(newPath)}>+</span>
             </div>}
         </div>);
     }

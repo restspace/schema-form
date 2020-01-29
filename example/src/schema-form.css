@@ -67,7 +67,7 @@
     padding-left: 1px;
 }
 
-.sf-down-button, .sf-up-button {
+.sf-down-button, .sf-up-button, .sf-duplication-button {
     border: 1px solid #333;
     display: inline-block;
     width: 21px;

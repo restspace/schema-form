@@ -12,7 +12,7 @@ export interface IUploadEditorContext {
     saveSiteRelative: boolean;
 }
 
-export function sendFileAsBody(url: string, file: File, progress: (pc: number) => void) {
+export function sendFileAsBody(url: string, file: File, progress: (pc: number) => void, method: string = "POST") {
     return new Promise<void>((resolve, reject) => {
         try {
             const xhr = new XMLHttpRequest();
@@ -22,7 +22,7 @@ export function sendFileAsBody(url: string, file: File, progress: (pc: number) =
                 resolve();
             }
             xhr.withCredentials = true;
-            xhr.open('POST', url);
+            xhr.open(method, url);
             xhr.send(file);
         } catch(err) {
             reject(err);
@@ -97,7 +97,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
             .then((absUrls) => {
                 let saveUrls = absUrls.map(absUrl => uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl);
                 if (isMulti) {
-                    saveUrls = _.union((value || '').split('|'), saveUrls);
+                    saveUrls = _.union(value ? value.split('|') : [], saveUrls);
                 } else if (value && value.length > 0 && uploadContext.deleteFile) {
                     let absUrl = makeAbsolute(value.split('|')[0], imageHost);
                     uploadContext.deleteFile(absUrl); // fire and forget delete request

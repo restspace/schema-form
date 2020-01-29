@@ -12,7 +12,8 @@ export declare enum ValueActionType {
     Down = 2,
     Create = 3,
     Delete = 4,
-    Set = 5
+    Set = 5,
+    Duplicate = 6
 }
 export declare class ValueAction {
     type: ValueActionType;
@@ -23,6 +24,7 @@ export declare class ValueAction {
     static down(path: string[]): ValueAction;
     static delete(path: string[]): ValueAction;
     static create(path: string[], value: any): ValueAction;
+    static duplicate(path: string[]): ValueAction;
     static set(path: string[], value: any): ValueAction;
 }
 export declare function valueReducer(oldValue: object, action: ValueAction): any;

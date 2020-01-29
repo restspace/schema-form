@@ -24832,8 +24832,8 @@ function getAjv() {
 }
 function rectifyErrorPaths(errors) {
     return errors.map(function (e) { return (__assign(__assign({}, e), { dataPath: e.params['missingProperty']
-            ? e.dataPath.replace('[', '.[') + '.' + e.params['missingProperty']
-            : e.dataPath.replace('[', '.[') })); });
+            ? e.dataPath.replace(/\[/g, '.[') + '.' + e.params['missingProperty']
+            : e.dataPath.replace(/\[/g, '.[') })); });
 }
 function errorPathsToObject(errors) {
     var errorObj = new ErrorObject();
@@ -24887,6 +24887,7 @@ var ValueActionType;
     ValueActionType[ValueActionType["Create"] = 3] = "Create";
     ValueActionType[ValueActionType["Delete"] = 4] = "Delete";
     ValueActionType[ValueActionType["Set"] = 5] = "Set";
+    ValueActionType[ValueActionType["Duplicate"] = 6] = "Duplicate";
 })(ValueActionType || (ValueActionType = {}));
 var ValueAction = /** @class */ (function () {
     function ValueAction() {
@@ -24907,6 +24908,9 @@ var ValueAction = /** @class */ (function () {
     };
     ValueAction.create = function (path, value) {
         return { type: ValueActionType.Create, path: path, value: value };
+    };
+    ValueAction.duplicate = function (path) {
+        return { type: ValueActionType.Duplicate, path: path };
     };
     ValueAction.set = function (path, value) {
         return { type: ValueActionType.Set, path: path, value: value };
@@ -24954,6 +24958,14 @@ function valueReducer(oldValue, action) {
         case ValueActionType.Create: {
             var newValueArray = lodash.get(value, action.path) || [];
             lodash.set(value, action.path, __spreadArrays(newValueArray, [action.value]));
+            break;
+        }
+        case ValueActionType.Duplicate: {
+            var newValueArray = lodash.get(value, parentPath);
+            if (!isNaN(idx) && idx < newValueArray.length) {
+                newValueArray.splice(idx, 0, lodash.cloneDeep(newValueArray[idx]));
+            }
+            lodash.set(value, parentPath, newValueArray);
             break;
         }
         case ValueActionType.Set: {
@@ -25126,16 +25138,18 @@ function SchemaFormArray(_a) {
     var handleDelete = function (path) { return function () { return dispatch(ValueAction.delete(path)); }; };
     var handleUp = function (path) { return function () { return dispatch(ValueAction.up(path)); }; };
     var handleDown = function (path) { return function () { return dispatch(ValueAction.down(path)); }; };
+    var handleDuplicate = function (path) { return function () { return dispatch(ValueAction.duplicate(path)); }; };
     var handleAdd = function () { return dispatch(ValueAction.create(path, emptyValue(itemSchema))); };
     function arrayElement(v, i) {
         var newPath = __spreadArrays(path, ["" + i]);
-        var newErrors = ErrorObject.forKey(errors, "" + i);
+        var newErrors = ErrorObject.forKey(errors, "[" + i + "]");
         return (React.createElement("div", { className: "sf-element" },
             React.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React.createElement("div", { className: "sf-array-buttons" },
                 React.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(newPath) }, "x"),
                 i > 0 && React.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(newPath) }, "^"),
-                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath) }, "v"))));
+                i < count - 1 && React.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath) }, "v"),
+                React.createElement("span", { className: "sf-control-button sf-duplication-button oi", onClick: handleDuplicate(newPath) }, "+"))));
     }
     var collapsible = (context.collapsible && path.length > 0) || false;
     var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
@@ -27433,7 +27447,8 @@ function reducer(state, action) {
   }
 }
 
-function sendFileAsBody(url, file, progress) {
+function sendFileAsBody(url, file, progress, method) {
+    if (method === void 0) { method = "POST"; }
     return new Promise(function (resolve, reject) {
         try {
             var xhr_1 = new XMLHttpRequest();
@@ -27443,7 +27458,7 @@ function sendFileAsBody(url, file, progress) {
                 resolve();
             };
             xhr_1.withCredentials = true;
-            xhr_1.open('POST', url);
+            xhr_1.open(method, url);
             xhr_1.send(file);
         }
         catch (err) {
@@ -27502,7 +27517,7 @@ function UploadEditor(props) {
             .then(function (absUrls) {
             var saveUrls = absUrls.map(function (absUrl) { return uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl; });
             if (isMulti) {
-                saveUrls = lodash.union((value || '').split('|'), saveUrls);
+                saveUrls = lodash.union(value ? value.split('|') : [], saveUrls);
             }
             else if (value && value.length > 0 && uploadContext.deleteFile) {
                 var absUrl = makeAbsolute(value.split('|')[0], imageHost);

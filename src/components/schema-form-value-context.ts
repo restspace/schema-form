@@ -8,7 +8,7 @@ export enum ActionType {
 }
 
 export enum ValueActionType {
-    Replace, Up, Down, Create, Delete, Set
+    Replace, Up, Down, Create, Delete, Set, Duplicate
 }
 
 export class ValueAction {
@@ -34,6 +34,10 @@ export class ValueAction {
 
     static create(path: string[], value: any) {
         return { type: ValueActionType.Create, path, value } as ValueAction;
+    }
+
+    static duplicate(path: string[]) {
+        return { type: ValueActionType.Duplicate, path } as ValueAction;
     }
 
     static set(path: string[], value: any) {
@@ -83,6 +87,14 @@ export function valueReducer(oldValue: object, action: ValueAction) {
         case ValueActionType.Create: {
             const newValueArray = _.get(value, action.path) || [];
             _.set(value, action.path, [ ...newValueArray, action.value ]);
+            break;
+        }
+        case ValueActionType.Duplicate: {
+            const newValueArray = _.get(value, parentPath);
+            if (!isNaN(idx) && idx < newValueArray.length) {
+                newValueArray.splice(idx, 0, _.cloneDeep(newValueArray[idx]));
+            }
+            _.set(value, parentPath, newValueArray);
             break;
         }
         case ValueActionType.Set: {

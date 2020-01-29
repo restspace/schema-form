@@ -32,8 +32,8 @@ export function rectifyErrorPaths(errors: Ajv.ErrorObject[]): Ajv.ErrorObject[] 
     return errors.map((e) => ({
         ...e,
         dataPath: e.params['missingProperty']
-            ? e.dataPath.replace('[', '.[') + '.' + e.params['missingProperty'] 
-            : e.dataPath.replace('[', '.[')
+            ? e.dataPath.replace(/\[/g, '.[') + '.' + e.params['missingProperty'] 
+            : e.dataPath.replace(/\[/g, '.[')
     }));
 }
 
