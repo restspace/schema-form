@@ -25070,9 +25070,11 @@ function SchemaFormComponent(props) {
             case "textarea":
                 return (React.createElement("textarea", __assign({}, commonProps, { value: uiValue(value), onInput: handleTextChange, className: classes("sf-textarea") })));
             case "enum":
-                return (React.createElement("select", __assign({}, selectProps, { className: classes("sf-enum") }), schema['enum'].map(function (val, idx) {
-                    return (React.createElement("option", { key: val || idx, value: val }, val));
-                })));
+                return (React.createElement("select", __assign({}, selectProps, { className: classes("sf-enum") }),
+                    React.createElement("option", { key: '', value: '' }),
+                    schema['enum'].map(function (val, idx) {
+                        return (React.createElement("option", { key: val || idx, value: val }, val));
+                    })));
         }
         return (React.createElement("div", null, "No such type"));
     }
