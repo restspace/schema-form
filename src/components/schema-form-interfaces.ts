@@ -9,7 +9,7 @@ export interface ISchemaContainerProps {
     value: object,
     errors: ErrorObject | Ajv.ErrorObject[],
     onFocus(path: string[]): void,
-    onBlur(): void,
+    onBlur(path: string[]): void,
     onEditor?(data: object, path: string[]): any,
     context: ISchemaFormContext
 }
@@ -28,7 +28,7 @@ export interface ISchemaComponentProps {
     value: any,
     errors: Ajv.ErrorObject[]
     onFocus(path: string[]): void,
-    onBlur(): void,
+    onBlur(path: string[]): void,
     onEditor?(data: object, path: string[]): any,
     caption: string,
     context?: object

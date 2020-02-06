@@ -23,10 +23,14 @@ export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactEle
         onFocus(path);
     }
 
+    function handleBlur() {
+        onBlur(path);
+    }
+
     function radios(isError: boolean) {
         const classes = `sf-control sf-radio-buttons ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
-        const baseProps = { name, readOnly, onFocus: handleFocus, onBlur };
+        const baseProps = { name, readOnly, onFocus: handleFocus, onBlur: handleBlur };
         const enums = schema['enum'] as string[];
         if (!enums) throw(`In schema ${JSON.stringify(schema)}, editor: radioButtons requires an enum property`);
 

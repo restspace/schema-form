@@ -73,7 +73,7 @@ function getHost(url: string): string {
 }
 
 export function UploadEditor(props: ISchemaComponentProps) {
-    const { context, schema, path, value, errors, onFocus, onBlur } = props;
+    const { context, schema, path, value, errors, onFocus } = props;
     const isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     const uploadMsg = "Drag files here or click to select";
     const uploadContext = (context || {}) as IUploadEditorContext;

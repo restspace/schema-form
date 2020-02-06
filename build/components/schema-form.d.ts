@@ -7,7 +7,7 @@ export interface ISchemaFormProps {
     value: object;
     onChange?(value: object, path: string[], errors: ErrorObject, action?: ValueActionType): void;
     onFocus?(path: string[]): void;
-    onBlur?(): void;
+    onBlur?(path: string[]): void;
     onEditor?(data: object, path: string[]): any;
     showErrors?: boolean;
     components?: IComponentMap;

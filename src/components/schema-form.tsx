@@ -17,7 +17,7 @@ export interface ISchemaFormProps {
     value: object,
     onChange?(value: object, path: string[], errors: ErrorObject, action?: ValueActionType): void,
     onFocus?(path: string[]): void,
-    onBlur?(): void,
+    onBlur?(path: string[]): void,
     onEditor?(data: object, path: string[]): any,
     showErrors?: boolean,
     components?: IComponentMap,
@@ -123,8 +123,8 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     }, [onFocus]);
 
     const handleBlur = useCallback(
-    () => {
-        if (onBlur) onBlur();
+    (path: string[]) => {
+        if (onBlur) onBlur(path);
     }, [onBlur]);
 
     const formClass = `sf-form ${className}`;

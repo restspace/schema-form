@@ -96,10 +96,14 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         onFocus(path);
     }
 
+    function handleBlur() {
+        onBlur(path);
+    }
+
     function schemaInput(isError: boolean) {
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
-        const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur };
+        const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
         const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
         const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
         const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };

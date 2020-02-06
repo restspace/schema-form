@@ -25050,10 +25050,13 @@ function SchemaFormComponent(props) {
     function handleFocus() {
         onFocus(path);
     }
+    function handleBlur() {
+        onBlur(path);
+    }
     function schemaInput(isError) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
         var readOnly = schema['readOnly'] || false;
-        var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: onBlur };
+        var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
         var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
         var commonProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: function () { }, onInput: handleChange });
         var selectProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: handleChange });
@@ -27504,7 +27507,7 @@ function getHost(url) {
     return match ? match[0].slice(0, -1) : '';
 }
 function UploadEditor(props) {
-    var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
+    var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus;
     var isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     var uploadMsg = "Drag files here or click to select";
     var uploadContext = (context || {});
@@ -27585,10 +27588,13 @@ function RadioButtonsEditor(props) {
     function handleFocus() {
         onFocus(path);
     }
+    function handleBlur() {
+        onBlur(path);
+    }
     function radios(isError) {
         var classes = "sf-control sf-radio-buttons " + (isError && 'sf-has-error');
         var readOnly = schema['readOnly'] || false;
-        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: onBlur };
+        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: handleBlur };
         var enums = schema['enum'];
         if (!enums)
             throw ("In schema " + JSON.stringify(schema) + ", editor: radioButtons requires an enum property");
@@ -27616,10 +27622,13 @@ function MultiSelectButtonsEditor(props) {
     function handleFocus() {
         onFocus(path);
     }
+    function handleBlur() {
+        onBlur(path);
+    }
     function checks(isError) {
         var classes = "sf-control sf-check-buttons " + (isError && 'sf-has-error');
         var readOnly = schema['readOnly'] || false;
-        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: onBlur };
+        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: handleBlur };
         var enums = schema['items']['enum'];
         if (!enums || schema['type'] !== 'array') {
             throw ("In schema " + JSON.stringify(schema) + ", editor: checkButtons must be an array type with items an enum property");
@@ -27710,9 +27719,9 @@ function SchemaForm(props) {
         if (onFocus)
             onFocus(path);
     }, [onFocus]);
-    var handleBlur = React.useCallback(function () {
+    var handleBlur = React.useCallback(function (path) {
         if (onBlur)
-            onBlur();
+            onBlur(path);
     }, [onBlur]);
     var formClass = "sf-form " + className;
     var context = {
