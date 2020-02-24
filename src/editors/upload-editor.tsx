@@ -88,6 +88,30 @@ export function UploadEditor(props: ISchemaComponentProps) {
         if (!isMulti) {
             acceptedFiles = [ acceptedFiles[0] ];
         }
+
+        if (schema['maximumSize']) {
+            const overMax = acceptedFiles.filter(f => f.size > schema['maximumSize']);
+            if (overMax.length > 0) {
+                const maxKb = Math.floor(schema['maximumSize'] / 1000);
+                const overMaxNames = overMax.map(f => f.name).join(', ');
+                const fileDesc = overMax.length > 1 ? "These files are" : "This file is";
+                alert(`${fileDesc} over the maximum size of ${maxKb} KB: ${overMaxNames}`);
+                acceptedFiles = acceptedFiles.filter(f => f.size <= schema['maximumSize']);
+            }
+        }
+        if (schema['warningSize']) {
+            const overWarn = acceptedFiles.filter(f => f.size > schema['warningSize']);
+            if (overWarn.length > 0) {
+                const warnKb = Math.floor(schema['warningSize'] / 1000);
+                const overWarnNames = overWarn.map(f => f.name).join(', ');
+                const fileDesc = overWarn.length > 1 ? "These files are" : "This file is";
+                if (!confirm(`${fileDesc} over the recommended size of ${warnKb} KB: ${overWarnNames}, do you want to upload them?`)) {
+                    acceptedFiles = acceptedFiles.filter(f => f.size <= schema['warningSize']);
+                }
+            }
+        }
+        if (acceptedFiles.length === 0) return;
+
         const sendFilePromises = acceptedFiles.map(file => {
             const absUrl = uploadContext.getFileUrl(file, path, schema).toLowerCase();
             return uploadContext.sendFile(absUrl, file, (pc) => updateProgress(file, pc))

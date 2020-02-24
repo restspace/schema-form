@@ -27513,6 +27513,29 @@ function UploadEditor(props) {
         if (!isMulti) {
             acceptedFiles = [acceptedFiles[0]];
         }
+        if (schema['maximumSize']) {
+            var overMax = acceptedFiles.filter(function (f) { return f.size > schema['maximumSize']; });
+            if (overMax.length > 0) {
+                var maxKb = Math.floor(schema['maximumSize'] / 1000);
+                var overMaxNames = overMax.map(function (f) { return f.name; }).join(', ');
+                var fileDesc = overMax.length > 1 ? "These files are" : "This file is";
+                alert(fileDesc + " over the maximum size of " + maxKb + " KB: " + overMaxNames);
+                acceptedFiles = acceptedFiles.filter(function (f) { return f.size <= schema['maximumSize']; });
+            }
+        }
+        if (schema['warningSize']) {
+            var overWarn = acceptedFiles.filter(function (f) { return f.size > schema['warningSize']; });
+            if (overWarn.length > 0) {
+                var warnKb = Math.floor(schema['warningSize'] / 1000);
+                var overWarnNames = overWarn.map(function (f) { return f.name; }).join(', ');
+                var fileDesc = overWarn.length > 1 ? "These files are" : "This file is";
+                if (!confirm(fileDesc + " over the recommended size of " + warnKb + " KB: " + overWarnNames + ", do you want to upload them?")) {
+                    acceptedFiles = acceptedFiles.filter(function (f) { return f.size <= schema['warningSize']; });
+                }
+            }
+        }
+        if (acceptedFiles.length === 0)
+            return;
         var sendFilePromises = acceptedFiles.map(function (file) {
             var absUrl = uploadContext.getFileUrl(file, path, schema).toLowerCase();
             return uploadContext.sendFile(absUrl, file, function (pc) { return updateProgress(file, pc); })
