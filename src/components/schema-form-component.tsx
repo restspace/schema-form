@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useContext, useImperativeHandle } from "react";
+import React, { FunctionComponent, useContext, useImperativeHandle, useState } from "react";
 import { ISchemaComponentProps } from "components/schema-form-interfaces";
 import { fieldType } from "schema/schema";
 import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
@@ -46,10 +46,19 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         value,
         errors,
         onFocus,
-        onBlur
+        onBlur,
+        context
     } = props;
     const name = path.join('.');
     const dispatch = useContext(ValueDispatch);
+    const [ holdString, setHoldString ] = useState('');
+
+    let formatCurrency = context && context['formatCurrency'];
+    const currencySymbol = (context && context['currencySymbol']) || '$';
+    if (!formatCurrency) formatCurrency = (value?: number) => {
+        if (!value && value !== 0) return '';
+        return value === Math.round(value) ? `${currencySymbol}${value}` : `${currencySymbol}${value.toFixed(2)}`;
+    }
 
     function handleChange(ev: React.FormEvent) {
         const val = ev.target['value'] as string;
@@ -88,6 +97,23 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         }
     }
 
+    function handleCurrencyChange(ev: React.FormEvent) {
+        let str = ev.target['value'] as string;
+        if (str === '' || str == currencySymbol) {
+            setHoldString('');
+            dispatch(ValueAction.set(path, null));
+        } else {
+            const numStr = str.replace(currencySymbol, '');
+            const num = parseFloat(numStr);
+            const fmt = formatCurrency(num);
+            const fmtNoSymbol = fmt.replace(currencySymbol, '');
+            setHoldString(fmt === str || fmtNoSymbol === str ? '' : str);
+            if (!isNaN(num)) {
+                dispatch(ValueAction.set(path, num));
+            }
+        }
+    }
+
     function handleCheckChange(ev: React.ChangeEvent) {
         dispatch(ValueAction.set(path, ev.target['checked']));
     }
@@ -104,7 +130,6 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
-        const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
         const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
         const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
 
@@ -115,9 +140,14 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 return (<input {...baseProps} type="checkbox" checked={(value || false) as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
             case "number":
                 return (<input {...commonProps} type="number" className={classes("sf-number")} onInput={handleChangeNumber} />)
+            case "currency":
+                const currencyProps = { ...baseProps, value: holdString ? holdString : formatCurrency(value), onChange: () => {}, onInput: handleCurrencyChange };
+                console.log('hold string:::' + holdString);
+                return (<input {...currencyProps} type="text" className={classes("sf-currency")} />)
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "date-time":
+                const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
                 return (<input {...dateTimeProps} type="datetime-local" className={classes("sf-datetime")} />)
             case "email":
                 return (<input {...commonProps} type="email" className={classes("sf-email")} />)

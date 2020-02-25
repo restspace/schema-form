@@ -39,6 +39,7 @@ const defaultComponentMap: IComponentMap = {
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,
     "textarea": SchemaFormComponent,
+    "currency": SchemaFormComponent,
     "upload": UploadEditor,
     "uploadMulti": UploadEditor,
     "radioButtons": RadioButtonsEditor
@@ -132,6 +133,13 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext, collapsible
+    }
+
+    if (schema['currencySymbol']) {
+        context.componentContext = {
+            ...(context.componentContext || {}),
+            currencySymbol: schema['currencySymbol']
+        };
     }
 
     //console.log('FORM rendering ' + JSON.stringify(currentValue));

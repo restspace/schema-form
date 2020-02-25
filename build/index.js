@@ -25008,9 +25008,18 @@ var stringFilters = {
     }
 };
 function SchemaFormComponent(props) {
-    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur;
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur, context = props.context;
     var name = path.join('.');
     var dispatch = React.useContext(ValueDispatch);
+    var _a = React.useState(''), holdString = _a[0], setHoldString = _a[1];
+    var formatCurrency = context && context['formatCurrency'];
+    var currencySymbol = (context && context['currencySymbol']) || '$';
+    if (!formatCurrency)
+        formatCurrency = function (value) {
+            if (!value && value !== 0)
+                return '';
+            return value === Math.round(value) ? "" + currencySymbol + value : "" + currencySymbol + value.toFixed(2);
+        };
     function handleChange(ev) {
         var val = ev.target['value'];
         dispatch(ValueAction.set(path, val));
@@ -25044,6 +25053,23 @@ function SchemaFormComponent(props) {
             }
         }
     }
+    function handleCurrencyChange(ev) {
+        var str = ev.target['value'];
+        if (str === '' || str == currencySymbol) {
+            setHoldString('');
+            dispatch(ValueAction.set(path, null));
+        }
+        else {
+            var numStr = str.replace(currencySymbol, '');
+            var num = parseFloat(numStr);
+            var fmt = formatCurrency(num);
+            var fmtNoSymbol = fmt.replace(currencySymbol, '');
+            setHoldString(fmt === str || fmtNoSymbol === str ? '' : str);
+            if (!isNaN(num)) {
+                dispatch(ValueAction.set(path, num));
+            }
+        }
+    }
     function handleCheckChange(ev) {
         dispatch(ValueAction.set(path, ev.target['checked']));
     }
@@ -25057,7 +25083,6 @@ function SchemaFormComponent(props) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
         var readOnly = schema['readOnly'] || false;
         var baseProps = { name: name, readOnly: readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
-        var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
         var commonProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: function () { }, onInput: handleChange });
         var selectProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: handleChange });
         switch (fieldType(schema)) {
@@ -25067,9 +25092,14 @@ function SchemaFormComponent(props) {
                 return (React__default.createElement("input", __assign({}, baseProps, { type: "checkbox", checked: (value || false), className: classes("sf-boolean sf-checkbox"), onChange: handleCheckChange })));
             case "number":
                 return (React__default.createElement("input", __assign({}, commonProps, { type: "number", className: classes("sf-number"), onInput: handleChangeNumber })));
+            case "currency":
+                var currencyProps = __assign(__assign({}, baseProps), { value: holdString ? holdString : formatCurrency(value), onChange: function () { }, onInput: handleCurrencyChange });
+                console.log('hold string:::' + holdString);
+                return (React__default.createElement("input", __assign({}, currencyProps, { type: "text", className: classes("sf-currency") })));
             case "date":
                 return (React__default.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
             case "date-time":
+                var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
                 return (React__default.createElement("input", __assign({}, dateTimeProps, { type: "datetime-local", className: classes("sf-datetime") })));
             case "email":
                 return (React__default.createElement("input", __assign({}, commonProps, { type: "email", className: classes("sf-email") })));
@@ -27679,6 +27709,7 @@ var defaultComponentMap = {
     "hidden": SchemaFormComponent,
     "password": SchemaFormComponent,
     "textarea": SchemaFormComponent,
+    "currency": SchemaFormComponent,
     "upload": UploadEditor,
     "uploadMulti": UploadEditor,
     "radioButtons": RadioButtonsEditor
@@ -27752,6 +27783,9 @@ function SchemaForm(props) {
         containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext: componentContext, collapsible: collapsible
     };
+    if (schema['currencySymbol']) {
+        context.componentContext = __assign(__assign({}, (context.componentContext || {})), { currencySymbol: schema['currencySymbol'] });
+    }
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
     return (React__default.createElement(ValueDispatch.Provider, { value: dispatchChange },
         React__default.createElement("div", { className: formClass },
