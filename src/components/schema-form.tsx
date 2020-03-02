@@ -135,7 +135,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         componentContext, collapsible
     }
 
-    if (schema['currencySymbol']) {
+    if (schema && schema['currencySymbol']) {
         context.componentContext = {
             ...(context.componentContext || {}),
             currencySymbol: schema['currencySymbol']
@@ -143,13 +143,17 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     }
 
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
-    return (
-        <ValueDispatch.Provider value={dispatchChange}>
-            <div className={formClass}>
-                <ComponentForType schema={schema} path={[]} value={currentValue} errors={errors}
-                    onFocus={handleFocus} onBlur={handleBlur} onEditor={onEditor}
-                    context={context}/>
-            </div>
-        </ValueDispatch.Provider>
-    )
+    if (!schema) {
+        return (<></>);
+    } else {
+        return (
+            <ValueDispatch.Provider value={dispatchChange}>
+                <div className={formClass}>
+                    <ComponentForType schema={schema} path={[]} value={currentValue} errors={errors}
+                        onFocus={handleFocus} onBlur={handleBlur} onEditor={onEditor}
+                        context={context}/>
+                </div>
+            </ValueDispatch.Provider>
+        );
+    }
 }

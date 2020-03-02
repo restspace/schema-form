@@ -48,10 +48,10 @@ export function SchemaFormArray({
                 context={context}
             />
             {updatable && <div className="sf-array-buttons">
-                <span className="sf-control-button sf-delete-button oi" onClick={handleDelete(newPath)}>x</span>
-                {i > 0 && <span className="sf-control-button sf-up-button oi" onClick={handleUp(newPath)}>^</span>}
-                {i < count - 1 && <span className="sf-control-button sf-down-button oi" onClick={handleDown(newPath)}>v</span>}
-                <span className="sf-control-button sf-duplication-button oi" onClick={handleDuplicate(newPath)}>+</span>
+                <span className="sf-control-button sf-delete-button oi" onClick={handleDelete(newPath)} title="Delete">x</span>
+                {i > 0 && <span className="sf-control-button sf-up-button oi" onClick={handleUp(newPath)} title="Move up">^</span>}
+                {i < count - 1 && <span className="sf-control-button sf-down-button oi" onClick={handleDown(newPath)} title="Move down">v</span>}
+                <span className="sf-control-button sf-duplication-button oi" onClick={handleDuplicate(newPath)} title="Duplicate">+</span>
             </div>}
         </div>);
     }
@@ -70,7 +70,7 @@ export function SchemaFormArray({
             {!collapsed && <div className="sf-array-fieldset fieldset">
                 {valueArray.map((v, i) => <React.Fragment key={i}>{arrayElement(v, i)}</React.Fragment>)}
             </div>}
-            {updatable && <span className="sf-control-button sf-add-button" onClick={handleAdd}>+</span>}
+            {updatable && <span className="sf-control-button sf-add-button" onClick={handleAdd} title="Add new">+</span>}
         </div>
     );
 }

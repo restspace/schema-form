@@ -25188,10 +25188,10 @@ function SchemaFormArray(_a) {
         return (React__default.createElement("div", { className: "sf-element" },
             React__default.createElement(ComponentForType, { schema: itemSchema, path: newPath, value: v, errors: newErrors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context }),
             updatable && React__default.createElement("div", { className: "sf-array-buttons" },
-                React__default.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(newPath) }, "x"),
-                i > 0 && React__default.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(newPath) }, "^"),
-                i < count - 1 && React__default.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath) }, "v"),
-                React__default.createElement("span", { className: "sf-control-button sf-duplication-button oi", onClick: handleDuplicate(newPath) }, "+"))));
+                React__default.createElement("span", { className: "sf-control-button sf-delete-button oi", onClick: handleDelete(newPath), title: "Delete" }, "x"),
+                i > 0 && React__default.createElement("span", { className: "sf-control-button sf-up-button oi", onClick: handleUp(newPath), title: "Move up" }, "^"),
+                i < count - 1 && React__default.createElement("span", { className: "sf-control-button sf-down-button oi", onClick: handleDown(newPath), title: "Move down" }, "v"),
+                React__default.createElement("span", { className: "sf-control-button sf-duplication-button oi", onClick: handleDuplicate(newPath), title: "Duplicate" }, "+"))));
     }
     var collapsible = (context.collapsible && path.length > 0) || false;
     var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
@@ -25202,7 +25202,7 @@ function SchemaFormArray(_a) {
             collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
             fieldCaption(schema, path) || '\u00A0'),
         !collapsed && React__default.createElement("div", { className: "sf-array-fieldset fieldset" }, valueArray.map(function (v, i) { return React__default.createElement(React__default.Fragment, { key: i }, arrayElement(v, i)); })),
-        updatable && React__default.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd }, "+")));
+        updatable && React__default.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd, title: "Add new" }, "+")));
 }
 
 function SchemaFormObject(_a) {
@@ -27783,13 +27783,18 @@ function SchemaForm(props) {
         containers: Object.assign(defaultContainerMap, containers || {}),
         componentContext: componentContext, collapsible: collapsible
     };
-    if (schema['currencySymbol']) {
+    if (schema && schema['currencySymbol']) {
         context.componentContext = __assign(__assign({}, (context.componentContext || {})), { currencySymbol: schema['currencySymbol'] });
     }
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
-    return (React__default.createElement(ValueDispatch.Provider, { value: dispatchChange },
-        React__default.createElement("div", { className: formClass },
-            React__default.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context }))));
+    if (!schema) {
+        return (React__default.createElement(React__default.Fragment, null));
+    }
+    else {
+        return (React__default.createElement(ValueDispatch.Provider, { value: dispatchChange },
+            React__default.createElement("div", { className: formClass },
+                React__default.createElement(ComponentForType, { schema: schema, path: [], value: currentValue, errors: errors, onFocus: handleFocus, onBlur: handleBlur, onEditor: onEditor, context: context }))));
+    }
 }
 
 function SchemaSubmitForm(props) {
