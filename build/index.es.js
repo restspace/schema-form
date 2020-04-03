@@ -24979,12 +24979,13 @@ function valueReducer(oldValue, action) {
 }
 
 var SchemaFormComponentWrapper = function (_a) {
-    var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema;
+    var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema, isRequired = _a.isRequired;
     var isError = errors.length > 0;
-    var errorClass = isError ? "sf-has-error" : "";
+    var errorClass = isError ? "sf-has-error " : "";
+    var requiredClass = isRequired ? "sf-required" : "";
     return (React.createElement(React.Fragment, null,
         React.createElement("div", { className: "sf-row" },
-            caption && React.createElement("label", { htmlFor: name, className: "sf-caption " + errorClass },
+            caption && React.createElement("label", { htmlFor: name, className: "sf-caption " + errorClass + requiredClass },
                 caption,
                 schema['description'] && (React.createElement(React.Fragment, null,
                     React.createElement("br", null),
@@ -25001,7 +25002,7 @@ var stringFilters = {
     }
 };
 function SchemaFormComponent(props) {
-    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur, context = props.context;
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur, context = props.context, isRequired = props.isRequired;
     var name = path.join('.');
     var dispatch = useContext(ValueDispatch);
     var _a = useState(''), holdString = _a[0], setHoldString = _a[1];
@@ -25133,15 +25134,16 @@ function isEqual(p0, p1) {
     var equ = lodash.isEqual(p0.value, p1.value)
         && lodash.isEqual(p0.errors, p1.errors)
         && p0.schema === p1.schema
+        && (p0.isRequired || false) === (p1.isRequired || false)
         && p0.onBlur === p1.onBlur
         && p0.onFocus === p1.onFocus
         && p0.onEditor === p1.onEditor;
     return equ;
 }
 function SchemaFormComponentGenericInner(_a) {
-    var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
+    var schema = _a.schema, path = _a.path, value = _a.value, isRequired = _a.isRequired, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var componentProps = {
-        schema: schema, path: path, value: value, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
+        schema: schema, path: path, value: value, isRequired: isRequired, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor,
         errors: (errors || []),
         caption: fieldCaption(schema, path),
         context: context.componentContext
@@ -25203,23 +25205,24 @@ function SchemaFormObject(_a) {
     var _b = useState(false), collapsed = _b[0], setCollapsed = _b[1];
     var pathEl = path.length ? lodash.last(path) : '';
     var objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
-    function renderSection(order, properties, i) {
+    function renderSection(order, properties, requireds, i) {
         if (typeof order === 'string') {
             var _a = properties.find(function (_a) {
                 var key = _a[0], _ = _a[1];
                 return key === order;
             }) || ['', null], key = _a[0], subSchema = _a[1];
             if (key) {
-                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], errors: ErrorObject.forKey(errors, key), onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
+                return (React.createElement(ComponentForType, { schema: subSchema, path: __spreadArrays(path, [key]), value: value && value[key], isRequired: requireds && requireds.indexOf(key) >= 0, errors: ErrorObject.forKey(errors, key), onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, key: key, context: context }));
             }
         }
         else { // recurse into a section list
-            return (React.createElement("section", { key: i || 0 }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, i); })));
+            return (React.createElement("section", { key: i || 0 }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, requireds, i); })));
         }
         return React.createElement(React.Fragment, null);
     }
     var topOrder = schema['order'] || Object.keys(schema['properties']);
     var properties = Object.entries(schema['properties']);
+    var requireds = schema['required'];
     if (schema['order'] && lodash.flatten(schema['order']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));
     }
@@ -25231,7 +25234,7 @@ function SchemaFormObject(_a) {
         showTitle && React.createElement("div", { className: "sf-title" },
             collapsible && React.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
             fieldCaption(schema, path, value) || '\u00A0'),
-        !collapsed && React.createElement("div", { className: "sf-object-fieldset fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties); }))));
+        !collapsed && React.createElement("div", { className: "sf-object-fieldset fieldset" }, topOrder.map(function (subOrder) { return renderSection(subOrder, properties, requireds); }))));
 }
 
 var reactIs_production_min = createCommonjsModule(function (module, exports) {

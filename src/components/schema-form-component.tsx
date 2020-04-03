@@ -3,13 +3,14 @@ import { ISchemaComponentProps } from "components/schema-form-interfaces";
 import { fieldType } from "schema/schema";
 import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
 
-export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema }) => {
+export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired }) => {
     const isError = errors.length > 0;
-    const errorClass = isError ? "sf-has-error" : "";
+    const errorClass = isError ? "sf-has-error " : "";
+    const requiredClass = isRequired ? "sf-required" : ""
     return (
     <>
         <div className="sf-row">
-            {caption && <label htmlFor={name} className={"sf-caption " + errorClass}>
+            {caption && <label htmlFor={name} className={"sf-caption " + errorClass + requiredClass}>
                 {caption}
                 {schema['description'] && (<><br/><span className={"sf-description " + errorClass}>
                     {schema['description']}
@@ -47,7 +48,8 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         errors,
         onFocus,
         onBlur,
-        context
+        context,
+        isRequired
     } = props;
     const name = path.join('.');
     const dispatch = useContext(ValueDispatch);

@@ -22,7 +22,7 @@ export function SchemaFormObject({
     const pathEl = path.length ? _.last(path) : '';
     const objectClass = path.length === 0 ? "" : "sf-object sf-" + pathEl;
 
-    function renderSection(order: NestedList, properties: [string, unknown][], i?: number) {
+    function renderSection(order: NestedList, properties: [string, unknown][], requireds?: string[], i?: number) {
         if (typeof order === 'string') {
             const [key, subSchema] = properties.find(([key, _]) => key === order) || ['', null];
             if (key) {
@@ -31,6 +31,7 @@ export function SchemaFormObject({
                         schema={subSchema as object}
                         path={[ ...path, key ]}
                         value={value && value[key]}
+                        isRequired={requireds && requireds.indexOf(key) >= 0}
                         errors={ErrorObject.forKey(errors, key)}
                         onFocus={onFocus}
                         onBlur={onBlur}
@@ -42,7 +43,7 @@ export function SchemaFormObject({
         } else { // recurse into a section list
             return (
                 <section key={i || 0}>
-                    {order.map((subOrder, i) => renderSection(subOrder, properties, i))}
+                    {order.map((subOrder, i) => renderSection(subOrder, properties, requireds, i))}
                 </section>
             )
         }
@@ -51,6 +52,7 @@ export function SchemaFormObject({
     
     let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties']);
     let properties = Object.entries(schema['properties']);
+    let requireds = schema['required'];
     if (schema['order'] && _.flatten(schema['order']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));
     }
@@ -66,7 +68,7 @@ export function SchemaFormObject({
                 {fieldCaption(schema, path, value) || '\u00A0'}
             </div>}
             {!collapsed && <div className="sf-object-fieldset fieldset">
-                {topOrder.map((subOrder) => renderSection(subOrder, properties))}
+                {topOrder.map((subOrder) => renderSection(subOrder, properties, requireds))}
             </div>}
         </div>
     )

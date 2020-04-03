@@ -26,6 +26,7 @@ function isEqual(p0: ISchemaContainerProps, p1: ISchemaContainerProps) {
     const equ =  _.isEqual(p0.value, p1.value)
     && _.isEqual(p0.errors, p1.errors)
     && p0.schema === p1.schema
+    && (p0.isRequired || false) === (p1.isRequired || false)
     && p0.onBlur === p1.onBlur
     && p0.onFocus === p1.onFocus
     && p0.onEditor === p1.onEditor;
@@ -33,11 +34,11 @@ function isEqual(p0: ISchemaContainerProps, p1: ISchemaContainerProps) {
 }
 
 function SchemaFormComponentGenericInner({
-    schema, path, value, errors, onFocus, onBlur, onEditor, context
+    schema, path, value, isRequired, errors, onFocus, onBlur, onEditor, context
 }: ISchemaContainerProps): React.ReactElement {
 
     const componentProps: ISchemaComponentProps = {
-        schema, path, value, onFocus, onBlur, onEditor,
+        schema, path, value, isRequired, onFocus, onBlur, onEditor,
         errors: (errors || []) as Ajv.ErrorObject[],
         caption: fieldCaption(schema, path),
         context: context.componentContext

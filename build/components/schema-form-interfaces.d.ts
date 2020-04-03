@@ -5,6 +5,7 @@ export interface ISchemaContainerProps {
     schema: object;
     path: string[];
     value: object;
+    isRequired?: boolean;
     errors: ErrorObject | Ajv.ErrorObject[];
     onFocus(path: string[]): void;
     onBlur(path: string[]): void;
@@ -15,6 +16,7 @@ export interface ISchemaComponentProps {
     schema: object;
     path: string[];
     value: any;
+    isRequired?: boolean;
     errors: Ajv.ErrorObject[];
     onFocus(path: string[]): void;
     onBlur(path: string[]): void;
