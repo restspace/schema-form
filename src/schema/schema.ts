@@ -1,6 +1,8 @@
 import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility";
-import { getAjv } from "error";
+import jsonpointer from "jsonpointer";
 import _ from "lodash";
+import { ISchemaFormContext } from "components/schema-form-interfaces";
+import { SchemaContext } from "./schemaContext";
 
 export function fieldType(schema: object): string {
     let type = schema['type'];
@@ -64,6 +66,7 @@ export function nullOptionalsAllowed(schema: object): object {
 
 function nullOptionalsAllowedApply(schema: object) {
     let req : Array<string> = schema['required'] || [];
+    if (schema['$ref']) return;
     switch (schema['type']) {
         case 'object':
             for (let prop in schema['properties']) {
@@ -348,12 +351,11 @@ export function schemaHasConditional(schema: object) {
         || (schema['allOf']);
 }
 
-export function applyConditional(schema: object, val: object): object | null {
+export function applyConditional(schema: object, val: object, context: SchemaContext): object | null {
     let result: object | null = null;
     if (schema['if']) {
-        let ajv = getAjv();
-        let validate = ajv.compile(nullOptionalsAllowed(schema['if']));
-        let valid = validate(val);
+        let valid = !context.validationErrors(nullOptionalsAllowed(schema['if']), val);
+        
         let apply: any = null;
         if (valid && schema['then']) {
             apply = schema['then'];
@@ -362,22 +364,20 @@ export function applyConditional(schema: object, val: object): object | null {
         }
         if (apply) {
             // recurse into conditionals of then/else schemas
-            apply = applyConditional(apply, val) || apply;
+            apply = applyConditional(apply, val, context) || apply;
             result = conjoin(schema, apply);
         }
     }
     if (schema['anyOf']) {
         // We only select and apply subschemas which when added to the parent schema will
         // validate against the current value
-        let ajv = getAjv();
         let disjunction = null;
         for (let subSchema of <object[]>schema['anyOf']) {
             const schemaWithSubSchema = conjoin(_.omit(schema, 'anyOf'), subSchema);
             if (schemaWithSubSchema === null) continue;
 
-            let validate = ajv.compile(nullOptionalsAllowed(schemaWithSubSchema));
-            if (validate(val)) {
-                let apply = applyConditional(subSchema, val) || subSchema;
+            if (!context.validationErrors(nullOptionalsAllowed(schemaWithSubSchema), val)) {
+                let apply = applyConditional(subSchema, val, context) || subSchema;
                 disjunction = disjoin(disjunction, apply);
             }
         }
@@ -388,7 +388,7 @@ export function applyConditional(schema: object, val: object): object | null {
     if (schema['allOf']) {
         let conjunction: object | null = {};
         for (let subSchema of <object[]>schema['allOf']) {
-            let apply = applyConditional(subSchema, val) || subSchema;
+            let apply = applyConditional(subSchema, val, context) || subSchema;
             conjunction = conjoin(conjunction, apply);
         }
         if (conjunction === null)
@@ -440,5 +440,31 @@ export function applyOrder<T>(items: T[], selector: (item: T) => string, order: 
         result.push(itemMap[key]);
     }
     return result;
+}
+
+export const makeSchemaResolver = (schemas: object[], fallbackResolver?: (address: string) => object) => (address: string) => {
+    let resolution;
+    if (address.startsWith('#')) {
+        resolution = jsonpointer.get(schemas[0], address.substr(1));
+    } else if (address.startsWith('http')) {
+        resolution = schemas.find(s => s['$id'] && s['$id'] === address);
+    } else if (schemas[0]['$id']) {
+        const idSegs = schemas[0]['$id'].split('/');
+        const domain = [ idSegs.shift(), idSegs.shift() ];
+        const addressSegs = address.split('/');
+        if (idSegs[0]) {
+            idSegs.pop();
+            addressSegs.forEach(seg => {
+                if (seg === '..') {
+                    idSegs.pop();
+                } else if (seg !== '.') {
+                    idSegs.push(seg);
+                }
+            });
+            const targetAddress = domain.concat(idSegs).join('/');
+            resolution = schemas.find(s => s['$id'] && s['$id'] === targetAddress);
+        }
+    }
+    return resolution || (fallbackResolver && fallbackResolver(address));
 }
     

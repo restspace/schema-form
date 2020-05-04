@@ -7,9 +7,11 @@ export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps
     const isError = errors.length > 0;
     const errorClass = isError ? "sf-has-error " : "";
     const requiredClass = isRequired ? "sf-required" : ""
+    const outerClass = schema['className'] ? "sf-row " + schema['className'] : "sf-row";
+    const outerErrorClass = schema['className'] ? "sf-row sf-error-row " + schema["className"] + "-error" : "sf-row sf-error-row";
     return (
     <>
-        <div className="sf-row">
+        <div className={outerClass}>
             {caption && <label htmlFor={name} className={"sf-caption " + errorClass + requiredClass}>
                 {caption}
                 {schema['description'] && (<><br/><span className={"sf-description " + errorClass}>
@@ -18,7 +20,7 @@ export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps
             </label>}
             {children}
         </div>
-        {isError && <div className="sf-row sf-error-row">
+        {isError && <div className={outerErrorClass}>
             <label className="sf-caption"></label>
             {errors.map((err, idx) => (
                 <label key={idx} className="sf-error" htmlFor={name}>{err.message}</label>

@@ -1,4 +1,27 @@
 .App {
-    margin: 0 auto;
-    max-width: 800px;
+}
+
+.container {
+    display: flex;
+}
+
+.schema-input {
+    width: 33%;
+    height: 80vh;
+    border: 1px solid black;
+}
+
+.schema-input.invalid {
+    color: darkred;
+}
+
+.container .sf-form {
+    width: 33%;
+    height: 80vh;
+}
+
+.value-output {
+    width: 33%;
+    height: 80vh;
+    border: 1px solid black;
 }

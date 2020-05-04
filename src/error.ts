@@ -1,6 +1,7 @@
 import Ajv from "ajv"
 import { nullOptionalsAllowed } from "schema/schema";
-import { withoutFalsyProperties } from "utility"
+import { withoutFalsyProperties } from "utility";
+import { SchemaContext } from "schema/schemaContext";
 
 export class ErrorObject {
     [ errorName: string ]: Ajv.ErrorObject[] | ErrorObject
@@ -15,17 +16,10 @@ export class ErrorObject {
     }
 }
 
-export function validate(schema: object, value: object) {
-    let ajv = getAjv();
-    ajv.validate(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
-    const errors = errorPathsToObject(rectifyErrorPaths(ajv.errors || []));
+export function validate(schema: object, value: object, context: SchemaContext) {
+    const validationErrors = context.validationErrors(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
+    const errors = errorPathsToObject(rectifyErrorPaths(validationErrors || []));
     return errors;
-}
-
-export function getAjv(): Ajv.Ajv {
-    const ajv = new Ajv({ allErrors: true });
-    ajv.addFormat("password", (val) => true);
-    return ajv;
 }
 
 export function rectifyErrorPaths(errors: Ajv.ErrorObject[]): Ajv.ErrorObject[] {

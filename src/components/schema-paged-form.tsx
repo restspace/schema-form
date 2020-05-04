@@ -5,6 +5,7 @@ import { ErrorObject, validate } from 'error';
 import { isEmpty } from 'utility';
 import { emptyValue } from 'schema/schema';
 import _ from "lodash";
+import { SchemaContext } from 'schema/schemaContext';
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
     onSubmit?(value: object, page: number): void,
@@ -60,14 +61,14 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     function onPage(page: number) {
         setEntered(true);
         const pageKey = 'page' + props.page;
-        const errors = validate(props.schema['properties'][pageKey], value[pageKey]);
+        const errors = validate(props.schema['properties'][pageKey], value[pageKey], new SchemaContext(props.schema));
         if (props.onPage && isEmpty(errors))
             props.onPage(value, page, props.page);
     }
 
     function onSubmit() {
         setEntered(true);
-        const errors = validate(props.schema, value);
+        const errors = validate(props.schema, value, new SchemaContext(props.schema));
         if (props.onSubmit && isEmpty(errors)) {
             props.onSubmit(value, props.page);
         } else if (props.onSubmit) {

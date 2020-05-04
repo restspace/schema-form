@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { ErrorObject } from 'error';
 import _ from 'lodash';
 import { ActionType } from 'components/schema-form-value-context';
+import { SchemaContext } from 'schema/schemaContext';
 
 export interface ISchemaContainerProps {
     schema: object,
@@ -48,5 +49,6 @@ export interface ISchemaFormContext {
     components: IComponentMap,
     containers: IContainerMap,
     collapsible?: boolean,
-    componentContext?: object
+    componentContext?: object,
+    schemaContext: SchemaContext
 }

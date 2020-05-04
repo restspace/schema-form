@@ -10,10 +10,13 @@ import { UploadEditor } from "editors/upload-editor";
 import { RadioButtonsEditor } from "editors/radio-buttons-editor";
 import { MultiSelectButtonsEditor } from "editors/multi-select-buttons-editor";
 import _ from "lodash";
+import { makeSchemaResolver } from "schema/schema";
+import Ajv from "ajv";
+import { SchemaContext } from "schema/schemaContext"
 
 
 export interface ISchemaFormProps {
-    schema: object,
+    schema: object | object[],
     value: object,
     onChange?(value: object, path: string[], errors: ErrorObject, action?: ValueActionType): void,
     onFocus?(path: string[]): void,
@@ -25,7 +28,8 @@ export interface ISchemaFormProps {
     className?: string,
     changeOnBlur?: boolean,
     collapsible?: boolean,
-    componentContext?: object
+    componentContext?: object,
+    schemaResolver?(address: string): object
 }
 
 const defaultComponentMap: IComponentMap = {
@@ -67,10 +71,18 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         components,
         containers
     } = props;
+
+    const context: ISchemaFormContext = {
+        components: Object.assign(defaultComponentMap, components || {}),
+        containers: Object.assign(defaultContainerMap, containers || {}),
+        schemaContext: new SchemaContext(schema),
+        componentContext, collapsible
+    }
+
     const [currentValue, dispatch] = useReducer(valueReducer, value);
     const refLastCurrentValue = useRef(currentValue);
     const refLastPropValue = useRef(value);
-    const initErrors = () => showErrors || showErrors == undefined ? validate(schema, currentValue) : new ErrorObject();
+    const initErrors = () => showErrors || showErrors == undefined ? validate(schema, currentValue, context.schemaContext) : new ErrorObject();
     const [errors, setErrors] = useState(initErrors);
     const refShowErrors = useRef(showErrors);
     const refOnChange = useRef(onChange);
@@ -81,7 +93,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         if (showErrors || showErrors == undefined) {
             // check if value changed since last render
             if (_.isEqual(refLastCurrentValue.current, currentValue) && refShowErrors.current === showErrors) return;
-            const newErrors = validate(schema, currentValue);
+            const newErrors = validate(schema, currentValue, context.schemaContext);
             if (_.isEqual(errors, newErrors) && refShowErrors.current === showErrors) return;
             console.log("ER Updating errors:");
             console.log(_.cloneDeep(newErrors));
@@ -113,7 +125,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         const onChange = refOnChange.current;
         if (onChange && (action !== undefined || !changeOnBlur)) {
             const newValue = valueReducer(refLastCurrentValue.current, action);
-            const newErrors = validate(schema, newValue);
+            const newErrors = validate(schema, newValue, context.schemaContext);
             onChange(newValue, action.path, newErrors, action.type);
         }
     }, [ dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur ]);
@@ -129,11 +141,6 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
     }, [onBlur]);
 
     const formClass = `sf-form ${className}`;
-    const context: ISchemaFormContext = {
-        components: Object.assign(defaultComponentMap, components || {}),
-        containers: Object.assign(defaultContainerMap, containers || {}),
-        componentContext, collapsible
-    }
 
     if (schema && schema['currencySymbol']) {
         context.componentContext = {
@@ -149,7 +156,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         return (
             <ValueDispatch.Provider value={dispatchChange}>
                 <div className={formClass}>
-                    <ComponentForType schema={schema} path={[]} value={currentValue} errors={errors}
+                    <ComponentForType schema={Array.isArray(schema) ? schema[0] : schema} path={[]} value={currentValue} errors={errors}
                         onFocus={handleFocus} onBlur={handleBlur} onEditor={onEditor}
                         context={context}/>
                 </div>

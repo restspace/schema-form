@@ -3,6 +3,7 @@ import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
 import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "schema-form";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const loginSchema = {
   type: "object",
@@ -169,6 +170,57 @@ const testValuePaged = {
   }
 }
 
+function Playground() {
+  let baseSchema = null;
+  const baseSchemaInput = localStorage.getItem('schema');
+  try {
+    baseSchema = JSON.parse(baseSchemaInput);
+  } catch (er) { }
+  if (!baseSchema) {
+    baseSchema = {
+      type: "object",
+      properties: {
+        item1: { type: "string" }
+      }
+    };
+  }
+
+  const [schemaInput, setSchemaInput] = useState(JSON.stringify(baseSchema, null, 2)); 
+  const [schema, setSchema] = useState(baseSchema);
+  const [value, setValue] = useState({});
+  const [isValid, setIsValid] = useState(true);
+
+  const onChange = (e) => {
+    const newSchemaInput = e.target.value;
+    setSchemaInput(newSchemaInput);
+    try {
+      const newSchema = JSON.parse(newSchemaInput);
+      setSchema(newSchema);
+      setIsValid(true);
+      localStorage.setItem('schema', newSchemaInput);
+    } catch(e) {
+      setIsValid(false);
+    }
+  }
+
+  const valueChange = (v) => setValue(v);
+
+  return (
+    <div className='container'>
+      <textarea className={'schema-input ' + (isValid ? 'valid' : 'invalid')} value={schemaInput} onChange={onChange} />
+      <ErrorBoundary>
+        <SchemaForm schema={schema} value={value}
+          onChange={valueChange} />
+      </ErrorBoundary>
+      <div className='value-output'>
+        <pre>
+        {JSON.stringify(value, 2)}
+        </pre>
+      </div>
+    </div>
+  )
+}
+
 function Form(props) {
   const [value, setValue] = useState(testValue);
   const [valuePaged, setValuePaged] = useState(testValuePaged);
@@ -243,6 +295,7 @@ function Form(props) {
           <div onClick={() => onClick(0)}>Submit</div>
         )}
         />}
+      {props.type === "playground" && <Playground/>}
     </div>
     <div>
       {(props.type === "no submit") && <div>Value: {JSON.stringify(value)}</div>}
@@ -275,6 +328,9 @@ class App extends Component {
             <li>
               <Link to="/paged-form">Paged Form</Link>
             </li>
+            <li>
+              <Link to="/playground">Playground</Link>
+            </li>
           </ul>
         </div>
         <Router>
@@ -282,6 +338,7 @@ class App extends Component {
           <Form path="/selector" type="selector"/>
           <Form path="/single-form" type="submit"/>
           <Form path="/paged-form" type="paged"/>
+          <Form path="/playground" type="playground"/>
         </Router>
       </div>
     )

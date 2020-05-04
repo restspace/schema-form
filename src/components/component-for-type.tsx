@@ -5,11 +5,21 @@ import { ISchemaContainerProps, ISchemaComponentProps } from "components/schema-
 import _ from 'lodash';
 
 function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement {
-    const { schema, value } = props;
+    let { schema, value, context } = props;
+
+    // resolve a $ref
+    if (schema['$ref']) schema = context.schemaContext.resolver(schema['$ref']);
+    if (!schema) return <></>;
+
     const container: React.FC<ISchemaContainerProps> = props.context.containers[containerType(schema)];
 
 
-    let condSchema = applyConditional(schema, value);
+    let condSchema = null;
+    try {
+        condSchema = applyConditional(schema, value, context.schemaContext);
+    } catch (er) {
+        console.log(er);
+    }
     let mergedSchema = condSchema || schema;
 
     if (container) {

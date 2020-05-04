@@ -4,6 +4,7 @@ import { ISchemaFormProps } from 'components/schema-form';
 import { ErrorObject, validate } from 'error';
 import { isEmpty } from 'utility';
 import _ from 'lodash';
+import { SchemaContext } from 'schema/schemaContext';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): Promise<boolean>,
@@ -44,7 +45,7 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
 
     function onSubmit() {
         setSubmitted(true);
-        const newErrors = validate(schema, currentValue);
+        const newErrors = validate(schema, currentValue, new SchemaContext(schema));
         if (props.onSubmit && isEmpty(newErrors)) {
             props.onSubmit(currentValue)
                 .then((submitted) => {

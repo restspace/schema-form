@@ -1,6 +1,7 @@
 /// <reference types="react" />
 import Ajv from 'ajv';
 import { ErrorObject } from 'error';
+import { SchemaContext } from 'schema/schemaContext';
 export interface ISchemaContainerProps {
     schema: object;
     path: string[];
@@ -35,4 +36,5 @@ export interface ISchemaFormContext {
     containers: IContainerMap;
     collapsible?: boolean;
     componentContext?: object;
+    schemaContext: SchemaContext;
 }
