@@ -18232,6 +18232,15 @@ function SchemaFormArray(_a) {
         updatable && React__default.createElement("span", { className: "sf-control-button sf-add-button", onClick: handleAdd, title: "Add new" }, "+")));
 }
 
+var firstNestedString = function (list) {
+    if (typeof list === 'string') {
+        return [list, 0];
+    }
+    else {
+        var _a = firstNestedString(list[0]), item = _a[0], innerDepth = _a[1];
+        return [item, innerDepth + 1];
+    }
+};
 function SchemaFormObject(_a) {
     var schema = _a.schema, path = _a.path, value = _a.value, errors = _a.errors, onFocus = _a.onFocus, onBlur = _a.onBlur, onEditor = _a.onEditor, context = _a.context;
     var _b = React.useState(false), collapsed = _b[0], setCollapsed = _b[1];
@@ -18248,7 +18257,8 @@ function SchemaFormObject(_a) {
             }
         }
         else { // recurse into a section list
-            return (React__default.createElement("section", { key: i || 0 }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, requireds, i); })));
+            var _b = firstNestedString(order), firstKey = _b[0], depth = _b[1];
+            return (React__default.createElement("section", { key: i || 0, className: "group-" + depth + "-" + firstKey }, order.map(function (subOrder, i) { return renderSection(subOrder, properties, requireds, i); })));
         }
         return React__default.createElement(React__default.Fragment, null);
     }
@@ -27869,7 +27879,7 @@ var SchemaContext = /** @class */ (function () {
                 schema[key] = this.rootSchema['$id'] + schema[key];
             }
             else if (schema[key] !== null && typeof (schema[key]) === 'object') {
-                schema[key] = this.baseRefsOnRootInner(schema[key]);
+                this.baseRefsOnRootInner(schema[key]);
             }
         }
     };

@@ -40,7 +40,7 @@ export class SchemaContext {
             if (key === '$ref' && schema[key].startsWith('#')) {
                 schema[key] = this.rootSchema['$id'] + schema[key];
             } else if (schema[key] !== null && typeof(schema[key]) === 'object') {
-                schema[key] = this.baseRefsOnRootInner(schema[key]);
+                this.baseRefsOnRootInner(schema[key]);
             }
         }
     }

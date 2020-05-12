@@ -8,6 +8,15 @@ import _ from 'lodash';
 type NestedList = string | NestedListArray;
 interface NestedListArray extends Array<NestedList> {}
 
+const firstNestedString = (list: NestedList): [ string, number ] => {
+    if (typeof list === 'string') {
+        return [ list, 0 ];
+    } else {
+        const [ item, innerDepth ] = firstNestedString(list[0]);
+        return [ item, innerDepth + 1];
+    }
+}
+
 export function SchemaFormObject({
     schema,
     path,
@@ -41,8 +50,9 @@ export function SchemaFormObject({
                 )
             }
         } else { // recurse into a section list
+            const [ firstKey, depth ] = firstNestedString(order);
             return (
-                <section key={i || 0}>
+                <section key={i || 0} className={`group-${depth}-${firstKey}`}>
                     {order.map((subOrder, i) => renderSection(subOrder, properties, requireds, i))}
                 </section>
             )
