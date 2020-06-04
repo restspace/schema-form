@@ -9,6 +9,7 @@ import { SchemaContext } from 'schema/schemaContext';
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
     onSubmit?(value: object, page: number): void,
+    onSubmitError?(value: object, page: number, errors: ErrorObject): void,
     onPage?(value: object, page: number, previousPage: number): void,
     makeNextLink(nextPage: number, onClick: (page: number) => void): React.ReactNode,
     makePreviousLink(previousPage: number, onClick: (page: number) => void): React.ReactNode,
@@ -71,9 +72,8 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
         const errors = validate(props.schema, value, new SchemaContext(props.schema));
         if (props.onSubmit && isEmpty(errors)) {
             props.onSubmit(value, props.page);
-        } else if (props.onSubmit) {
-            console.log('+ Blocked page change from error:');
-            console.log(JSON.parse(JSON.stringify(errors)));
+        } else if (!isEmpty(errors) && props.onSubmitError) {
+            props.onSubmitError(value, props.page, errors);
         }
     }
 

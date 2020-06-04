@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useContext } from 'react';
+import React, { useState, useReducer, useContext, useEffect } from 'react';
 import { ISchemaComponentProps } from "components/schema-form-interfaces";
 import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
 import { useDropzone } from "react-dropzone";
@@ -10,6 +10,7 @@ export interface IUploadEditorContext {
     sendFile(url: string, file: File, progress: (pc: number) => void): Promise<void>;
     deleteFile?(url: string): Promise<void>;
     saveSiteRelative: boolean;
+    testState?: "uploading";
 }
 
 export function sendFileAsBody(url: string, file: File, progress: (pc: number) => void, method: string = "POST") {
@@ -76,9 +77,15 @@ export function UploadEditor(props: ISchemaComponentProps) {
     const { context, schema, path, value, errors, onFocus } = props;
     const isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     const uploadMsg = "Drag files here or click to select";
-    const uploadContext = (context || {}) as IUploadEditorContext;
+    const uploadContext = ((context && context['uploadEditor']) || {}) as IUploadEditorContext;
     const [ progressBars, dispatchProgressBars ] = useReducer(progressBarsReducer, {});
     const dispatch = useContext(ValueDispatch);
+
+    useEffect(() => {
+        if (uploadContext.testState) {
+            dispatchProgressBars([ 'test', 50 ]);
+        }
+    }, [ uploadContext.testState ]);
 
     const updateProgress = (file: File, pc: number) => {
         dispatchProgressBars([ file.name, pc ]);

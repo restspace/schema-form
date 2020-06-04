@@ -8,6 +8,7 @@ import { SchemaContext } from 'schema/schemaContext';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): Promise<boolean>,
+    onSubmitError?(value: object, error: ErrorObject): void,
     makeSubmitLink(onClick: () => void): React.ReactNode,
     onDirty?(isDirty: boolean): void,
 }
@@ -15,6 +16,7 @@ export interface ISchemaSubmitFormProps extends ISchemaFormProps {
 export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
     const { onDirty, onChange, schema, value } = props;
     const [ currentValue, setCurrentValue ] = useState(value);
+    const [ currentErrors, setCurrentErrors ] = useState(new ErrorObject());
     const [ submitted, setSubmitted ] = useState(false);
     const [ dirty, setDirty ] = useState(false);
 
@@ -29,6 +31,12 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
             console.log('value changed, set clean');
         }
     }, [value]);
+
+    useEffect(() => {
+        if (!isEmpty(currentErrors) && props.onSubmitError) {
+            props.onSubmitError(currentValue, currentErrors);
+        }
+    }, [currentErrors, submitted]);
 
     const handleChange = useCallback(
     (value: object, path: string[], errors: ErrorObject) => {
@@ -46,6 +54,7 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
     function onSubmit() {
         setSubmitted(true);
         const newErrors = validate(schema, currentValue, new SchemaContext(schema));
+        setCurrentErrors(newErrors);
         if (props.onSubmit && isEmpty(newErrors)) {
             props.onSubmit(currentValue)
                 .then((submitted) => {

@@ -59,7 +59,8 @@ export function SchemaFormArray({
     const collapsible = (context.collapsible && path.length > 0) || false;
     const onCollapserClick = () => setCollapsed(collapsed => !collapsed);
     const collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
-    const showTitle = path.length > 0;
+    const caption = fieldCaption(schema, path);
+    const showTitle = path.length > 0 && (collapsible || caption);
 
     return (
         <div className={arrayClass}>

@@ -18223,7 +18223,8 @@ function SchemaFormArray(_a) {
     var collapsible = (context.collapsible && path.length > 0) || false;
     var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
     var collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
-    var showTitle = path.length > 0;
+    var caption = fieldCaption(schema, path);
+    var showTitle = path.length > 0 && (collapsible || caption);
     return (React__default.createElement("div", { className: arrayClass },
         showTitle && React__default.createElement("div", { className: "sf-title" },
             collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
@@ -18271,7 +18272,8 @@ function SchemaFormObject(_a) {
     var collapsible = (context.collapsible && path.length > 0) || false;
     var onCollapserClick = function () { return setCollapsed(function (collapsed) { return !collapsed; }); };
     var collapserClasses = "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
-    var showTitle = path.length > 0;
+    var caption = fieldCaption(schema, path);
+    var showTitle = path.length > 0 && (collapsible || caption);
     return (React__default.createElement("div", { className: objectClass },
         showTitle && React__default.createElement("div", { className: "sf-title" },
             collapsible && React__default.createElement("span", { className: collapserClasses, onClick: onCollapserClick }),
@@ -20578,9 +20580,14 @@ function UploadEditor(props) {
     var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus;
     var isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     var uploadMsg = "Drag files here or click to select";
-    var uploadContext = (context || {});
+    var uploadContext = ((context && context['uploadEditor']) || {});
     var _a = React.useReducer(progressBarsReducer, {}), progressBars = _a[0], dispatchProgressBars = _a[1];
     var dispatch = React.useContext(ValueDispatch);
+    React.useEffect(function () {
+        if (uploadContext.testState) {
+            dispatchProgressBars(['test', 50]);
+        }
+    }, [uploadContext.testState]);
     var updateProgress = function (file, pc) {
         dispatchProgressBars([file.name, pc]);
     };
@@ -27994,8 +28001,9 @@ function SchemaForm(props) {
 function SchemaSubmitForm(props) {
     var onDirty = props.onDirty, onChange = props.onChange, schema = props.schema, value = props.value;
     var _a = React.useState(value), currentValue = _a[0], setCurrentValue = _a[1];
-    var _b = React.useState(false), submitted = _b[0], setSubmitted = _b[1];
-    var _c = React.useState(false), dirty = _c[0], setDirty = _c[1];
+    var _b = React.useState(new ErrorObject()), currentErrors = _b[0], setCurrentErrors = _b[1];
+    var _c = React.useState(false), submitted = _c[0], setSubmitted = _c[1];
+    var _d = React.useState(false), dirty = _d[0], setDirty = _d[1];
     // feed value into state when props change
     React.useEffect(function () {
         if (!lodash.isEqual(currentValue, value)) {
@@ -28007,6 +28015,11 @@ function SchemaSubmitForm(props) {
             console.log('value changed, set clean');
         }
     }, [value]);
+    React.useEffect(function () {
+        if (!isEmpty(currentErrors) && props.onSubmitError) {
+            props.onSubmitError(currentValue, currentErrors);
+        }
+    }, [currentErrors, submitted]);
     var handleChange = React.useCallback(function (value, path, errors) {
         setCurrentValue(value);
         if (!dirty && onDirty)
@@ -28021,6 +28034,7 @@ function SchemaSubmitForm(props) {
     function onSubmit() {
         setSubmitted(true);
         var newErrors = validate(schema, currentValue, new SchemaContext(schema));
+        setCurrentErrors(newErrors);
         if (props.onSubmit && isEmpty(newErrors)) {
             props.onSubmit(currentValue)
                 .then(function (submitted) {
@@ -28091,9 +28105,8 @@ function SchemaPagedForm(props) {
         if (props.onSubmit && isEmpty(errors)) {
             props.onSubmit(value, props.page);
         }
-        else if (props.onSubmit) {
-            console.log('+ Blocked page change from error:');
-            console.log(JSON.parse(JSON.stringify(errors)));
+        else if (!isEmpty(errors) && props.onSubmitError) {
+            props.onSubmitError(value, props.page, errors);
         }
     }
     var pageLast = Object.keys(props.schema['properties']).reduce(function (currCount, key) {

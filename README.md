@@ -56,7 +56,8 @@ Form generation features include the following:
 | array: items | This schema is used to render each subsection of the array. Tuple validation (where items is a list of schemas) is not supported. |
 | array: contains | Not supported except for validation |
 | array: additionalItems | Not supported |
-| array: length | Implemented only as validation |
+| array: maxItems | Implemented only as validation |
+| array: minItems | Implemented only as validation |
 | array: uniqueItems | Implemented as validation |
 | generic: title | The label of a field uses title for preference, otherwise it defaults to convering camel case into separated words e.g. initialRepeatingCost -> Initial repeating cost |
 | generic: description | Description is rendered as part of the label and can be styled differently |
@@ -102,7 +103,7 @@ Here are the built-in editors:
 | textarea | string | Renders a textarea HTML tag rather than an input for text entry |
 | currency | number | Renders a text entry box with an automatic currency label (set with the currencySymbol property on the top-level schema object). Supplies a decimal number to the output value. |
 | hidden | string | Renders a type='hidden' text box |
-| multicheck | array of enums | Renders a multi-select set of check boxes which supplies an array of values of an enum whose values correspond to the check box labels |
+| multiCheck | array of enums | Renders a multi-select set of check boxes which supplies an array of values of an enum whose values correspond to the check box labels |
 | upload | string | Renders a file upload. The behaviour of the file upload is determined by two functions set up on the componentContext prop which (see below) is an object containing customisation for components. The functions are:
 
 
