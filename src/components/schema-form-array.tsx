@@ -19,7 +19,7 @@ export function SchemaFormArray({
     const dispatch = useContext(ValueDispatch);
     const [ collapsed, setCollapsed ] = useState(false);
     const itemSchema = schema['items'];
-    const valueArray = (value || []) as object[];
+    const valueArray = Array.isArray(value) ? value as any[] : [];
     const pathEl = path.length ? _.last(path) : '';
     const arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     const count = valueArray.length;

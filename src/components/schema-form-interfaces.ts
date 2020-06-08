@@ -50,5 +50,6 @@ export interface ISchemaFormContext {
     containers: IContainerMap,
     collapsible?: boolean,
     componentContext?: object,
-    schemaContext: SchemaContext
+    schemaContext: SchemaContext,
+    outerPropsChange: boolean
 }

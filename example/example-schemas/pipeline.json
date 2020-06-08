@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+        "pipeline": {
+            "$ref": "#/definitions/pipeline"
+        },
+        "onlyLowerServices": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "pipeline"
+    ],
+    "definitions": {
+        "pipeline": {
+            "type": "array",
+            "items": {
+                "type": [
+                    "string",
+                    "array"
+                ],
+                "oneOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "$ref": "#/definitions/pipeline"
+                    }
+                ],
+                "editor": "oneOfRadio"
+            }
+        }
+    },
+    "$id": "http://restspace.io/services/pipeline"
+}

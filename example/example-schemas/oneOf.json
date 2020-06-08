@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "$id": "http://schema-form.org/test",
+    "definitions": {
+      "item2": {
+        "type": "number",
+        "className": "item2-class"
+      }
+    },
+    "properties": {
+      "things": {
+        "type": "array",
+        "items": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/item2"
+            }
+          ],
+          "editor": "oneOfRadio"
+        }
+      }
+    }
+  }

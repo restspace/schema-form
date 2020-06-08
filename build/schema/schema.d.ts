@@ -14,3 +14,4 @@ export declare function applyConditional(schema: object, val: object, context: S
 export declare function mergeOrders(order0: string[], order1: string[]): string[];
 export declare function applyOrder<T>(items: T[], selector: (item: T) => string, order: string[]): T[];
 export declare const makeSchemaResolver: (schemas: object[], fallbackResolver?: ((address: string) => object) | undefined) => (address: string) => any;
+export declare const deleteSubschemaProperties: (value: any, schema: object) => any;

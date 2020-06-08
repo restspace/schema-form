@@ -8,12 +8,13 @@ export enum ActionType {
 }
 
 export enum ValueActionType {
-    Replace, Up, Down, Create, Delete, Set, Duplicate
+    Replace, Up, Down, Create, Delete, Set, Duplicate, DeleteProperties
 }
 
 export class ValueAction {
     type: ValueActionType;
     path: string[] = [];
+    properties: string[] = [];
     value: any = null;
 
     static replace(value: any) {
@@ -30,6 +31,10 @@ export class ValueAction {
 
     static delete(path: string[]) {
         return { type: ValueActionType.Delete, path } as ValueAction;
+    }
+
+    static deleteProperties(path: string[], properties: string[]) {
+        return { type: ValueActionType.DeleteProperties, path, properties } as ValueAction;
     }
 
     static create(path: string[], value: any) {
@@ -100,6 +105,12 @@ export function valueReducer(oldValue: object, action: ValueAction) {
         case ValueActionType.Set: {
             _.set(value, action.path, action.value);
             break;
+        }
+        case ValueActionType.DeleteProperties: {
+            const obj = action.path.length ? _.get(value, action.path) : value;
+            if (obj) {
+                action.properties.forEach(prop => delete obj[prop]);
+            }
         }
     }
     console.log('VALUE update (' + ValueActionType[action.type] + '):');

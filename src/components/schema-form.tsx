@@ -13,6 +13,7 @@ import _ from "lodash";
 import { makeSchemaResolver } from "schema/schema";
 import Ajv from "ajv";
 import { SchemaContext } from "schema/schemaContext"
+import { OneOfRadioEditor } from "editors/oneOf-radio-editor"
 
 
 export interface ISchemaFormProps {
@@ -52,7 +53,8 @@ const defaultComponentMap: IComponentMap = {
 const defaultContainerMap: IContainerMap = {
     "array": SchemaFormArray,
     "object": SchemaFormObject,
-    "multiCheck": MultiSelectButtonsEditor
+    "multiCheck": MultiSelectButtonsEditor,
+    "oneOfRadio": OneOfRadioEditor
 }
 
 export default function SchemaForm(props: ISchemaFormProps): React.ReactElement {
@@ -72,10 +74,13 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         containers
     } = props;
 
+    const [isPropsChange, setIsPropsChange] = useState(true);
+
     const context: ISchemaFormContext = {
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
         schemaContext: new SchemaContext(schema),
+        outerPropsChange: isPropsChange,
         componentContext, collapsible
     }
 
@@ -108,6 +113,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         if (!_.isEqual(refLastCurrentValue.current, value)) {
             console.log("PROPS Update from props value:");
             console.log(_.cloneDeep(value));
+            setIsPropsChange(true);
             dispatch(ValueAction.replace(value));
         }
         refLastCurrentValue.current = value;
@@ -126,6 +132,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         if (onChange && (action !== undefined || !changeOnBlur)) {
             const newValue = valueReducer(refLastCurrentValue.current, action);
             const newErrors = validate(schema, newValue, context.schemaContext);
+            setIsPropsChange(false);
             onChange(newValue, action.path, newErrors, action.type);
         }
     }, [ dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur ]);

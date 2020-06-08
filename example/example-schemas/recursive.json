@@ -1,0 +1,45 @@
+{
+    "type": "object",
+    "$id": "http://schema-form.org/test",
+    "definitions": {
+      "item2": {
+        "type": "number",
+        "className": "item2-class"
+      },
+      "test": {
+        "type": "object",
+        "properties": {
+          "item1": {
+            "type": "string",
+            "const": "x"
+          }
+        },
+        "required": [
+          "item1"
+        ]
+      }
+    },
+    "properties": {
+      "item1": {
+        "type": "string"
+      },
+      "item2": {
+        "$ref": "#/definitions/item2"
+      }
+    },
+    "allOf": [
+      {
+        "if": {
+          "$ref": "#/definitions/test"
+        },
+        "then": {
+          "type": "object",
+          "properties": {
+            "item4": {
+              "$ref": "http://schema-form.org/test"
+            }
+          }
+        }
+      }
+    ]
+  }

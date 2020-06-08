@@ -13,16 +13,19 @@ export declare enum ValueActionType {
     Create = 3,
     Delete = 4,
     Set = 5,
-    Duplicate = 6
+    Duplicate = 6,
+    DeleteProperties = 7
 }
 export declare class ValueAction {
     type: ValueActionType;
     path: string[];
+    properties: string[];
     value: any;
     static replace(value: any): ValueAction;
     static up(path: string[]): ValueAction;
     static down(path: string[]): ValueAction;
     static delete(path: string[]): ValueAction;
+    static deleteProperties(path: string[], properties: string[]): ValueAction;
     static create(path: string[], value: any): ValueAction;
     static duplicate(path: string[]): ValueAction;
     static set(path: string[], value: any): ValueAction;

@@ -84,10 +84,15 @@
 
 .sf-array-fieldset > .sf-element {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .sf-array-fieldset > .sf-element > div {
     flex-grow: 1;
+}
+
+.sf-array-fieldset > .sf-element > .sf-schema-selector {
+    width: 100%;
 }
 
 .sf-array-fieldset > .sf-element > .sf-array-buttons {

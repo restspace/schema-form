@@ -17489,7 +17489,11 @@ function nullOptionalsAllowedApply(schema) {
             }
             break;
         case 'array':
-            nullOptionalsAllowedApply(schema['items']);
+            var items = schema['items'];
+            nullOptionalsAllowedApply(items);
+            if (items['oneOf'] && !items['oneOf'].some(function (subschema) { return subschema["type"] == "null"; })) {
+                items['oneOf'].push({ type: 'null' });
+            }
             break;
         default:
             if (Array.isArray(schema['type'])) {
@@ -17501,6 +17505,11 @@ function nullOptionalsAllowedApply(schema) {
                 schema['type'] = [schema['type'], 'null'];
             }
             break;
+    }
+    if (schema['definitions']) {
+        for (var defn in schema['definitions']) {
+            nullOptionalsAllowedApply(schema['definitions'][defn]);
+        }
     }
 }
 function conjoin(schema0, schema1) {
@@ -17822,6 +17831,23 @@ var makeSchemaResolver = function (schemas, fallbackResolver) { return function 
     }
     return resolution || (fallbackResolver && fallbackResolver(address));
 }; };
+var deleteSubschemaProperties = function (value, schema) {
+    var schemaType = schema['type'];
+    if (schemaType === 'object') {
+        schema['properties'].forEach(function (prop) {
+            var res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
+            if (res === null)
+                delete value[prop];
+        });
+        return value === {} ? null : value;
+    }
+    else if (schemaType === 'array') {
+        return value.map(function (item) { return deleteSubschemaProperties(item, schema['items']); }).filter(function (item) { return item !== null; });
+    }
+    else {
+        return null;
+    }
+};
 
 var ErrorObject = /** @class */ (function () {
     function ErrorObject() {
@@ -17900,10 +17926,12 @@ var ValueActionType;
     ValueActionType[ValueActionType["Delete"] = 4] = "Delete";
     ValueActionType[ValueActionType["Set"] = 5] = "Set";
     ValueActionType[ValueActionType["Duplicate"] = 6] = "Duplicate";
+    ValueActionType[ValueActionType["DeleteProperties"] = 7] = "DeleteProperties";
 })(ValueActionType || (ValueActionType = {}));
 var ValueAction = /** @class */ (function () {
     function ValueAction() {
         this.path = [];
+        this.properties = [];
         this.value = null;
     }
     ValueAction.replace = function (value) {
@@ -17917,6 +17945,9 @@ var ValueAction = /** @class */ (function () {
     };
     ValueAction.delete = function (path) {
         return { type: ValueActionType.Delete, path: path };
+    };
+    ValueAction.deleteProperties = function (path, properties) {
+        return { type: ValueActionType.DeleteProperties, path: path, properties: properties };
     };
     ValueAction.create = function (path, value) {
         return { type: ValueActionType.Create, path: path, value: value };
@@ -17983,6 +18014,12 @@ function valueReducer(oldValue, action) {
         case ValueActionType.Set: {
             lodash.set(value, action.path, action.value);
             break;
+        }
+        case ValueActionType.DeleteProperties: {
+            var obj_1 = action.path.length ? lodash.get(value, action.path) : value;
+            if (obj_1) {
+                action.properties.forEach(function (prop) { return delete obj_1[prop]; });
+            }
         }
     }
     console.log('VALUE update (' + ValueActionType[action.type] + '):');
@@ -18192,7 +18229,7 @@ function SchemaFormArray(_a) {
     var dispatch = useContext(ValueDispatch);
     var _b = useState(false), collapsed = _b[0], setCollapsed = _b[1];
     var itemSchema = schema['items'];
-    var valueArray = (value || []);
+    var valueArray = Array.isArray(value) ? value : [];
     var pathEl = path.length ? lodash.last(path) : '';
     var arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
     var count = valueArray.length;
@@ -27891,6 +27928,68 @@ var SchemaContext = /** @class */ (function () {
     return SchemaContext;
 }());
 
+function OneOfRadioEditor(props) {
+    var schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, context = props.context;
+    var name = path.join('.');
+    var _a = useState(-1), currentIdx = _a[0], setCurrentIdx = _a[1];
+    var dispatch = useContext(ValueDispatch);
+    var oneOf = schema['oneOf'];
+    useEffect(function () {
+        if (context.outerPropsChange) { // only infer chosen option if the value change is a result of a props change to the external SchemaForm
+            if (value !== null) {
+                var newIdx = 0;
+                for (var _i = 0, oneOf_1 = oneOf; _i < oneOf_1.length; _i++) {
+                    var subschema = oneOf_1[_i];
+                    var errors_1 = validate(subschema, value, context.schemaContext);
+                    if (isEmpty(errors_1)) {
+                        setCurrentIdx(newIdx);
+                        break;
+                    }
+                    newIdx++;
+                }
+                if (newIdx >= oneOf.length)
+                    newIdx = -1;
+            }
+            else {
+                setCurrentIdx(-1);
+            }
+        }
+    }, [value]);
+    var handleCheckChange = function (idx) { return function () {
+        setCurrentIdx(idx);
+        if (currentIdx >= 0) {
+            dispatch(ValueAction.set(path, deleteSubschemaProperties(value, oneOf[currentIdx])));
+        }
+    }; };
+    function handleFocus() {
+        onFocus(path);
+    }
+    function handleBlur() {
+        onBlur(path);
+    }
+    function radios(isError, currentIdx) {
+        var classes = "sf-control sf-radio-buttons " + (isError && 'sf-has-error');
+        var readOnly = schema['readOnly'] || false;
+        var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: handleBlur };
+        var opts = oneOf && oneOf.map(function (subschema, i) { return subschema['title'] || 'option ' + i.toString(); });
+        if (!opts) {
+            throw ("In schema " + JSON.stringify(schema) + ", editor: oneOfRadioEditor must be a subschema with an oneOf property");
+        }
+        return (React.createElement("div", { className: 'sf-row sf-schema-selector' },
+            React.createElement("div", { className: classes }, opts.map(function (opt, idx) {
+                return React.createElement("span", { className: "sf-radio", key: opt },
+                    React.createElement("input", __assign({}, baseProps, { id: name + '_' + idx, type: "radio", checked: idx === currentIdx, className: "sf-radio-button", onChange: handleCheckChange(idx), value: idx })),
+                    React.createElement("label", { htmlFor: name + '_' + idx }, opt));
+            }))));
+    }
+    var isError = errors.length > 0;
+    var itemSchema = currentIdx >= 0 ? oneOf[currentIdx] : null;
+    var caption = itemSchema ? fieldCaption(itemSchema, path) : '';
+    return (React.createElement(React.Fragment, null,
+        radios(isError, currentIdx),
+        itemSchema && React.createElement(ComponentForType, { schema: itemSchema, path: path, value: value, errors: errors, onFocus: onFocus, onBlur: onBlur, onEditor: onEditor, context: context })));
+}
+
 var defaultComponentMap = {
     "string": SchemaFormComponent,
     "number": SchemaFormComponent,
@@ -27910,21 +28009,24 @@ var defaultComponentMap = {
 var defaultContainerMap = {
     "array": SchemaFormArray,
     "object": SchemaFormObject,
-    "multiCheck": MultiSelectButtonsEditor
+    "multiCheck": MultiSelectButtonsEditor,
+    "oneOfRadio": OneOfRadioEditor
 };
 function SchemaForm(props) {
     var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, collapsible = props.collapsible, componentContext = props.componentContext, components = props.components, containers = props.containers;
+    var _a = useState(true), isPropsChange = _a[0], setIsPropsChange = _a[1];
     var context = {
         components: Object.assign(defaultComponentMap, components || {}),
         containers: Object.assign(defaultContainerMap, containers || {}),
         schemaContext: new SchemaContext(schema),
+        outerPropsChange: isPropsChange,
         componentContext: componentContext, collapsible: collapsible
     };
-    var _a = useReducer(valueReducer, value), currentValue = _a[0], dispatch = _a[1];
+    var _b = useReducer(valueReducer, value), currentValue = _b[0], dispatch = _b[1];
     var refLastCurrentValue = useRef(currentValue);
     var refLastPropValue = useRef(value);
     var initErrors = function () { return showErrors || showErrors == undefined ? validate(schema, currentValue, context.schemaContext) : new ErrorObject(); };
-    var _b = useState(initErrors), errors = _b[0], setErrors = _b[1];
+    var _c = useState(initErrors), errors = _c[0], setErrors = _c[1];
     var refShowErrors = useRef(showErrors);
     var refOnChange = useRef(onChange);
     // update error state with new current
@@ -27949,6 +28051,7 @@ function SchemaForm(props) {
         if (!lodash.isEqual(refLastCurrentValue.current, value)) {
             console.log("PROPS Update from props value:");
             console.log(lodash.cloneDeep(value));
+            setIsPropsChange(true);
             dispatch(ValueAction.replace(value));
         }
         refLastCurrentValue.current = value;
@@ -27965,6 +28068,7 @@ function SchemaForm(props) {
         if (onChange && (action !== undefined || !changeOnBlur)) {
             var newValue = valueReducer(refLastCurrentValue.current, action);
             var newErrors = validate(schema, newValue, context.schemaContext);
+            setIsPropsChange(false);
             onChange(newValue, action.path, newErrors, action.type);
         }
     }, [dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur]);

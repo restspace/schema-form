@@ -76,7 +76,11 @@ function nullOptionalsAllowedApply(schema: object) {
             }
             break;
         case 'array':
-            nullOptionalsAllowedApply(schema['items']);
+            const items = schema['items'];
+            nullOptionalsAllowedApply(items);
+            if (items['oneOf'] && !(items['oneOf'] as any[]).some(subschema => subschema["type"] == "null")) {
+                items['oneOf'].push({ type: 'null' });
+            }
             break;
         default:
             if (Array.isArray(schema['type'])) {
@@ -87,6 +91,11 @@ function nullOptionalsAllowedApply(schema: object) {
                 schema['type'] = [schema['type'], 'null'];
             }
             break;
+    }
+    if (schema['definitions']) {
+        for (let defn in schema['definitions']) {
+            nullOptionalsAllowedApply(schema['definitions'][defn]);
+        }
     }
 }
 
@@ -466,5 +475,20 @@ export const makeSchemaResolver = (schemas: object[], fallbackResolver?: (addres
         }
     }
     return resolution || (fallbackResolver && fallbackResolver(address));
+}
+
+export const deleteSubschemaProperties = (value: any, schema: object): any => {
+    const schemaType = schema['type'];
+    if (schemaType === 'object') {
+        (schema['properties'] as any[]).forEach(prop => {
+            const res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
+            if (res === null) delete value[prop];
+        });
+        return value === {} ? null : value;
+    } else if (schemaType === 'array') {
+        return (value as any[]).map(item => deleteSubschemaProperties(item, schema['items'])).filter((item: any) => item !== null);
+    } else {
+        return null;
+    }
 }
     

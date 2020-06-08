@@ -37,4 +37,5 @@ export interface ISchemaFormContext {
     collapsible?: boolean;
     componentContext?: object;
     schemaContext: SchemaContext;
+    outerPropsChange: boolean;
 }
