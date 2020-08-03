@@ -23,7 +23,7 @@ function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement
     let mergedSchema = condSchema || schema;
 
     if (container) {
-        return container({ ...props, schema: mergedSchema }) || (<></>)
+        return React.createElement(container, { ...props, schema: mergedSchema }) || (<></>)
     } else {
         return (<SchemaFormComponentGeneric {...props } schema={mergedSchema} />);
     }
@@ -61,7 +61,7 @@ function SchemaFormComponentGenericInner({
     
     if (component) {
         // memoize on the basis of full depth equality of props
-        return component(componentProps) || (<></>)
+        return React.createElement(component, componentProps) || (<></>)
     } else {
         console.log("Can't find editor for field type: " + fieldType(schema));
         return (<></>)

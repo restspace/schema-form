@@ -31,7 +31,7 @@ export function sendFileAsBody(url: string, file: File, progress: (pc: number) =
     });
 }
 
-export const imageSpec = { extensions: [ 'jpg', 'gif', 'png', 'svg' ] };
+export const imageSpec = { extensions: [ 'jpg', 'jpeg', 'gif', 'png', 'svg' ] };
 
 interface IProgressBarProps {
     filename: string;
@@ -78,6 +78,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
     const isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     const uploadMsg = "Drag files here or click to select";
     const uploadContext = ((context && context['uploadEditor']) || {}) as IUploadEditorContext;
+    const testState = uploadContext.testState || null;
     const [ progressBars, dispatchProgressBars ] = useReducer(progressBarsReducer, {});
     const dispatch = useContext(ValueDispatch);
 
@@ -85,7 +86,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         if (uploadContext.testState) {
             dispatchProgressBars([ 'test', 50 ]);
         }
-    }, [ uploadContext.testState ]);
+    }, [ testState ]);
 
     const updateProgress = (file: File, pc: number) => {
         dispatchProgressBars([ file.name, pc ]);

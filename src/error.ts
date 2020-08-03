@@ -1,6 +1,6 @@
 import Ajv from "ajv"
 import { nullOptionalsAllowed } from "schema/schema";
-import { withoutFalsyProperties } from "utility";
+import { withoutNoValueProperties } from "utility";
 import { SchemaContext } from "schema/schemaContext";
 
 export class ErrorObject {
@@ -17,7 +17,7 @@ export class ErrorObject {
 }
 
 export function validate(schema: object, value: object, context: SchemaContext) {
-    const validationErrors = context.validationErrors(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
+    const validationErrors = context.validationErrors(nullOptionalsAllowed(schema), withoutNoValueProperties(value));
     const errors = errorPathsToObject(rectifyErrorPaths(validationErrors || []));
     return errors;
 }

@@ -156,25 +156,25 @@ function deepCopy(obj) {
     }
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
-function withoutFalsyProperties(value) {
+function withoutNoValueProperties(value) {
     var newValue = deepCopy(value);
-    deleteFalsyProperties(newValue);
+    deleteNoValueProperties(newValue);
     return newValue;
 }
-function deleteFalsyProperties(value) {
+function deleteNoValueProperties(value) {
     if (Array.isArray(value)) {
         for (var _i = 0, value_1 = value; _i < value_1.length; _i++) {
             var item = value_1[_i];
-            deleteFalsyProperties(item);
+            deleteNoValueProperties(item);
         }
     }
     else if (typeof value == "object") {
         for (var key in value) {
-            if (!value[key]) {
+            if (!value[key] && value[key] !== 0 && value[key] !== false) {
                 delete value[key];
             }
             else {
-                deleteFalsyProperties(value[key]);
+                deleteNoValueProperties(value[key]);
             }
         }
     }
@@ -17864,7 +17864,7 @@ var ErrorObject = /** @class */ (function () {
     return ErrorObject;
 }());
 function validate(schema, value, context) {
-    var validationErrors = context.validationErrors(nullOptionalsAllowed(schema), withoutFalsyProperties(value));
+    var validationErrors = context.validationErrors(nullOptionalsAllowed(schema), withoutNoValueProperties(value));
     var errors = errorPathsToObject(rectifyErrorPaths(validationErrors || []));
     return errors;
 }
@@ -18184,7 +18184,7 @@ function ComponentForTypeInner(props) {
     }
     var mergedSchema = condSchema || schema;
     if (container) {
-        return container(__assign(__assign({}, props), { schema: mergedSchema })) || (React.createElement(React.Fragment, null));
+        return React.createElement(container, __assign(__assign({}, props), { schema: mergedSchema })) || (React.createElement(React.Fragment, null));
     }
     else {
         return (React.createElement(SchemaFormComponentGeneric, __assign({}, props, { schema: mergedSchema })));
@@ -18214,7 +18214,7 @@ function SchemaFormComponentGenericInner(_a) {
     console.log('> rendering ' + schema['type'] + ' at ' + path.join('.'));
     if (component) {
         // memoize on the basis of full depth equality of props
-        return component(componentProps) || (React.createElement(React.Fragment, null));
+        return React.createElement(component, componentProps) || (React.createElement(React.Fragment, null));
     }
     else {
         console.log("Can't find editor for field type: " + fieldType(schema));
@@ -20578,7 +20578,7 @@ function sendFileAsBody(url, file, progress, method) {
         }
     });
 }
-var imageSpec = { extensions: ['jpg', 'gif', 'png', 'svg'] };
+var imageSpec = { extensions: ['jpg', 'jpeg', 'gif', 'png', 'svg'] };
 function ProgressBar(_a) {
     var pc = _a.pc, filename = _a.filename;
     return (React.createElement("div", { className: "sf-progress" },
@@ -20611,13 +20611,14 @@ function UploadEditor(props) {
     var isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     var uploadMsg = "Drag files here or click to select";
     var uploadContext = ((context && context['uploadEditor']) || {});
+    var testState = uploadContext.testState || null;
     var _a = useReducer(progressBarsReducer, {}), progressBars = _a[0], dispatchProgressBars = _a[1];
     var dispatch = useContext(ValueDispatch);
     useEffect(function () {
         if (uploadContext.testState) {
             dispatchProgressBars(['test', 50]);
         }
-    }, [uploadContext.testState]);
+    }, [testState]);
     var updateProgress = function (file, pc) {
         dispatchProgressBars([file.name, pc]);
     };

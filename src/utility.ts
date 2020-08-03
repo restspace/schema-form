@@ -75,23 +75,23 @@ export function copySetPath(value: object, path: string[], valueAtPath: any): ob
     }
 }
 
-export function withoutFalsyProperties(value: object): object {
+export function withoutNoValueProperties(value: object): object {
     const newValue = deepCopy(value);
-    deleteFalsyProperties(newValue);
+    deleteNoValueProperties(newValue);
     return newValue;
 }
 
-function deleteFalsyProperties(value: any) {
+function deleteNoValueProperties(value: any) {
     if (Array.isArray(value)) {
         for (let item of value) {
-            deleteFalsyProperties(item);
+            deleteNoValueProperties(item);
         }
     } else if (typeof value == "object") {
         for (let key in value) {
-            if (!value[key]) {
+            if (!value[key] && value[key] !== 0 && value[key] !== false) {
                 delete value[key];
             } else {
-                deleteFalsyProperties(value[key]);
+                deleteNoValueProperties(value[key]);
             }
         }
     }
