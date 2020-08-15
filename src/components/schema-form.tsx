@@ -132,7 +132,12 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         if (onChange && (action !== undefined || !changeOnBlur)) {
             const newValue = valueReducer(refLastCurrentValue.current, action);
             const newErrors = validate(schema, newValue, context.schemaContext);
-            setIsPropsChange(false);
+            const isPropsChange = action.type === ValueActionType.Down // actions that potentially reorder fields
+                || action.type === ValueActionType.Up
+                || action.type === ValueActionType.Delete
+                || action.type === ValueActionType.DeleteProperties
+                || action.type === ValueActionType.Duplicate;
+            setIsPropsChange(isPropsChange);
             onChange(newValue, action.path, newErrors, action.type);
         }
     }, [ dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur ]);

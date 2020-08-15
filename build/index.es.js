@@ -20559,6 +20559,10 @@ function reducer(state, action) {
   }
 }
 
+var Upload = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4NCjxwYXRoIHN0eWxlPSJmaWxsOiB3aGl0ZSIgZD0iTTggMTBoLTVsOS0xMCA5IDEwaC01djEwaC04di0xMHptMTEgOXYzaC0xNHYtM2gtMnY1aDE4di01aC0yeiIvPg0KPC9zdmc+";
+
+var Link = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij4NCjxwYXRoIHN0eWxlPSJmaWxsOiB3aGl0ZSIgZD0iTTEzLjcyMyAxOC42NTRsLTMuNjEgMy42MDljLTIuMzE2IDIuMzE1LTYuMDYzIDIuMzE1LTguMzc4IDAtMS4xMi0xLjExOC0xLjczNS0yLjYwNi0xLjczNS00LjE4OCAwLTEuNTgyLjYxNS0zLjA3IDEuNzM0LTQuMTg5bDQuODY2LTQuODY1YzIuMzU1LTIuMzU1IDYuMTE0LTIuMjYyIDguMzc3IDAgLjQ1My40NTMuODEuOTczIDEuMDg5IDEuNTI3bC0xLjU5MyAxLjU5MmMtLjE4LS42MTMtLjUtMS4xODktLjk2NC0xLjY1Mi0xLjQ0OC0xLjQ0OC0zLjkzLTEuNTEtNS40MzktLjAwMWwtLjAwMS4wMDItNC44NjcgNC44NjVjLTEuNSAxLjQ5OS0xLjUgMy45NDEgMCA1LjQ0IDEuNTE3IDEuNTE3IDMuOTU4IDEuNDg4IDUuNDQyIDBsMi40MjUtMi40MjRjLjk5My4yODQgMS43OTEuMzM1IDIuNjU0LjI4NHptLjE2MS0xNi45MThsLTMuNTc0IDMuNTc2Yy44NDctLjA1IDEuNjU1IDAgMi42NTMuMjgzbDIuMzkzLTIuMzg5YzEuNDk4LTEuNTAyIDMuOTQtMS41IDUuNDQtLjAwMSAxLjUxNyAxLjUxOCAxLjQ4NiAzLjk1OSAwIDUuNDQybC00LjgzMSA0LjgzMS0uMDAzLjAwMmMtMS40MzggMS40MzctMy44ODYgMS41NTItNS40MzktLjAwMi0uNDczLS40NzQtLjc4NS0xLjA0Mi0uOTU2LTEuNjQzbC0uMDg0LjA2OC0xLjUxNyAxLjUxNWMuMjguNTU2LjYzNSAxLjA3NSAxLjA4OCAxLjUyOCAyLjI0NSAyLjI0NSA2LjAwNCAyLjM3NCA4LjM3OCAwbDQuODMyLTQuODMxYzIuMzE0LTIuMzE2IDIuMzE2LTYuMDYyLS4wMDEtOC4zNzctMi4zMTctMi4zMjEtNi4wNjctMi4zMTMtOC4zNzktLjAwMnoiLz4NCjwvc3ZnPg==";
+
 function sendFileAsBody(url, file, progress, method) {
     if (method === void 0) { method = "POST"; }
     return new Promise(function (resolve, reject) {
@@ -20608,12 +20612,13 @@ function getHost(url) {
 }
 function UploadEditor(props) {
     var context = props.context, schema = props.schema, path = props.path, value = props.value, errors = props.errors, onFocus = props.onFocus;
+    var _a = useState(false), showUrl = _a[0], setShowUrl = _a[1];
+    var _b = useReducer(progressBarsReducer, {}), progressBars = _b[0], dispatchProgressBars = _b[1];
+    var dispatch = useContext(ValueDispatch);
     var isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     var uploadMsg = "Drag files here or click to select";
     var uploadContext = ((context && context['uploadEditor']) || {});
     var testState = uploadContext.testState || null;
-    var _a = useReducer(progressBarsReducer, {}), progressBars = _a[0], dispatchProgressBars = _a[1];
-    var dispatch = useContext(ValueDispatch);
     useEffect(function () {
         if (uploadContext.testState) {
             dispatchProgressBars(['test', 50]);
@@ -20667,12 +20672,16 @@ function UploadEditor(props) {
             dispatch(ValueAction.set(path, saveUrls.join('|')));
         }); // vbar character not allowed in urls unencoded
     };
-    var _b = useDropzone({ onDrop: onDrop }), getRootProps = _b.getRootProps, getInputProps = _b.getInputProps, isDragActive = _b.isDragActive;
+    var _c = useDropzone({ onDrop: onDrop }), getRootProps = _c.getRootProps, getInputProps = _c.getInputProps, isDragActive = _c.isDragActive;
     var onDelete = function (absUrl) { return function () {
         uploadContext.deleteFile && uploadContext.deleteFile(absUrl);
         dispatch(ValueAction.set(path, (value || '').split('|')
             .filter(function (v) { return makeAbsolute(v, imageHost) !== absUrl; }).join('|')));
     }; };
+    var onTextChange = function (ev) {
+        var val = ev.target['value'];
+        dispatch(ValueAction.set(path, val));
+    };
     var urls = value ? value.split('|') : [];
     var getExtn = function (url) { return lodash.last(url.toLowerCase().split('.')) || ''; };
     var imageHost = uploadContext.saveSiteRelative
@@ -20697,14 +20706,20 @@ function UploadEditor(props) {
     };
     return (React.createElement(SchemaFormComponentWrapper, __assign({}, props),
         React.createElement("div", { className: "sf-control sf-upload " + (isDragActive ? "sf-drag-over" : "") + " " + (progressBars.length ? "sf-uploading" : "") },
-            React.createElement("div", { className: 'sf-upload-row' },
-                urls.length > 0 && images(urls),
-                React.createElement("div", __assign({}, getRootProps()),
-                    React.createElement("input", __assign({}, getInputProps())),
-                    React.createElement("p", { className: 'sf-upload-message' }, uploadMsg))),
-            Object.keys(progressBars).map(function (name) {
-                return React.createElement(ProgressBar, { pc: progressBars[name], filename: name, key: name });
-            }))));
+            showUrl ? React.createElement(React.Fragment, null,
+                React.createElement("div", { className: 'sf-upload-row' },
+                    React.createElement("input", { type: 'text', className: 'sf-upload-url', value: urls.join('|'), onInput: onTextChange })))
+                : React.createElement(React.Fragment, null,
+                    React.createElement("div", { className: 'sf-upload-row' },
+                        urls.length > 0 && images(urls),
+                        React.createElement("div", __assign({}, getRootProps()),
+                            React.createElement("input", __assign({}, getInputProps())),
+                            React.createElement("p", { className: 'sf-upload-message' }, uploadMsg))),
+                    Object.keys(progressBars).map(function (name) {
+                        return React.createElement(ProgressBar, { pc: progressBars[name], filename: name, key: name });
+                    })),
+            React.createElement("div", { className: 'sf-upload-mode', onClick: function () { return setShowUrl(!showUrl); } },
+                React.createElement("img", { src: showUrl ? Upload : Link })))));
 }
 
 function RadioButtonsEditor(props) {
@@ -28069,7 +28084,12 @@ function SchemaForm(props) {
         if (onChange && (action !== undefined || !changeOnBlur)) {
             var newValue = valueReducer(refLastCurrentValue.current, action);
             var newErrors = validate(schema, newValue, context.schemaContext);
-            setIsPropsChange(false);
+            var isPropsChange_1 = action.type === ValueActionType.Down // actions that potentially reorder fields
+                || action.type === ValueActionType.Up
+                || action.type === ValueActionType.Delete
+                || action.type === ValueActionType.DeleteProperties
+                || action.type === ValueActionType.Duplicate;
+            setIsPropsChange(isPropsChange_1);
             onChange(newValue, action.path, newErrors, action.type);
         }
     }, [dispatch, refOnChange, refLastCurrentValue, schema, changeOnBlur]);

@@ -4,6 +4,7 @@ import external from "rollup-plugin-peer-deps-external";
 import resolve from "rollup-plugin-node-resolve";
 import json from "rollup-plugin-json";
 import sass from "rollup-plugin-sass";
+import image from "rollup-plugin-img";
 
 import pkg from "./package.json";
 
@@ -24,6 +25,9 @@ export default {
     }
   ],
   plugins: [
+    image({
+      limit: 10000
+    }),
     external(),
     resolve(),
     typescript({

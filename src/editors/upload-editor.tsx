@@ -4,6 +4,8 @@ import { ValueDispatch, ValueAction } from "components/schema-form-value-context
 import { useDropzone } from "react-dropzone";
 import { SchemaFormComponentWrapper } from "components/schema-form-component";
 import _ from "lodash";
+import Upload from "./upload.svg";
+import Link from "./link.svg";
 
 export interface IUploadEditorContext {
     getFileUrl(file: File, path: string[], schema: object): string;
@@ -75,12 +77,14 @@ function getHost(url: string): string {
 
 export function UploadEditor(props: ISchemaComponentProps) {
     const { context, schema, path, value, errors, onFocus } = props;
+    const [ showUrl, setShowUrl ] = useState(false);
+    const [ progressBars, dispatchProgressBars ] = useReducer(progressBarsReducer, {});
+    const dispatch = useContext(ValueDispatch);
     const isMulti = schema['editor'].toLowerCase().indexOf('multi') >= 0;
     const uploadMsg = "Drag files here or click to select";
     const uploadContext = ((context && context['uploadEditor']) || {}) as IUploadEditorContext;
     const testState = uploadContext.testState || null;
-    const [ progressBars, dispatchProgressBars ] = useReducer(progressBarsReducer, {});
-    const dispatch = useContext(ValueDispatch);
+
 
     useEffect(() => {
         if (uploadContext.testState) {
@@ -147,6 +151,11 @@ export function UploadEditor(props: ISchemaComponentProps) {
         );
     };
 
+    const onTextChange = (ev: React.FormEvent) => {
+        let val = ev.target['value'];
+        dispatch(ValueAction.set(path, val));
+    }
+
     const urls = value ? (value as string).split('|') : [];
     const getExtn = (url: string) => _.last(url.toLowerCase().split('.')) || '';
 
@@ -183,16 +192,26 @@ export function UploadEditor(props: ISchemaComponentProps) {
     return (
         <SchemaFormComponentWrapper {...props}>
             <div className={`sf-control sf-upload ${isDragActive ? "sf-drag-over" : ""} ${progressBars.length ? "sf-uploading" : ""}`}>
-                <div className='sf-upload-row'>
-                    {urls.length > 0 && images(urls)}
-                    <div {...getRootProps()}>
-                        <input {...getInputProps()} />
-                        <p className='sf-upload-message'>{uploadMsg}</p>
+                {showUrl ? <>
+                    <div className='sf-upload-row'>
+                        <input type='text' className='sf-upload-url' value={urls.join('|')} onInput={onTextChange} />
                     </div>
+                </>
+                : <>
+                    <div className='sf-upload-row'>
+                        {urls.length > 0 && images(urls)}
+                        <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <p className='sf-upload-message'>{uploadMsg}</p>
+                        </div>
+                    </div>
+                    {Object.keys(progressBars).map(name => 
+                        <ProgressBar pc={progressBars[name]} filename={name} key={name}/>
+                    )}
+                </>}
+                <div className='sf-upload-mode' onClick={() => setShowUrl(!showUrl)}>
+                    <img src={showUrl ? Upload : Link}></img>
                 </div>
-                {Object.keys(progressBars).map(name => 
-                    <ProgressBar pc={progressBars[name]} filename={name} key={name}/>
-                )}
             </div>
         </SchemaFormComponentWrapper>
     );
