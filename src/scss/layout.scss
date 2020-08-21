@@ -47,7 +47,7 @@
 .sf-row .sf-upload {
     overflow: hidden;
     padding: 0;
-    display: flex;
+    position: relative;
 
     & > div {
         padding: 0.5em;
@@ -60,7 +60,6 @@
     .sf-upload-row {
         display: flex;
         flex-wrap: wrap;
-        flex: 1 1;
 
         .sf-image-container {
             display: flex;
@@ -100,10 +99,14 @@
 
         .sf-upload-url {
             flex: 1 1;
+            margin-right: 20px;
         }
     }
 
     .sf-upload-mode {
+        position: absolute;
+        top: 0;
+        right: 0;
         width: 1.3em;
         height: 1.3em;
         background-color: #333;
