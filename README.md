@@ -164,8 +164,8 @@ JSON schema is an extremely powerful descriptive language and this package while
 | combiner: oneOf | This is rendered as a selector which allows you to choose one of the subschemas which is then rendered as a subform |
 | combiner: not | Only supported as validation |
 | conditional: if then else | Supported by validating the current values against the 'if' schema, then conjoining the main schema with the 'then' clause if the validate, or else the 'else' clause if they don't |
-| references: $ref | Supported: can be used to refer to a schema by its $id value: this also works for a schema to refer to itself recursively. For an example see .  |
-| references: $id | Supported |
+| references: $ref | Supported: can be used to refer to a schema by its $id value: this also works for a schema to refer to itself recursively. For an example see [recursive.json](https://github.com/restspace/schema-form/blob/master/example/example-schemas/recursive.json). Also supports refering to other subschemas by path within the main schema, see [oneOf.json](https://github.com/restspace/schema-form/blob/master/example/example-schemas/oneOf.json). Won't fetch schemas by url but external schemas can be listed in the object array version of the *schema* prop. |
+| references: $id | Supported, but only at the top level of a schema, nested subschemas have to be referred to by path |
 
 ### Rendering based on combiners and conditionals
 Combiners and conditionals are a powerful means for creating conditional forms,
@@ -219,6 +219,19 @@ A default function value for 'sendFile' is provided as a named export that can b
 This posts the file as the HTTP request body.
 
 The file uploader uploads a file dropped onto its rendered area or one chosen with the file chooser. It does this immediately before the form is submitted. It shows upload progress. When the file is uploaded, the value of the field is set to the url where the file has been saved and from where it can be retrieved.
+### Custom editors
+Custom editors can be built as single React components according to certain rules and these components passed in via the *components* or *containers* props (see above for these props' details).
+
+Examples can be seen in this repo under [editors](https://github.com/restspace/schema-form/tree/master/src/editors).
+
+Editor components take a props as defined in ISchemaComponentProps (single value editors) or ISchemaContainerProps (array or object value editors) - see (schema-form-interfaces.ts)[https://github.com/restspace/schema-form/blob/master/src/components/schema-form-interfaces.ts].
+
+Generally speaking, the editor will set render itself for the value in the *value* prop. On interaction which updates the value, it reports this by dispatching an update to a context. The context is called ValueDispatch. It's reducer-style, and updates are sent to it via actions which are created using methods on ValueAction.
+
+(radio-buttons-editor.tsx)[https://github.com/restspace/schema-form/blob/master/src/editors/radio-buttons-editor.tsx] provides a good basic example for a component. Notice it wraps the rendered output in SchemaFormComponentWrapper to which all the properties are passed. This allows for standardised field rendering.
+
+(oneOf-radio-editor.tsx)[https://github.com/restspace/schema-form/blob/master/src/editors/oneOf-radio-editor.tsx] is a good container example. It recurses into its children objects using ComponentForType to render them, passing through the relevant sub value (in this case actually the original value) and sub schema.
+
 
 
 
