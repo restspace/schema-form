@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback, useRef, useReducer } from "react"
-import { ErrorObject, validate } from "error"
-import { SchemaFormComponent } from "components/schema-form-component"
-import { SchemaFormArray } from "components/schema-form-array"
-import { SchemaFormObject } from "components/schema-form-object"
-import { ComponentForType } from "components/component-for-type"
-import { IComponentMap, IContainerMap, ISchemaFormContext } from "components/schema-form-interfaces"
-import { ValueDispatch, ValueAction, valueReducer, ValueActionType } from "components/schema-form-value-context";
-import { UploadEditor } from "editors/upload-editor";
-import { RadioButtonsEditor } from "editors/radio-buttons-editor";
-import { MultiSelectButtonsEditor } from "editors/multi-select-buttons-editor";
+import { ErrorObject, validate } from "../error"
+import { SchemaFormComponent } from "./schema-form-component"
+import { SchemaFormArray } from "./schema-form-array"
+import { SchemaFormObject } from "./schema-form-object"
+import { ComponentForType } from "./component-for-type"
+import { IComponentMap, IContainerMap, ISchemaFormContext } from "./schema-form-interfaces"
+import { ValueDispatch, ValueAction, valueReducer, ValueActionType } from "./schema-form-value-context";
+import { UploadEditor } from "../editors/upload-editor";
+import { RadioButtonsEditor } from "../editors/radio-buttons-editor";
+import { MultiSelectButtonsEditor } from "../editors/multi-select-buttons-editor";
 import _ from "lodash";
-import { makeSchemaResolver } from "schema/schema";
+import { makeSchemaResolver } from "../schema/schema";
 import Ajv from "ajv";
-import { SchemaContext } from "schema/schemaContext"
-import { OneOfRadioEditor } from "editors/oneOf-radio-editor"
+import { SchemaContext } from "../schema/schemaContext"
+import { OneOfRadioEditor } from "../editors/oneOf-radio-editor"
 
 
 export interface ISchemaFormProps {

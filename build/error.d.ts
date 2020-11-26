@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import { SchemaContext } from "schema/schemaContext";
+import { SchemaContext } from "./schema/schemaContext";
 export declare class ErrorObject {
     [errorName: string]: Ajv.ErrorObject[] | ErrorObject;
     static forKey(errors: any, key: string): ErrorObject | Ajv.ErrorObject[];

@@ -131,3 +131,37 @@ function indexFromPathElement(pathEl: string): number {
     const idx = parseInt(pathEl.substring(1, pathEl.length - 1));
     return idx;
 }
+
+export function parseUrl(url: string) {
+    let urlElements = {
+        scheme: '',
+        domain: '',
+        path: '',
+        queryString: '',
+        fragment: '',
+        resourceName: '',
+        resourceExtension: ''
+    }
+    if (!url) return urlElements;
+    const urlParse = url.match(/^((https?:\/\/)([^?#/]+))?\/([^?#]*)(\?.*)?(#.*)?$/);
+    if (!urlParse) return urlElements;
+    urlElements = {
+        scheme: urlParse[2],
+        domain: urlParse[3],
+        path: urlParse[4],
+        queryString: urlParse[5],
+        fragment: urlParse[6],
+        resourceName: '',
+        resourceExtension: ''
+    }
+    urlElements.queryString = urlElements.queryString ? urlElements.queryString.substr(1) : '';
+    const pathParts = urlElements.path.split('/');
+    urlElements.resourceName = pathParts[pathParts.length - 1];
+    const rnParts = urlElements.resourceName.split('.');
+    if (rnParts.length > 1) {
+        urlElements.resourceExtension = rnParts.pop() || '';
+        urlElements.resourceName = rnParts.join('.');
+    }
+
+    return urlElements;
+}

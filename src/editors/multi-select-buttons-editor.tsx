@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
-import { ISchemaContainerProps } from "components/schema-form-interfaces"
-import { SchemaFormComponentWrapper } from "components/schema-form-component";
-import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
-import { fieldCaption } from "schema/schema";
+import { ISchemaContainerProps } from "../components/schema-form-interfaces"
+import { SchemaFormComponentWrapper } from "../components/schema-form-component";
+import { ValueDispatch, ValueAction } from "../components/schema-form-value-context";
+import { fieldCaption } from "../schema/schema";
 import Ajv from "ajv";
 import _ from "lodash";
 

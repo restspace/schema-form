@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import SchemaForm from 'components/schema-form';
-import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject, validate } from 'error';
-import { isEmpty } from 'utility';
+import SchemaForm from './schema-form';
+import { ISchemaFormProps } from './schema-form';
+import { ErrorObject, validate } from '../error';
+import { isEmpty } from '../utility';
 import _ from 'lodash';
-import { SchemaContext } from 'schema/schemaContext';
+import { SchemaContext } from '../schema/schemaContext';
 
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): Promise<boolean>,

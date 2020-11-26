@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import Ajv from 'ajv';
-import { ErrorObject } from 'error';
-import { SchemaContext } from 'schema/schemaContext';
+import { ErrorObject } from '../error';
+import { SchemaContext } from '../schema/schemaContext';
 export interface ISchemaContainerProps {
     schema: object;
     path: string[];

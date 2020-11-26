@@ -1,7 +1,7 @@
 import React from "react"
-import { fieldType, fieldCaption, containerType, applyConditional } from "schema/schema"
+import { fieldType, fieldCaption, containerType, applyConditional } from "../schema/schema"
 import Ajv from "ajv"
-import { ISchemaContainerProps, ISchemaComponentProps } from "components/schema-form-interfaces"
+import { ISchemaContainerProps, ISchemaComponentProps } from "../components/schema-form-interfaces"
 import _ from 'lodash';
 
 function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement {

@@ -1,6 +1,6 @@
 {
   "name": "@lynicon/schema-form",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
@@ -15,6 +15,7 @@
     "json schema"
   ],
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "module": "build/index.es.js",
   "jsnext:main": "build/index.es.js",
   "files": [
@@ -35,6 +36,7 @@
     "@types/react": "^16.8.24",
     "@types/react-dom": "^16.8.5",
     "@types/react-test-renderer": "^16.8.3",
+    "@types/jest": "^24.0.17",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
     "react-scripts-ts": "^3.1.0",
@@ -44,7 +46,7 @@
     "rollup-plugin-img": "^1.1.0",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.3",
     "rollup-plugin-sass": "^1.2.2",
     "rollup-plugin-typescript2": "^0.22.1",
     "typescript": "^3.5.3"
@@ -54,7 +56,6 @@
     "react-dom": "^16.8.6"
   },
   "dependencies": {
-    "@types/jest": "^24.0.17",
     "@types/jsonpointer": "^4.0.0",
     "@types/lodash": "^4.14.138",
     "ajv": "^6.10.2",

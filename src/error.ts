@@ -1,7 +1,7 @@
 import Ajv from "ajv"
-import { nullOptionalsAllowed } from "schema/schema";
-import { withoutNoValueProperties } from "utility";
-import { SchemaContext } from "schema/schemaContext";
+import { nullOptionalsAllowed } from "./schema/schema";
+import { withoutNoValueProperties } from "./utility";
+import { SchemaContext } from "./schema/schemaContext";
 
 export class ErrorObject {
     [ errorName: string ]: Ajv.ErrorObject[] | ErrorObject

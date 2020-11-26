@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import { ISchemaComponentProps } from "components/schema-form-interfaces"
-import { SchemaFormComponentWrapper } from "components/schema-form-component";
-import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
+import { ISchemaComponentProps } from "../components/schema-form-interfaces"
+import { SchemaFormComponentWrapper } from "../components/schema-form-component";
+import { ValueDispatch, ValueAction } from "../components/schema-form-value-context";
 
 export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactElement {
     const {

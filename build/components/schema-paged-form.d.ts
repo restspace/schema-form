@@ -1,6 +1,6 @@
 import React from 'react';
-import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject } from 'error';
+import { ISchemaFormProps } from './schema-form';
+import { ErrorObject } from '../error';
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
     onSubmit?(value: object, page: number): void;
     onSubmitError?(value: object, page: number, errors: ErrorObject): void;

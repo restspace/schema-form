@@ -1,11 +1,12 @@
 import React, { useState, useReducer, useContext, useEffect } from 'react';
-import { ISchemaComponentProps } from "components/schema-form-interfaces";
-import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
+import { ISchemaComponentProps } from "../components/schema-form-interfaces";
+import { ValueDispatch, ValueAction } from "../components/schema-form-value-context";
 import { useDropzone } from "react-dropzone";
-import { SchemaFormComponentWrapper } from "components/schema-form-component";
+import { SchemaFormComponentWrapper } from "../components/schema-form-component";
 import _ from "lodash";
 import Upload from "./upload.svg";
 import Link from "./link.svg";
+import { parseUrl } from '../utility';
 
 export interface IUploadEditorContext {
     getFileUrl(file: File, path: string[], schema: object): string;
@@ -122,6 +123,20 @@ export function UploadEditor(props: ISchemaComponentProps) {
                 }
             }
         }
+        if (schema['acceptedExtensions']) {
+            const getExt = (name: string) => {
+                const parts = name.split('.');
+                return parts.length === 1 ? '' : parts[parts.length - 1].toLowerCase();
+            }
+            const accepted = (schema['acceptedExtensions'] as string[]).map(ext => ext.startsWith('.') ? ext.substr(1) : ext);
+            const badExtensions = acceptedFiles.filter(f => !accepted.includes(getExt(f.name)));
+            if (badExtensions.length > 0) {
+                const fileDesc = badExtensions.length > 1 ? "These files have" : "This file has";
+                const badExtnNames = badExtensions.map(f => f.name).join(', ');
+                alert(`${fileDesc} have illegal file types: ${badExtnNames}`);
+                acceptedFiles = acceptedFiles.filter(f => accepted.includes(getExt(f.name)));
+            }
+        }
         if (acceptedFiles.length === 0) return;
 
         const sendFilePromises = acceptedFiles.map(file => {
@@ -157,16 +172,15 @@ export function UploadEditor(props: ISchemaComponentProps) {
     }
 
     const urls = value ? (value as string).split('|') : [];
-    const getExtn = (url: string) => _.last(url.toLowerCase().split('.')) || '';
 
     const imageHost = uploadContext.saveSiteRelative
         ? getHost(uploadContext.getFileUrl(new File([], ''), path, schema))
         : '';
 
     const images = (urls: string[]) => {
-        const imageUrls = urls.filter(url => imageSpec.extensions.indexOf(getExtn(url)) >= 0)
+        const imageUrls = urls.filter(url => imageSpec.extensions.indexOf(parseUrl(url).resourceExtension) >= 0)
             .map(url => makeAbsolute(url, imageHost));
-        const fileUrls = urls.filter(url => imageSpec.extensions.indexOf(getExtn(url)) < 0);
+        const fileUrls = urls.filter(url => imageSpec.extensions.indexOf(parseUrl(url).resourceExtension) < 0);
         return (
         <div className="sf-image-container">
             {imageUrls.map((absUrl) =>
@@ -180,7 +194,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
             {fileUrls.map((url) =>
                 <div className="sf-upload-container" key={url}>
                     <div className="sf-upload-item sf-file-crop" key={url} title={url}>
-                        {getExtn(url)}
+                        {parseUrl(url).resourceExtension}
                     </div>
                     <div className="sf-upload-delete" onMouseDown={onDelete(makeAbsolute(url, imageHost))}>x</div>
                 </div>

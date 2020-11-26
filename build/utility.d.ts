@@ -6,3 +6,12 @@ export declare function copySetPath(value: object, path: string[], valueAtPath: 
 export declare function withoutNoValueProperties(value: object): object;
 export declare function camelToTitle(camel: string): string;
 export declare function getByPath(value: object, path: string[]): any;
+export declare function parseUrl(url: string): {
+    scheme: string;
+    domain: string;
+    path: string;
+    queryString: string;
+    fragment: string;
+    resourceName: string;
+    resourceExtension: string;
+};

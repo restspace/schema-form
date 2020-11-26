@@ -1,7 +1,7 @@
-import { union, intersection, deepCopy, isEmpty, camelToTitle } from "utility";
+import { union, intersection, deepCopy, isEmpty, camelToTitle } from "../utility";
 import jsonpointer from "jsonpointer";
 import _ from "lodash";
-import { ISchemaFormContext } from "components/schema-form-interfaces";
+import { ISchemaFormContext } from "../components/schema-form-interfaces";
 import { SchemaContext } from "./schemaContext";
 
 export function fieldType(schema: object): string {

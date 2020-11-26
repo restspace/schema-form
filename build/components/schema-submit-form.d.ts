@@ -1,6 +1,6 @@
 import React from 'react';
-import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject } from 'error';
+import { ISchemaFormProps } from './schema-form';
+import { ErrorObject } from '../error';
 export interface ISchemaSubmitFormProps extends ISchemaFormProps {
     onSubmit?(value: object): Promise<boolean>;
     onSubmitError?(value: object, error: ErrorObject): void;

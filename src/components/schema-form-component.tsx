@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useContext, useImperativeHandle, useState } from "react";
-import { ISchemaComponentProps } from "components/schema-form-interfaces";
-import { fieldType } from "schema/schema";
-import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
+import { ISchemaComponentProps } from "./schema-form-interfaces";
+import { fieldType } from "../schema/schema";
+import { ValueDispatch, ValueAction } from "./schema-form-value-context";
 
 export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired }) => {
     const isError = errors.length > 0;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { ComponentForType } from 'components/component-for-type'
-import { ErrorObject } from 'error'
-import { fieldCaption } from 'schema/schema'
-import { ISchemaContainerProps } from 'components/schema-form-interfaces';
+import { ComponentForType } from './component-for-type'
+import { ErrorObject } from '../error'
+import { fieldCaption } from '../schema/schema'
+import { ISchemaContainerProps } from './schema-form-interfaces';
 import _ from 'lodash';
 
 type NestedList = string | NestedListArray;

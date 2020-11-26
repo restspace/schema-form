@@ -1,13 +1,13 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ISchemaContainerProps } from "components/schema-form-interfaces"
-import { SchemaFormComponentWrapper } from "components/schema-form-component";
-import { fieldCaption, deleteSubschemaProperties } from "schema/schema";
+import { ISchemaContainerProps } from "../components/schema-form-interfaces"
+import { SchemaFormComponentWrapper } from "../components/schema-form-component";
+import { fieldCaption, deleteSubschemaProperties } from "../schema/schema";
 import Ajv from "ajv";
 import _ from "lodash";
-import { ComponentForType } from "components/component-for-type";
-import { ValueDispatch, ValueAction } from "components/schema-form-value-context";
-import { validate } from "error";
-import { isEmpty } from "utility";
+import { ComponentForType } from "../components/component-for-type";
+import { ValueDispatch, ValueAction } from "../components/schema-form-value-context";
+import { validate } from "../error";
+import { isEmpty } from "../utility";
 
 export function OneOfRadioEditor(props: ISchemaContainerProps): React.ReactElement {
     const {

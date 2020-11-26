@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import SchemaForm from 'components/schema-form';
-import { ISchemaFormProps } from 'components/schema-form';
-import { ErrorObject, validate } from 'error';
-import { isEmpty } from 'utility';
-import { emptyValue } from 'schema/schema';
+import SchemaForm from './schema-form';
+import { ISchemaFormProps } from './schema-form';
+import { ErrorObject, validate } from '../error';
+import { isEmpty } from '../utility';
+import { emptyValue } from '../schema/schema';
 import _ from "lodash";
-import { SchemaContext } from 'schema/schemaContext';
+import { SchemaContext } from '../schema/schemaContext';
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
     onSubmit?(value: object, page: number): void,

@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { ISchemaComponentProps } from "components/schema-form-interfaces";
+import { ISchemaComponentProps } from "../components/schema-form-interfaces";
 export interface IUploadEditorContext {
     getFileUrl(file: File, path: string[], schema: object): string;
     sendFile(url: string, file: File, progress: (pc: number) => void): Promise<void>;

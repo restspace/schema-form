@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { ComponentForType } from 'components/component-for-type'
-import { ISchemaContainerProps } from 'components/schema-form-interfaces'
-import { ErrorObject } from 'error'
-import { fieldCaption, emptyValue } from 'schema/schema';
-import { ValueDispatch, ValueAction } from 'components/schema-form-value-context';
+import { ComponentForType } from './component-for-type'
+import { ISchemaContainerProps } from './schema-form-interfaces'
+import { ErrorObject } from '../error'
+import { fieldCaption, emptyValue } from '../schema/schema';
+import { ValueDispatch, ValueAction } from './schema-form-value-context';
 import _ from 'lodash';
 
 export function SchemaFormArray({

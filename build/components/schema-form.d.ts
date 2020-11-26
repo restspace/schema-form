@@ -1,7 +1,7 @@
 import React from "react";
-import { ErrorObject } from "error";
-import { IComponentMap, IContainerMap } from "components/schema-form-interfaces";
-import { ValueActionType } from "components/schema-form-value-context";
+import { ErrorObject } from "../error";
+import { IComponentMap, IContainerMap } from "./schema-form-interfaces";
+import { ValueActionType } from "./schema-form-value-context";
 export interface ISchemaFormProps {
     schema: object | object[];
     value: object;
