@@ -104,6 +104,12 @@ An explanation of each of the props follows:
 |makePreviousLink|function|A render prop which returns an element which lets the user tell the paged form to return to the previous page. The parameters is (*previousPage*, *onClick*). *previousPage* is the page number (starting 0) of the previous page. *onClick* is a function the rendered element must call when the user has requested to go to the previous page. It has one argument which is the number of the page to which to go.|
 |makeNextLink|function|A render prop which returns an element which lets the user tell the paged form to go to the next page. The parameters is (*nextPage*, *onClick*). *nextPage* is the page number (starting 0) of the next page. *onClick* is a function the rendered element must call when the user has requested to go to the next page. It has one argument which is the number of the page to which to go.|
 
+## Styling the components
+
+The package comes with a base CSS file which sets up expected layout. This can then be overriden with style customisations.
+
+    import "@restspace/schema-form/build/index.css";
+
 
 ## JSON schema
 JSON Schema is a (provisional but widely used) web standard defining a system for describing validity conditions on a JSON object. It is described here: [https://json-schema.org/](https://json-schema.org/).

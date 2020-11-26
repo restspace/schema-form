@@ -20738,7 +20738,7 @@ function UploadEditor(props) {
         if (schema['acceptedExtensions']) {
             var getExt_1 = function (name) {
                 var parts = name.split('.');
-                return parts.length === 1 ? '' : parts[parts.length - 1];
+                return parts.length === 1 ? '' : parts[parts.length - 1].toLowerCase();
             };
             var accepted_1 = schema['acceptedExtensions'].map(function (ext) { return ext.startsWith('.') ? ext.substr(1) : ext; });
             var badExtensions = acceptedFiles.filter(function (f) { return !accepted_1.includes(getExt_1(f.name)); });
