@@ -11,7 +11,7 @@ through the power of JSON schema or customisations. A summary of its features is
 - form value returned as a JSON object
 - custom field components, full event model
 
-Schema form is a key part of the [Restspace](https://restspace.io) project. Restspace defines its data store structure using JSON Schema files which are available over the web, allowing for a single source of truth for structure for data input and data storage.
+Schema form is a key part of the [Restspace](https://restspace.io) project. Restspace defines its data store structure using JSON Schema files which are available over the web, allowing for a single source of truth for structure for data input and data storage. It's available as an NPM package @restspace/schema-form. You can find a demo playground here: [https://restspace.io/react/schema-form/demo](https://restspace.io/react/schema-form/demo).
 
 ## Using the components
 The simplest component is SchemaForm which is a controlled component which has a schema and a value that matches the schema passed
