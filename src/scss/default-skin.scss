@@ -1,0 +1,346 @@
+.fieldset {
+    border: none;
+    border-left: 1px solid #333;
+    margin: 0 0 8px 0;
+}
+
+.sf-form {
+    padding: 1rem;
+}
+
+.sf-form > div > .fieldset {
+    padding-left: 0;
+    border-left: none;
+    margin-left: 8px;
+}
+
+.sf-title {
+    border-bottom: 1px solid rgb(7, 6, 6);
+    display: inline-block;
+    padding-right: 2rem;
+}
+
+.sf-row > label.sf-caption {
+    max-width: 10rem;
+}
+
+.sf-row {
+    padding: 0.25rem 0;
+}
+
+.sf-row > label.sf-required:after {
+    content: '*';
+    color: #a03c3c;
+}
+
+.sf-object {
+    padding: 0;
+    margin: 10px 0;
+}
+
+.sf-form input.sf-control {
+    border: none;
+    border-bottom: 1px solid #333;
+}
+
+.sf-form input.sf-control:focus {
+    outline: none;
+    background-color: #ddd;
+}
+
+.sf-add-button {
+    width:22px;
+    height: 22px;
+    color: rgba(0,0,0,0);
+    border-radius: 13px;
+    cursor: pointer;
+    margin: 0 4px 2px 4px;
+    display: inline-block;
+    background-image: url(./images/plus.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.sf-delete-button, .sf-duplication-button, .sf-down-button, .sf-up-button, .sf-edit-button, .sf-save-button, .sf-control-button {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-top: 15px;
+    border-radius: 12px;
+    color: rgba(0,0,0,0);
+    background-size: contain;
+    background-repeat: no-repeat;
+    flex: 0 0;
+    flex-basis: 22px;
+    margin-left: 2px;
+    cursor: pointer;
+}
+
+.sf-delete-button {
+    background-image: url(./images/ex.svg);
+}
+
+.sf-save-button {
+    background-image: url(./images/save.svg);
+    border-radius: 0;
+}
+
+.sf-duplication-button {
+    background-image: url(./images/plus.svg);
+}
+
+.sf-up-button {
+    background-image: url(./images/up.svg);
+}
+
+.sf-down-button {
+    background-image: url(./images/up.svg);
+    transform: rotate(180deg);
+}
+
+.sf-control-button:hover {
+    background-color: #ddd;
+}
+
+.sf-array-fieldset > .sf-element {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.sf-array-fieldset > .sf-element > div {
+    flex-grow: 1;
+}
+
+.sf-array-fieldset > .sf-element > .sf-schema-selector {
+    width: 100%;
+}
+
+.sf-array-fieldset > .sf-element > .sf-array-buttons {
+    flex-grow: unset;
+    padding-left: 0.3rem;
+}
+
+.sf-collapser {
+    display: inline-block;
+    width: 16px;
+    height: 11px;
+    cursor: pointer;
+    background-image: url(./images/right-arrow-black.svg);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.sf-collapser.sf-open {
+    transform: rotate(90deg);
+    position: relative;
+    top: 5px;
+    left: -3px;
+  }
+
+
+.sf-progress {
+    margin: .5em;
+    height: 1.5em;
+    position: relative;
+    background-color: #eee;
+    padding: 0 !important;
+}
+
+.sf-progress-indicator {
+    height: 100%;
+    background-color: #8794c5;
+}
+
+.sf-progress-name {
+    position: absolute;
+    display: block;
+    top: 0.05em;
+    left: 0.6em;
+}
+
+.sf-row .sf-upload {
+    padding: 0 0.5em;
+}
+
+/* Custom checkbox/radio */
+
+.checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.sf-radio, .sf-multi-check {
+    padding-bottom: 3px;
+}
+
+.sf-radio input[type="radio"],
+.sf-multi-check input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox label,
+.sf-radio label,
+.sf-multi-check label {
+  position: relative;
+  display: inline-block;
+  
+  /*16px width of fake checkbox + 6px distance between fake checkbox and text*/
+  padding-left: 22px;
+  line-height: 20px;
+  margin-right: 6px;
+}
+
+.checkbox label::before,
+.checkbox label::after,
+.sf-radio label::before,
+.sf-radio label::after,
+.sf-multi-check label::before,
+.sf-multi-check label::after {
+  position: absolute;
+  content: "";
+  
+  /*Needed for the line-height to take effect*/
+  display: inline-block;
+}
+
+/*Outer box of the fake checkbox*/
+.checkbox label::before,
+.sf-radio label::before,
+.sf-multi-check label::before {
+  height: 16px;
+  width: 16px;
+  
+  border: 1px solid;
+  left: 0px;
+  
+  /*(24px line-height - 16px height of fake checkbox) / 2 - 1px for the border
+    *to vertically center it.
+    */
+  top: 3px;
+}
+
+/*Checkmark of the fake checkbox*/
+.checkbox label::after,
+.sf-radio label::after,
+.sf-multi-check label::after {
+  height: 5px;
+  width: 9px;
+  border-left: 2px solid;
+  border-bottom: 2px solid;
+  
+  transform: rotate(-45deg);
+  
+  left: 4px;
+  top: 7px;
+}
+
+.sf-radio label::after {
+  height: 3px;
+  width: 8px;
+  left: 2px;
+  top: 3px;
+}
+
+.sf-radio-buttons, .sf-check-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/*Hide the checkmark by default*/
+.checkbox input[type="checkbox"] + label::after,
+.sf-radio input[type="radio"] + label::after,
+.sf-multi-check input[type="checkbox"] + label::after {
+  content: none;
+}
+
+/*Unhide on the checked state*/
+.checkbox input[type="checkbox"]:checked + label::after,
+.sf-multi-check input[type="checkbox"]:checked + label::after,
+.sf-radio input[type="radio"]:checked + label::after {
+  content: "";
+}
+
+/*Adding focus styles on the outer-box of the fake checkbox*/
+.checkbox input[type="checkbox"]:focus + label::before,
+.sf-multi-check input[type="checkbox"]:focus + label::before,
+.sf-radio input[type="radio"]:focus + label::before {
+  outline: rgb(59, 153, 252) auto 5px;
+}
+
+.sf-schema-selector {
+  .sf-radio {
+      input[type="radio"] {
+          margin: 0;
+
+          & + label::after, & + label::before {
+              content: none;
+          }
+
+          &:checked + label {
+              background-color: gray;
+              color: white;
+          }
+      }
+
+      label {
+          padding: 0 0.5em;
+          text-align: center;
+          margin: 0;
+          line-height: normal;
+      }
+  }
+}
+
+.sf-array-fieldset > .sf-element > .sf-row.sf-schema-selector {
+  display: block;
+}
+
+.sf-array-fieldset > .sf-element > .sf-schema-selector ~ .sf-array-buttons {
+  width: 29%;
+  text-align: right;
+}
+
+.sf-array-fieldset > .sf-element > .sf-schema-selector ~ .sf-array-buttons > .sf-control-button {
+  margin-top: 2px;
+}
+
+.sf-row.sf-schema-selector ~ .sf-array {
+  order: 1;
+}
+
+.sf-row.sf-schema-selector > .sf-radio-buttons {
+  padding: 0;
+  display: inline-block;
+}
+
+/* SUBMIT BUTTON */
+
+.sf-buttons {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.sf-submit-button {
+  background-color: white;
+  border: 1px solid #333;
+  cursor: pointer;
+}
+
+.sf-submit-button {
+  text-decoration: none;
+  padding: 4px 10px;
+  color: black;
+  display: inline-block;
+}
+
+.sf-submit-button {
+  text-transform: uppercase;
+}
+
+.sf-submit-button:hover {
+  background-color: #ccc;
+}
+
+.sf-dirty .sf-submit-button {
+  background-color:#eed4d4
+}
