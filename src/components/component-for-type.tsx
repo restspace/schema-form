@@ -7,12 +7,12 @@ import _ from 'lodash';
 function ComponentForTypeInner(props: ISchemaContainerProps): React.ReactElement {
     let { schema, value, context } = props;
 
-    // resolve a $ref
-    if (schema['$ref']) schema = context.schemaContext.resolver(schema['$ref']);
     if (!schema) return <></>;
 
-    const container: React.FC<ISchemaContainerProps> = props.context.containers[containerType(schema)];
+    // resolve a $ref
+    if (schema['$ref']) schema = context.schemaContext.resolver(schema['$ref']);
 
+    const container: React.FC<ISchemaContainerProps> = props.context.containers[containerType(schema)];
 
     let condSchema = null;
     try {

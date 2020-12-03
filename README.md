@@ -1,4 +1,5 @@
 # React JSON Schema Form Generator
+![schema form animation](https:/restspace.io/img/json/blog/this%20react%20component%20turns%20a%20headless%20cms%20into%20a%20form%20builder.json/blocks/0/image/schemaformdemo.gif)
 ## Introduction
 This tool is designed to drastically reduce the effort needed to create complex forms in React. It uses JSON schema as a description language for the form you want to create. It is highly flexible and can deal with pretty much any requirement
 through the power of JSON schema or customisations. A summary of its features is as follows:
