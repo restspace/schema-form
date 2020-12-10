@@ -246,6 +246,24 @@ function parseUrl(url) {
     }
     return urlElements;
 }
+var browserInfo = {
+    // Opera 8.0+
+    isOpera: (!!window['opr'] && !!window['opr']['addons']) || !!window['opera'] || navigator.userAgent.indexOf(' OPR/') >= 0,
+    // Firefox 1.0+
+    isFirefox: typeof window['InstallTrigger'] !== 'undefined',
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    isSafari: /constructor/i.test(window['HTMLElement']) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof window['safari'] !== 'undefined' && window['safari'].pushNotification)),
+    // Internet Explorer 6-11
+    isIE: /*@cc_on!@*/  !!document['documentMode'],
+    // Chrome 1 - 71
+    isChrome: !!window['chrome'] && (!!window['chrome']['webstore'] || !!window['chrome']['runtime']),
+    isEdge: false,
+    isBlink: false
+};
+// Edge 20+
+browserInfo.isEdge = !browserInfo.isIE && !!window['StyleMedia'];
+// Blink engine detection
+browserInfo.isBlink = (browserInfo.isChrome || browserInfo.isOpera) && !!window['CSS'];
 
 var hasExcape = /~/;
 var escapeMatcher = /~[01]/g;
@@ -18170,6 +18188,21 @@ function SchemaFormComponent(props) {
         var val = ev.target['value'] + ':00Z';
         dispatch(ValueAction.set(path, val));
     }
+    function handleTextDateTimeChange(ev) {
+        var str = ev.target['value'];
+        if (str === '') {
+            setHoldString('');
+            dispatch(ValueAction.set(path, null));
+        }
+        else {
+            var dt = Date.parse(str);
+            setHoldString(str);
+            if (isNaN(dt))
+                return;
+            var newStr = new Date(dt).toISOString();
+            dispatch(ValueAction.set(path, newStr));
+        }
+    }
     function handleChangeNumber(ev) {
         var str = ev.target['value'];
         if (str === '')
@@ -18207,6 +18240,12 @@ function SchemaFormComponent(props) {
     function handleBlur() {
         onBlur(path);
     }
+    function handleHeldBlur() {
+        if (!value && holdString)
+            dispatch(ValueAction.set(path, holdString));
+        setHoldString('');
+        handleBlur();
+    }
     function schemaInput(isError) {
         var classes = function (specific) { return "sf-control " + specific + " " + (isError && 'sf-has-error'); };
         var readOnly = schema['readOnly'] || false;
@@ -18227,8 +18266,14 @@ function SchemaFormComponent(props) {
             case "date":
                 return (React.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
             case "date-time":
-                var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
-                return (React.createElement("input", __assign({}, dateTimeProps, { type: "datetime-local", className: classes("sf-datetime") })));
+                if (browserInfo.isIE || browserInfo.isSafari || browserInfo.isFirefox) {
+                    var textDateTimeProps = __assign(__assign({}, baseProps), { value: holdString ? holdString : (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur });
+                    return (React.createElement("input", __assign({}, textDateTimeProps, { type: "text", className: classes("sf-datetime") })));
+                }
+                else {
+                    var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });
+                    return (React.createElement("input", __assign({}, dateTimeProps, { type: "datetime-local", className: classes("sf-datetime") })));
+                }
             case "email":
                 return (React.createElement("input", __assign({}, commonProps, { type: "email", className: classes("sf-email") })));
             case "password":
@@ -18252,11 +18297,11 @@ function SchemaFormComponent(props) {
 
 function ComponentForTypeInner(props) {
     var schema = props.schema, value = props.value, context = props.context;
+    if (!schema)
+        return React.createElement(React.Fragment, null);
     // resolve a $ref
     if (schema['$ref'])
         schema = context.schemaContext.resolver(schema['$ref']);
-    if (!schema)
-        return React.createElement(React.Fragment, null);
     var container = props.context.containers[containerType(schema)];
     var condSchema = null;
     try {

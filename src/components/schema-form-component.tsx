@@ -2,6 +2,7 @@ import React, { FunctionComponent, useContext, useImperativeHandle, useState } f
 import { ISchemaComponentProps } from "./schema-form-interfaces";
 import { fieldType } from "../schema/schema";
 import { ValueDispatch, ValueAction } from "./schema-form-value-context";
+import { browserInfo } from "../utility";
 
 export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired }) => {
     const isError = errors.length > 0;
@@ -89,6 +90,20 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         dispatch(ValueAction.set(path, val));
     }
 
+    function handleTextDateTimeChange(ev: React.FormEvent) {
+        const str = ev.target['value'] as string;
+        if (str === '') {
+            setHoldString('');
+            dispatch(ValueAction.set(path, null));
+        } else {
+            const dt = Date.parse(str);
+            setHoldString(str);
+            if (isNaN(dt)) return;
+            const newStr = new Date(dt).toISOString();
+            dispatch(ValueAction.set(path, newStr));
+        }
+    }
+
     function handleChangeNumber(ev: React.FormEvent) {
         const str = ev.target['value'] as string;
         if (str === '')
@@ -130,6 +145,12 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         onBlur(path);
     }
 
+    function handleHeldBlur() {
+        if (!value && holdString) dispatch(ValueAction.set(path, holdString));
+        setHoldString('');
+        handleBlur();
+    }
+
     function schemaInput(isError: boolean) {
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
@@ -151,8 +172,15 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "date-time":
-                const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
-                return (<input {...dateTimeProps} type="datetime-local" className={classes("sf-datetime")} />)
+                if (browserInfo.isIE || browserInfo.isSafari || browserInfo.isFirefox) {
+                    const textDateTimeProps = { ...baseProps, value: holdString ? holdString : (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur };
+                    return (<input {...textDateTimeProps } type="text" className={classes("sf-datetime")} />);
+                } else if (false) {
+                    return (<></>);
+                } else {
+                    const dateTimeProps = { ...baseProps, value: (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleDateTimeChange };
+                    return (<input {...dateTimeProps} type="datetime-local" className={classes("sf-datetime")} />);
+                }
             case "email":
                 return (<input {...commonProps} type="email" className={classes("sf-email")} />)
             case "password":

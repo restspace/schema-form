@@ -165,3 +165,29 @@ export function parseUrl(url: string) {
 
     return urlElements;
 }
+
+export const browserInfo: { 
+    isOpera: boolean, isFirefox: boolean, isSafari: boolean, isIE: boolean, isEdge: boolean, isChrome: boolean, isBlink: boolean
+ } = {
+    // Opera 8.0+
+    isOpera: (!!window['opr'] && !!window['opr']['addons']) || !!window['opera'] || navigator.userAgent.indexOf(' OPR/') >= 0,
+
+    // Firefox 1.0+
+    isFirefox: typeof window['InstallTrigger'] !== 'undefined',
+
+    // Safari 3.0+ "[object HTMLElementConstructor]" 
+    isSafari: /constructor/i.test(window['HTMLElement'] as unknown as string) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof window['safari'] !== 'undefined' && window['safari'].pushNotification)),
+
+    // Internet Explorer 6-11
+    isIE: /*@cc_on!@*/false || !!document['documentMode'],
+
+    // Chrome 1 - 71
+    isChrome: !!window['chrome'] && (!!window['chrome']['webstore'] || !!window['chrome']['runtime']),
+    isEdge: false,
+    isBlink: false
+}
+
+// Edge 20+
+browserInfo.isEdge = !browserInfo.isIE && !!window['StyleMedia'];
+// Blink engine detection
+browserInfo.isBlink = (browserInfo.isChrome || browserInfo.isOpera) && !!window['CSS'];

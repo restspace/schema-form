@@ -15,7 +15,7 @@
 }
 
 .sf-title {
-  border-bottom: 1px solid rgb(7, 6, 6);
+  border-bottom: 1px solid #070606;
   display: inline-block;
   padding-right: 2rem;
 }
@@ -29,7 +29,7 @@
 }
 
 .sf-row > label.sf-required:after {
-  content: '*';
+  content: "*";
   color: #a03c3c;
 }
 
@@ -49,9 +49,9 @@
 }
 
 .sf-add-button {
-  width:22px;
+  width: 22px;
   height: 22px;
-  color: rgba(0,0,0,0);
+  color: rgba(0, 0, 0, 0);
   border-radius: 13px;
   cursor: pointer;
   margin: 0 4px 2px 4px;
@@ -61,7 +61,7 @@
 }
 
 .sf-add-button, .sf-duplication-button {
-background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" id="svg4" version="1.1" viewBox="0 0 24 24" height="24" width="24"><defs id="defs8" /><path style="fill:%23d38f12;fill-opacity:1" id="path2" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 13h-5v5h-2v-5h-5v-2h5v-5h2v5h5v2z" /></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" id="svg4" version="1.1" viewBox="0 0 24 24" height="24" width="24"><defs id="defs8" /><path style="fill:%23d38f12;fill-opacity:1" id="path2" d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 13h-5v5h-2v-5h-5v-2h5v-5h2v5h5v2z" /></svg>');
 }
 
 .sf-delete-button, .sf-duplication-button, .sf-down-button, .sf-up-button, .sf-edit-button, .sf-save-button, .sf-control-button {
@@ -70,7 +70,7 @@ background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/200
   height: 22px;
   margin-top: 15px;
   border-radius: 12px;
-  color: rgba(0,0,0,0);
+  color: rgba(0, 0, 0, 0);
   background-size: contain;
   background-repeat: no-repeat;
   flex: 0 0;
@@ -135,9 +135,8 @@ background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/200
   left: -3px;
 }
 
-
 .sf-progress {
-  margin: .5em;
+  margin: 0.5em;
   height: 1.5em;
   position: relative;
   background-color: #eee;
@@ -161,30 +160,28 @@ background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/200
 }
 
 /* Custom checkbox/radio */
-
-.checkbox input[type="checkbox"] {
-display: none;
+.checkbox input[type=checkbox] {
+  display: none;
 }
 
 .sf-radio, .sf-multi-check {
   padding-bottom: 3px;
 }
 
-.sf-radio input[type="radio"],
-.sf-multi-check input[type="checkbox"] {
-display: none;
+.sf-radio input[type=radio],
+.sf-multi-check input[type=checkbox] {
+  display: none;
 }
 
 .checkbox label,
 .sf-radio label,
 .sf-multi-check label {
-position: relative;
-display: inline-block;
-
-/*16px width of fake checkbox + 6px distance between fake checkbox and text*/
-padding-left: 22px;
-line-height: 20px;
-margin-right: 6px;
+  position: relative;
+  display: inline-block;
+  /*16px width of fake checkbox + 6px distance between fake checkbox and text*/
+  padding-left: 22px;
+  line-height: 20px;
+  margin-right: 6px;
 }
 
 .checkbox label::before,
@@ -193,152 +190,141 @@ margin-right: 6px;
 .sf-radio label::after,
 .sf-multi-check label::before,
 .sf-multi-check label::after {
-position: absolute;
-content: "";
-
-/*Needed for the line-height to take effect*/
-display: inline-block;
+  position: absolute;
+  content: "";
+  /*Needed for the line-height to take effect*/
+  display: inline-block;
 }
 
 /*Outer box of the fake checkbox*/
 .checkbox label::before,
 .sf-radio label::before,
 .sf-multi-check label::before {
-height: 16px;
-width: 16px;
-
-border: 1px solid;
-left: 0px;
-
-/*(24px line-height - 16px height of fake checkbox) / 2 - 1px for the border
-  *to vertically center it.
-  */
-top: 3px;
+  height: 16px;
+  width: 16px;
+  border: 1px solid;
+  left: 0px;
+  /*(24px line-height - 16px height of fake checkbox) / 2 - 1px for the border
+    *to vertically center it.
+    */
+  top: 3px;
 }
 
 /*Checkmark of the fake checkbox*/
 .checkbox label::after,
 .sf-radio label::after,
 .sf-multi-check label::after {
-height: 5px;
-width: 9px;
-border-left: 2px solid;
-border-bottom: 2px solid;
-
-transform: rotate(-45deg);
-
-left: 4px;
-top: 7px;
+  height: 5px;
+  width: 9px;
+  border-left: 2px solid;
+  border-bottom: 2px solid;
+  transform: rotate(-45deg);
+  left: 4px;
+  top: 7px;
 }
 
 .sf-radio label::after {
-height: 3px;
-width: 8px;
-left: 2px;
-top: 3px;
+  height: 3px;
+  width: 8px;
+  left: 2px;
+  top: 3px;
 }
 
 .sf-radio-buttons, .sf-check-buttons {
-display: flex;
-flex-wrap: wrap;
-align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 /*Hide the checkmark by default*/
-.checkbox input[type="checkbox"] + label::after,
-.sf-radio input[type="radio"] + label::after,
-.sf-multi-check input[type="checkbox"] + label::after {
-content: none;
+.checkbox input[type=checkbox] + label::after,
+.sf-radio input[type=radio] + label::after,
+.sf-multi-check input[type=checkbox] + label::after {
+  content: none;
 }
 
 /*Unhide on the checked state*/
-.checkbox input[type="checkbox"]:checked + label::after,
-.sf-multi-check input[type="checkbox"]:checked + label::after,
-.sf-radio input[type="radio"]:checked + label::after {
-content: "";
+.checkbox input[type=checkbox]:checked + label::after,
+.sf-multi-check input[type=checkbox]:checked + label::after,
+.sf-radio input[type=radio]:checked + label::after {
+  content: "";
 }
 
 /*Adding focus styles on the outer-box of the fake checkbox*/
-.checkbox input[type="checkbox"]:focus + label::before,
-.sf-multi-check input[type="checkbox"]:focus + label::before,
-.sf-radio input[type="radio"]:focus + label::before {
-outline: rgb(59, 153, 252) auto 5px;
+.checkbox input[type=checkbox]:focus + label::before,
+.sf-multi-check input[type=checkbox]:focus + label::before,
+.sf-radio input[type=radio]:focus + label::before {
+  outline: #3b99fc auto 5px;
 }
 
-.sf-schema-selector {
-.sf-radio {
-    input[type="radio"] {
-        margin: 0;
-
-        & + label::after, & + label::before {
-            content: none;
-        }
-
-        &:checked + label {
-            background-color: gray;
-            color: white;
-        }
-    }
-
-    label {
-        padding: 0 0.5em;
-        text-align: center;
-        margin: 0;
-        line-height: normal;
-    }
+.sf-schema-selector .sf-radio input[type=radio] {
+  margin: 0;
 }
+.sf-schema-selector .sf-radio input[type=radio] + label::after, .sf-schema-selector .sf-radio input[type=radio] + label::before {
+  content: none;
+}
+.sf-schema-selector .sf-radio input[type=radio]:checked + label {
+  background-color: gray;
+  color: white;
+}
+.sf-schema-selector .sf-radio label {
+  padding: 0 0.5em;
+  text-align: center;
+  margin: 0;
+  line-height: normal;
 }
 
 .sf-array-fieldset > .sf-element > .sf-row.sf-schema-selector {
-display: block;
+  display: block;
 }
 
 .sf-array-fieldset > .sf-element > .sf-schema-selector ~ .sf-array-buttons {
-width: 29%;
-text-align: right;
+  width: 29%;
+  text-align: right;
 }
 
 .sf-array-fieldset > .sf-element > .sf-schema-selector ~ .sf-array-buttons > .sf-control-button {
-margin-top: 2px;
+  margin-top: 2px;
 }
 
 .sf-row.sf-schema-selector ~ .sf-array {
-order: 1;
+  order: 1;
 }
 
 .sf-row.sf-schema-selector > .sf-radio-buttons {
-padding: 0;
-display: inline-block;
+  padding: 0;
+  display: inline-block;
 }
 
 /* SUBMIT BUTTON */
-
 .sf-buttons {
   text-align: center;
   margin-bottom: 10px;
 }
 
 .sf-submit-button {
-background-color: white;
-border: 1px solid #333;
-cursor: pointer;
+  background-color: white;
+  border: 1px solid #333;
+  cursor: pointer;
 }
 
 .sf-submit-button {
-text-decoration: none;
-padding: 4px 10px;
-color: black;
-display: inline-block;
+  text-decoration: none;
+  padding: 4px 10px;
+  color: black;
+  display: inline-block;
 }
 
 .sf-submit-button {
-text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .sf-submit-button:hover {
-background-color: #ccc;
+  background-color: #ccc;
 }
 
 .sf-dirty .sf-submit-button {
-background-color:#eed4d4
+  background-color: #eed4d4;
 }
+
+/*# sourceMappingURL=default-skin.css.map */

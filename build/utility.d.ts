@@ -15,3 +15,12 @@ export declare function parseUrl(url: string): {
     resourceName: string;
     resourceExtension: string;
 };
+export declare const browserInfo: {
+    isOpera: boolean;
+    isFirefox: boolean;
+    isSafari: boolean;
+    isIE: boolean;
+    isEdge: boolean;
+    isChrome: boolean;
+    isBlink: boolean;
+};
