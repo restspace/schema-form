@@ -1,3 +1,5 @@
+![license](https://img.shields.io/github/license/restspace/schema-form)
+![issues](https://img.shields.io/github/issues/restspace/schema-form)
 # React JSON Schema Form Generator
 ![schema form animation](https://restspace.io/img/json/blog/this%20react%20component%20turns%20a%20headless%20cms%20into%20a%20form%20builder.json/blocks/0/image/schemaformdemo.gif)
 ## Introduction
