@@ -3,6 +3,12 @@ import { ISchemaComponentProps } from "./schema-form-interfaces";
 import { fieldType } from "../schema/schema";
 import { ValueDispatch, ValueAction } from "./schema-form-value-context";
 import { browserInfo } from "../utility";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(customParseFormat);
+dayjs.extend(utc);
 
 export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired }) => {
     const isError = errors.length > 0;
@@ -96,10 +102,15 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             setHoldString('');
             dispatch(ValueAction.set(path, null));
         } else {
-            const dt = Date.parse(str);
+            const dt = dayjs(str, [
+                "YYYY-MM-DD HH:mm:ss",
+                "YYYY-MM-DD HH:mm",
+                "YYYY-MM-DD"
+            ], true);
             setHoldString(str);
-            if (isNaN(dt)) return;
-            const newStr = new Date(dt).toISOString();
+            if (!dt.isValid()) return;
+            const newStr = dt.utc().format();
+            console.log('ch d val ' + newStr);
             dispatch(ValueAction.set(path, newStr));
         }
     }
@@ -173,8 +184,9 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "date-time":
                 if (browserInfo.isIE || browserInfo.isSafari || browserInfo.isFirefox) {
-                    const textDateTimeProps = { ...baseProps, value: holdString ? holdString : (value || '').toString().substring(0, 16), onChange: () => {}, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur };
-                    return (<input {...textDateTimeProps } type="text" className={classes("sf-datetime")} />);
+                    const val = holdString || (value ? dayjs(value).format('YYYY-MM-DD HH:mm:ss') : '');
+                    const textDateTimeProps = { ...baseProps, value: val, onChange: () => {}, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur };
+                    return (<input {...textDateTimeProps } type="text" className={classes("sf-datetime")} placeholder="e.g. 2000-11-22 15:33:44" />);
                 } else if (false) {
                     return (<></>);
                 } else {

@@ -287,10 +287,6 @@
   margin-top: 2px;
 }
 
-.sf-row.sf-schema-selector ~ .sf-array {
-  order: 1;
-}
-
 .sf-row.sf-schema-selector > .sf-radio-buttons {
   padding: 0;
   display: inline-block;

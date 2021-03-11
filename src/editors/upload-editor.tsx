@@ -140,7 +140,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         if (acceptedFiles.length === 0) return;
 
         const sendFilePromises = acceptedFiles.map(file => {
-            const absUrl = uploadContext.getFileUrl(file, path, schema).toLowerCase();
+            const absUrl = uploadContext.getFileUrl(file, path, schema);
             return uploadContext.sendFile(absUrl, file, (pc) => updateProgress(file, pc))
                 .then(() => encodeURI(absUrl));
         });

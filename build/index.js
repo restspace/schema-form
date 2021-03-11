@@ -17544,6 +17544,7 @@ function fieldType(schema) {
         case "string-time":
         case "string-email":
         case "string-password":
+        case "number-currency":
             return schema['format'];
         default:
             return type;
@@ -17941,15 +17942,17 @@ var makeSchemaResolver = function (schemas, fallbackResolver) { return function 
 }; };
 var deleteSubschemaProperties = function (value, schema) {
     var schemaType = schema['type'];
-    if (schemaType === 'object') {
-        schema['properties'].forEach(function (prop) {
-            var res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
-            if (res === null)
-                delete value[prop];
-        });
+    if (schemaType === 'object' && value && typeof value === 'object') {
+        if (schema['properties']) {
+            Object.keys(schema['properties']).forEach(function (prop) {
+                var res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
+                if (res === null)
+                    delete value[prop];
+            });
+        }
         return value === {} ? null : value;
     }
-    else if (schemaType === 'array') {
+    else if (schemaType === 'array' && Array.isArray(value)) {
         return value.map(function (item) { return deleteSubschemaProperties(item, schema['items']); }).filter(function (item) { return item !== null; });
     }
     else {
@@ -18135,6 +18138,20 @@ function valueReducer(oldValue, action) {
     return value;
 }
 
+var dayjs_min = createCommonjsModule(function (module, exports) {
+!function(t,e){module.exports=e();}(commonjsGlobal,function(){var t="millisecond",e="second",n="minute",r="hour",i="day",s="week",u="month",a="quarter",o="year",f="date",h=/^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[^0-9]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?.?(\d+)?$/,c=/\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,d={name:"en",weekdays:"Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),months:"January_February_March_April_May_June_July_August_September_October_November_December".split("_")},$=function(t,e,n){var r=String(t);return !r||r.length>=e?t:""+Array(e+1-r.length).join(n)+t},l={s:$,z:function(t){var e=-t.utcOffset(),n=Math.abs(e),r=Math.floor(n/60),i=n%60;return (e<=0?"+":"-")+$(r,2,"0")+":"+$(i,2,"0")},m:function t(e,n){if(e.date()<n.date())return -t(n,e);var r=12*(n.year()-e.year())+(n.month()-e.month()),i=e.clone().add(r,u),s=n-i<0,a=e.clone().add(r+(s?-1:1),u);return +(-(r+(n-i)/(s?i-a:a-i))||0)},a:function(t){return t<0?Math.ceil(t)||0:Math.floor(t)},p:function(h){return {M:u,y:o,w:s,d:i,D:f,h:r,m:n,s:e,ms:t,Q:a}[h]||String(h||"").toLowerCase().replace(/s$/,"")},u:function(t){return void 0===t}},y="en",M={};M[y]=d;var m=function(t){return t instanceof S},D=function(t,e,n){var r;if(!t)return y;if("string"==typeof t)M[t]&&(r=t),e&&(M[t]=e,r=t);else{var i=t.name;M[i]=t,r=i;}return !n&&r&&(y=r),r||!n&&y},v=function(t,e){if(m(t))return t.clone();var n="object"==typeof e?e:{};return n.date=t,n.args=arguments,new S(n)},g=l;g.l=D,g.i=m,g.w=function(t,e){return v(t,{locale:e.$L,utc:e.$u,x:e.$x,$offset:e.$offset})};var S=function(){function d(t){this.$L=D(t.locale,null,!0),this.parse(t);}var $=d.prototype;return $.parse=function(t){this.$d=function(t){var e=t.date,n=t.utc;if(null===e)return new Date(NaN);if(g.u(e))return new Date;if(e instanceof Date)return new Date(e);if("string"==typeof e&&!/Z$/i.test(e)){var r=e.match(h);if(r){var i=r[2]-1||0,s=(r[7]||"0").substring(0,3);return n?new Date(Date.UTC(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)):new Date(r[1],i,r[3]||1,r[4]||0,r[5]||0,r[6]||0,s)}}return new Date(e)}(t),this.$x=t.x||{},this.init();},$.init=function(){var t=this.$d;this.$y=t.getFullYear(),this.$M=t.getMonth(),this.$D=t.getDate(),this.$W=t.getDay(),this.$H=t.getHours(),this.$m=t.getMinutes(),this.$s=t.getSeconds(),this.$ms=t.getMilliseconds();},$.$utils=function(){return g},$.isValid=function(){return !("Invalid Date"===this.$d.toString())},$.isSame=function(t,e){var n=v(t);return this.startOf(e)<=n&&n<=this.endOf(e)},$.isAfter=function(t,e){return v(t)<this.startOf(e)},$.isBefore=function(t,e){return this.endOf(e)<v(t)},$.$g=function(t,e,n){return g.u(t)?this[e]:this.set(n,t)},$.unix=function(){return Math.floor(this.valueOf()/1e3)},$.valueOf=function(){return this.$d.getTime()},$.startOf=function(t,a){var h=this,c=!!g.u(a)||a,d=g.p(t),$=function(t,e){var n=g.w(h.$u?Date.UTC(h.$y,e,t):new Date(h.$y,e,t),h);return c?n:n.endOf(i)},l=function(t,e){return g.w(h.toDate()[t].apply(h.toDate("s"),(c?[0,0,0,0]:[23,59,59,999]).slice(e)),h)},y=this.$W,M=this.$M,m=this.$D,D="set"+(this.$u?"UTC":"");switch(d){case o:return c?$(1,0):$(31,11);case u:return c?$(1,M):$(0,M+1);case s:var v=this.$locale().weekStart||0,S=(y<v?y+7:y)-v;return $(c?m-S:m+(6-S),M);case i:case f:return l(D+"Hours",0);case r:return l(D+"Minutes",1);case n:return l(D+"Seconds",2);case e:return l(D+"Milliseconds",3);default:return this.clone()}},$.endOf=function(t){return this.startOf(t,!1)},$.$set=function(s,a){var h,c=g.p(s),d="set"+(this.$u?"UTC":""),$=(h={},h[i]=d+"Date",h[f]=d+"Date",h[u]=d+"Month",h[o]=d+"FullYear",h[r]=d+"Hours",h[n]=d+"Minutes",h[e]=d+"Seconds",h[t]=d+"Milliseconds",h)[c],l=c===i?this.$D+(a-this.$W):a;if(c===u||c===o){var y=this.clone().set(f,1);y.$d[$](l),y.init(),this.$d=y.set(f,Math.min(this.$D,y.daysInMonth())).$d;}else $&&this.$d[$](l);return this.init(),this},$.set=function(t,e){return this.clone().$set(t,e)},$.get=function(t){return this[g.p(t)]()},$.add=function(t,a){var f,h=this;t=Number(t);var c=g.p(a),d=function(e){var n=v(h);return g.w(n.date(n.date()+Math.round(e*t)),h)};if(c===u)return this.set(u,this.$M+t);if(c===o)return this.set(o,this.$y+t);if(c===i)return d(1);if(c===s)return d(7);var $=(f={},f[n]=6e4,f[r]=36e5,f[e]=1e3,f)[c]||1,l=this.$d.getTime()+t*$;return g.w(l,this)},$.subtract=function(t,e){return this.add(-1*t,e)},$.format=function(t){var e=this;if(!this.isValid())return "Invalid Date";var n=t||"YYYY-MM-DDTHH:mm:ssZ",r=g.z(this),i=this.$locale(),s=this.$H,u=this.$m,a=this.$M,o=i.weekdays,f=i.months,h=function(t,r,i,s){return t&&(t[r]||t(e,n))||i[r].substr(0,s)},d=function(t){return g.s(s%12||12,t,"0")},$=i.meridiem||function(t,e,n){var r=t<12?"AM":"PM";return n?r.toLowerCase():r},l={YY:String(this.$y).slice(-2),YYYY:this.$y,M:a+1,MM:g.s(a+1,2,"0"),MMM:h(i.monthsShort,a,f,3),MMMM:h(f,a),D:this.$D,DD:g.s(this.$D,2,"0"),d:String(this.$W),dd:h(i.weekdaysMin,this.$W,o,2),ddd:h(i.weekdaysShort,this.$W,o,3),dddd:o[this.$W],H:String(s),HH:g.s(s,2,"0"),h:d(1),hh:d(2),a:$(s,u,!0),A:$(s,u,!1),m:String(u),mm:g.s(u,2,"0"),s:String(this.$s),ss:g.s(this.$s,2,"0"),SSS:g.s(this.$ms,3,"0"),Z:r};return n.replace(c,function(t,e){return e||l[t]||r.replace(":","")})},$.utcOffset=function(){return 15*-Math.round(this.$d.getTimezoneOffset()/15)},$.diff=function(t,f,h){var c,d=g.p(f),$=v(t),l=6e4*($.utcOffset()-this.utcOffset()),y=this-$,M=g.m(this,$);return M=(c={},c[o]=M/12,c[u]=M,c[a]=M/3,c[s]=(y-l)/6048e5,c[i]=(y-l)/864e5,c[r]=y/36e5,c[n]=y/6e4,c[e]=y/1e3,c)[d]||y,h?M:g.a(M)},$.daysInMonth=function(){return this.endOf(u).$D},$.$locale=function(){return M[this.$L]},$.locale=function(t,e){if(!t)return this.$L;var n=this.clone(),r=D(t,e,!0);return r&&(n.$L=r),n},$.clone=function(){return g.w(this.$d,this)},$.toDate=function(){return new Date(this.valueOf())},$.toJSON=function(){return this.isValid()?this.toISOString():null},$.toISOString=function(){return this.$d.toISOString()},$.toString=function(){return this.$d.toUTCString()},d}(),p=S.prototype;return v.prototype=p,[["$ms",t],["$s",e],["$m",n],["$H",r],["$W",i],["$M",u],["$y",o],["$D",f]].forEach(function(t){p[t[1]]=function(e){return this.$g(e,t[0],t[1])};}),v.extend=function(t,e){return t.$i||(t(e,S,v),t.$i=!0),v},v.locale=D,v.isDayjs=m,v.unix=function(t){return v(1e3*t)},v.en=M[y],v.Ls=M,v.p={},v});
+});
+
+var customParseFormat = createCommonjsModule(function (module, exports) {
+!function(t,e){module.exports=e();}(commonjsGlobal,function(){var t,e={LTS:"h:mm:ss A",LT:"h:mm A",L:"MM/DD/YYYY",LL:"MMMM D, YYYY",LLL:"MMMM D, YYYY h:mm A",LLLL:"dddd, MMMM D, YYYY h:mm A"},n=function(t,n){return t.replace(/(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g,function(t,r,i){var o=i&&i.toUpperCase();return r||n[i]||e[i]||n[o].replace(/(\[[^\]]+])|(MMMM|MM|DD|dddd)/g,function(t,e,n){return e||n.slice(1)})})},r=/(\[[^[]*\])|([-:/.()\s]+)|(A|a|YYYY|YY?|MM?M?M?|Do|DD?|hh?|HH?|mm?|ss?|S{1,3}|z|ZZ?)/g,i=/\d\d/,o=/\d\d?/,s=/\d*[^\s\d-:/()]+/;var a=function(t){return function(e){this[t]=+e;}},f=[/[+-]\d\d:?(\d\d)?/,function(t){(this.zone||(this.zone={})).offset=function(t){if(!t)return 0;var e=t.match(/([+-]|\d\d)/g),n=60*e[1]+(+e[2]||0);return 0===n?0:"+"===e[0]?-n:n}(t);}],u=function(e){var n=t[e];return n&&(n.indexOf?n:n.s.concat(n.f))},h=function(e,n){var r,i=t.meridiem;if(i){for(var o=1;o<=24;o+=1)if(e.indexOf(i(o,0,n))>-1){r=o>12;break}}else r=e===(n?"pm":"PM");return r},d={A:[s,function(t){this.afternoon=h(t,!1);}],a:[s,function(t){this.afternoon=h(t,!0);}],S:[/\d/,function(t){this.milliseconds=100*+t;}],SS:[i,function(t){this.milliseconds=10*+t;}],SSS:[/\d{3}/,function(t){this.milliseconds=+t;}],s:[o,a("seconds")],ss:[o,a("seconds")],m:[o,a("minutes")],mm:[o,a("minutes")],H:[o,a("hours")],h:[o,a("hours")],HH:[o,a("hours")],hh:[o,a("hours")],D:[o,a("day")],DD:[i,a("day")],Do:[s,function(e){var n=t.ordinal,r=e.match(/\d+/);if(this.day=r[0],n)for(var i=1;i<=31;i+=1)n(i).replace(/\[|\]/g,"")===e&&(this.day=i);}],M:[o,a("month")],MM:[i,a("month")],MMM:[s,function(t){var e=u("months"),n=(u("monthsShort")||e.map(function(t){return t.substr(0,3)})).indexOf(t)+1;if(n<1)throw new Error;this.month=n%12||n;}],MMMM:[s,function(t){var e=u("months").indexOf(t)+1;if(e<1)throw new Error;this.month=e%12||e;}],Y:[/[+-]?\d+/,a("year")],YY:[i,function(t){t=+t,this.year=t+(t>68?1900:2e3);}],YYYY:[/\d{4}/,a("year")],Z:f,ZZ:f};var c=function(e,i,o){try{var s=function(e){for(var i=(e=n(e,t&&t.formats)).match(r),o=i.length,s=0;s<o;s+=1){var a=i[s],f=d[a],u=f&&f[0],h=f&&f[1];i[s]=h?{regex:u,parser:h}:a.replace(/^\[|\]$/g,"");}return function(t){for(var e={},n=0,r=0;n<o;n+=1){var s=i[n];if("string"==typeof s)r+=s.length;else{var a=s.regex,f=s.parser,u=t.substr(r),h=a.exec(u)[0];f.call(e,h),t=t.replace(h,"");}}return function(t){var e=t.afternoon;if(void 0!==e){var n=t.hours;e?n<12&&(t.hours+=12):12===n&&(t.hours=0),delete t.afternoon;}}(e),e}}(i)(e),a=s.year,f=s.month,u=s.day,h=s.hours,c=s.minutes,m=s.seconds,l=s.milliseconds,M=s.zone,Y=new Date,v=u||(a||f?1:Y.getDate()),p=a||Y.getFullYear(),D=0;a&&!f||(D=f>0?f-1:Y.getMonth());var y=h||0,L=c||0,g=m||0,$=l||0;return M?new Date(Date.UTC(p,D,v,y,L,g,$+60*M.offset*1e3)):o?new Date(Date.UTC(p,D,v,y,L,g,$)):new Date(p,D,v,y,L,g,$)}catch(t){return new Date("")}};return function(e,n,r){r.p.customParseFormat=!0;var i=n.prototype,o=i.parse;i.parse=function(e){var n=e.date,i=e.utc,s=e.args;this.$u=i;var a=s[1];if("string"==typeof a){var f=!0===s[2],u=!0===s[3],h=f||u,d=s[2];u&&(d=s[2]),f||(t=d?r.Ls[d]:this.$locale()),this.$d=c(n,a,i),this.init(),d&&!0!==d&&(this.$L=this.locale(d).$L),h&&n!==this.format(a)&&(this.$d=new Date("")),t=void 0;}else if(a instanceof Array)for(var m=a.length,l=1;l<=m;l+=1){s[1]=a[l-1];var M=r.apply(this,s);if(M.isValid()){this.$d=M.$d,this.$L=M.$L,this.init();break}l===m&&(this.$d=new Date(""));}else o.call(this,e);};}});
+});
+
+var utc = createCommonjsModule(function (module, exports) {
+!function(t,i){module.exports=i();}(commonjsGlobal,function(){return function(t,i,e){var s=i.prototype;e.utc=function(t){return new i({date:t,utc:!0,args:arguments})},s.utc=function(t){var i=e(this.toDate(),{locale:this.$L,utc:!0});return t?i.add(this.utcOffset(),"minute"):i},s.local=function(){return e(this.toDate(),{locale:this.$L,utc:!1})};var f=s.parse;s.parse=function(t){t.utc&&(this.$u=!0),this.$utils().u(t.$offset)||(this.$offset=t.$offset),f.call(this,t);};var n=s.init;s.init=function(){if(this.$u){var t=this.$d;this.$y=t.getUTCFullYear(),this.$M=t.getUTCMonth(),this.$D=t.getUTCDate(),this.$W=t.getUTCDay(),this.$H=t.getUTCHours(),this.$m=t.getUTCMinutes(),this.$s=t.getUTCSeconds(),this.$ms=t.getUTCMilliseconds();}else n.call(this);};var u=s.utcOffset;s.utcOffset=function(t,i){var e=this.$utils().u;if(e(t))return this.$u?0:e(this.$offset)?u.call(this):this.$offset;var s=Math.abs(t)<=16?60*t:t,f=this;if(i)return f.$offset=s,f.$u=0===t,f;if(0!==t){var n=this.$u?this.toDate().getTimezoneOffset():-1*this.utcOffset();(f=this.local().add(s+n,"minute")).$offset=s,f.$x.$localOffset=n;}else f=this.utc();return f};var o=s.format;s.format=function(t){var i=t||(this.$u?"YYYY-MM-DDTHH:mm:ss[Z]":"");return o.call(this,i)},s.valueOf=function(){var t=this.$utils().u(this.$offset)?0:this.$offset+(this.$x.$localOffset||(new Date).getTimezoneOffset());return this.$d.valueOf()-6e4*t},s.isUTC=function(){return !!this.$u},s.toISOString=function(){return this.toDate().toISOString()},s.toString=function(){return this.toDate().toUTCString()};var r=s.toDate;s.toDate=function(t){return "s"===t&&this.$offset?e(this.format("YYYY-MM-DD HH:mm:ss:SSS")).toDate():r.call(this)};var a=s.diff;s.diff=function(t,i,s){if(t&&this.$u===t.$u)return a.call(this,t,i,s);var f=this.local(),n=e(t).local();return a.call(f,n,i,s)};}});
+});
+
+dayjs_min.extend(customParseFormat);
+dayjs_min.extend(utc);
 var SchemaFormComponentWrapper = function (_a) {
     var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema, isRequired = _a.isRequired;
     var isError = errors.length > 0;
@@ -18202,11 +18219,16 @@ function SchemaFormComponent(props) {
             dispatch(ValueAction.set(path, null));
         }
         else {
-            var dt = Date.parse(str);
+            var dt = dayjs_min(str, [
+                "YYYY-MM-DD HH:mm:ss",
+                "YYYY-MM-DD HH:mm",
+                "YYYY-MM-DD"
+            ], true);
             setHoldString(str);
-            if (isNaN(dt))
+            if (!dt.isValid())
                 return;
-            var newStr = new Date(dt).toISOString();
+            var newStr = dt.utc().format();
+            console.log('ch d val ' + newStr);
             dispatch(ValueAction.set(path, newStr));
         }
     }
@@ -18274,8 +18296,9 @@ function SchemaFormComponent(props) {
                 return (React__default.createElement("input", __assign({}, commonProps, { type: "date", className: classes("sf-date") })));
             case "date-time":
                 if (browserInfo.isIE || browserInfo.isSafari || browserInfo.isFirefox) {
-                    var textDateTimeProps = __assign(__assign({}, baseProps), { value: holdString ? holdString : (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur });
-                    return (React__default.createElement("input", __assign({}, textDateTimeProps, { type: "text", className: classes("sf-datetime") })));
+                    var val = holdString || (value ? dayjs_min(value).format('YYYY-MM-DD HH:mm:ss') : '');
+                    var textDateTimeProps = __assign(__assign({}, baseProps), { value: val, onChange: function () { }, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur });
+                    return (React__default.createElement("input", __assign({}, textDateTimeProps, { type: "text", className: classes("sf-datetime"), placeholder: "e.g. 2000-11-22 15:33:44" })));
                 }
                 else {
                     var dateTimeProps = __assign(__assign({}, baseProps), { value: (value || '').toString().substring(0, 16), onChange: function () { }, onInput: handleDateTimeChange });

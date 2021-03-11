@@ -20,6 +20,7 @@ export function fieldType(schema: object): string {
         case "string-time":
         case "string-email":
         case "string-password":
+        case "number-currency":
             return schema['format'];
         default:
             return type;
@@ -479,13 +480,15 @@ export const makeSchemaResolver = (schemas: object[], fallbackResolver?: (addres
 
 export const deleteSubschemaProperties = (value: any, schema: object): any => {
     const schemaType = schema['type'];
-    if (schemaType === 'object') {
-        (schema['properties'] as any[]).forEach(prop => {
-            const res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
-            if (res === null) delete value[prop];
-        });
+    if (schemaType === 'object' && value && typeof value === 'object') {
+        if (schema['properties']) {
+            Object.keys(schema['properties']).forEach(prop => {
+                const res = deleteSubschemaProperties(value[prop], schema['properties'][prop]);
+                if (res === null) delete value[prop];
+            });
+        }
         return value === {} ? null : value;
-    } else if (schemaType === 'array') {
+    } else if (schemaType === 'array' && Array.isArray(value)) {
         return (value as any[]).map(item => deleteSubschemaProperties(item, schema['items'])).filter((item: any) => item !== null);
     } else {
         return null;

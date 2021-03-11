@@ -1,6 +1,6 @@
 {
   "name": "@restspace/schema-form",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
@@ -62,6 +62,7 @@
     "@types/jsonpointer": "^4.0.0",
     "@types/lodash": "^4.14.138",
     "ajv": "^6.10.2",
+    "dayjs": "^1.9.7",
     "jsonpointer": "^4.0.1",
     "react-dropzone": "^10.1.8",
     "react-dropzone-uploader": "github:spathon/react-dropzone-uploader"
