@@ -60,8 +60,8 @@ export function SchemaFormObject({
         return <></>;
     }
     
-    let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties']);
-    let properties = Object.entries(schema['properties']);
+    let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties'] || {});
+    let properties = Object.entries(schema['properties'] || {});
     let requireds = schema['required'];
     if (schema['order'] && _.flatten(schema['order']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));

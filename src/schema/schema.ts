@@ -70,14 +70,15 @@ function nullOptionalsAllowedApply(schema: object) {
     if (schema['$ref']) return;
     switch (schema['type']) {
         case 'object':
-            for (let prop in schema['properties']) {
+            const properties = schema['properties'] || {};
+            for (let prop in properties) {
                 if (req.indexOf(prop) < 0) {
                     nullOptionalsAllowedApply(schema['properties'][prop]);
                 }
             }
             break;
         case 'array':
-            const items = schema['items'];
+            const items = schema['items'] || {};
             nullOptionalsAllowedApply(items);
             if (items['oneOf'] && !(items['oneOf'] as any[]).some(subschema => subschema["type"] == "null")) {
                 items['oneOf'].push({ type: 'null' });
@@ -226,7 +227,7 @@ export function disjoin(schema0: object | null, schema1: object | null ): object
             case 'properties':
                 let deleteProps = [];
                 for (let p in schema['properties']) {
-                    let otherProp = schema1['properties'][p] || null;
+                    let otherProp = schema1?.['properties']?.[p] || null;
                     if (otherProp === null) {
                         deleteProps.push(p);
                     } else {
@@ -321,7 +322,7 @@ export function fieldUnion(baseSchema: object, schema: object | null): object | 
     };
     switch (schema['type']) {
         case "object":
-            let props = schema['properties'];
+            let props = schema['properties'] || {};
             for (let field in props) {
                 union[field] = fieldUnion(baseSchema, props[field]);
             }
@@ -489,7 +490,7 @@ export const deleteSubschemaProperties = (value: any, schema: object): any => {
         }
         return value === {} ? null : value;
     } else if (schemaType === 'array' && Array.isArray(value)) {
-        return (value as any[]).map(item => deleteSubschemaProperties(item, schema['items'])).filter((item: any) => item !== null);
+        return (value as any[]).map(item => deleteSubschemaProperties(item, schema['items'] || {})).filter((item: any) => item !== null);
     } else {
         return null;
     }

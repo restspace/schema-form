@@ -39,7 +39,7 @@ export function MultiSelectButtonsEditor(props: ISchemaContainerProps): React.Re
         const classes = `sf-control sf-check-buttons ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, onFocus: handleFocus, onBlur: handleBlur };
-        const enums = schema['items']['enum'] as string[];
+        const enums = schema?.['items']['enum'] as string[];
         if (!enums || schema['type'] !== 'array') {
             throw(`In schema ${JSON.stringify(schema)}, editor: checkButtons must be an array type with items an enum property`);
         }

@@ -18,7 +18,7 @@ export function SchemaFormArray({
 }: ISchemaContainerProps): React.ReactElement {
     const dispatch = useContext(ValueDispatch);
     const [ collapsed, setCollapsed ] = useState(false);
-    const itemSchema = schema['items'];
+    const itemSchema = schema['items'] || {};
     const valueArray = Array.isArray(value) ? value as any[] : [];
     const pathEl = path.length ? _.last(path) : '';
     const arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
