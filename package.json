@@ -1,6 +1,6 @@
 {
   "name": "@restspace/schema-form",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
@@ -50,6 +50,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.3",
     "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.22.1",
     "sass": "^1.29.0",
     "typescript": "^3.5.3"

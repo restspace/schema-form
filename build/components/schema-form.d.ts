@@ -15,6 +15,7 @@ export interface ISchemaFormProps {
     className?: string;
     changeOnBlur?: boolean;
     collapsible?: boolean;
+    gridMode?: boolean;
     componentContext?: object;
     schemaResolver?(address: string): object;
 }

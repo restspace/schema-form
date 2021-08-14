@@ -5,6 +5,7 @@ import resolve from "rollup-plugin-node-resolve";
 import json from "rollup-plugin-json";
 import sass from "rollup-plugin-sass";
 import image from "rollup-plugin-img";
+import { terser } from "rollup-plugin-terser";
 
 import pkg from "./package.json";
 
@@ -50,6 +51,7 @@ export default {
     json(),
     sass({
       output: true
-    })
+    }),
+    //terser()
   ]
 };

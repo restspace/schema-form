@@ -86,6 +86,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
     const uploadContext = ((context && context['uploadEditor']) || {}) as IUploadEditorContext;
     const testState = uploadContext.testState || null;
 
+    const urls = typeof value === 'string' ? value.split('|') : [];
 
     useEffect(() => {
         if (uploadContext.testState) {
@@ -148,9 +149,9 @@ export function UploadEditor(props: ISchemaComponentProps) {
             .then((absUrls) => {
                 let saveUrls = absUrls.map(absUrl => uploadContext.saveSiteRelative ? makeSiteRelative(absUrl) : absUrl);
                 if (isMulti) {
-                    saveUrls = _.union(value ? value.split('|') : [], saveUrls);
-                } else if (value && value.length > 0 && uploadContext.deleteFile) {
-                    let absUrl = makeAbsolute(value.split('|')[0], imageHost);
+                    saveUrls = _.union(urls, saveUrls);
+                } else if (urls.length > 0 && uploadContext.deleteFile) {
+                    let absUrl = makeAbsolute(urls[0], imageHost);
                     uploadContext.deleteFile(absUrl); // fire and forget delete request
                 }
                 dispatch(ValueAction.set(path, saveUrls.join('|')))
@@ -161,8 +162,8 @@ export function UploadEditor(props: ISchemaComponentProps) {
 
     const onDelete = (absUrl: string) => () => {
         uploadContext.deleteFile && uploadContext.deleteFile(absUrl);
-        dispatch(ValueAction.set(path, (value || '').split('|')
-            .filter((v: string) => makeAbsolute(v, imageHost) !== absUrl).join('|'))
+        dispatch(ValueAction.set(path,
+            urls.filter((v: string) => makeAbsolute(v, imageHost) !== absUrl).join('|'))
         );
     };
 
@@ -170,8 +171,6 @@ export function UploadEditor(props: ISchemaComponentProps) {
         let val = ev.target['value'];
         dispatch(ValueAction.set(path, val));
     }
-
-    const urls = value ? (value as string).split('|') : [];
 
     const imageHost = uploadContext.saveSiteRelative
         ? getHost(uploadContext.getFileUrl(new File([], ''), path, schema))

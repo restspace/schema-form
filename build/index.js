@@ -18153,23 +18153,31 @@ var utc = createCommonjsModule(function (module, exports) {
 dayjs_min.extend(customParseFormat);
 dayjs_min.extend(utc);
 var SchemaFormComponentWrapper = function (_a) {
-    var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema, isRequired = _a.isRequired;
+    var errors = _a.errors, caption = _a.caption, children = _a.children, schema = _a.schema, isRequired = _a.isRequired, context = _a.context;
     var isError = errors.length > 0;
     var errorClass = isError ? "sf-has-error " : "";
-    var requiredClass = isRequired ? "sf-required" : "";
+    var requiredClass = isRequired ? "sf-required " : "";
     var outerClass = schema['className'] ? "sf-row " + schema['className'] : "sf-row";
     var outerErrorClass = schema['className'] ? "sf-row sf-error-row " + schema["className"] + "-error" : "sf-row sf-error-row";
+    var gridMode = context && context['gridMode'];
+    var innerClass = gridMode && schema['className'] ? schema["className"] + ' ' : '';
+    var mainField = function () { return (React__default.createElement(React__default.Fragment, null,
+        caption && React__default.createElement("label", { className: "sf-caption " + errorClass + requiredClass + innerClass },
+            caption,
+            schema['description'] && (React__default.createElement(React__default.Fragment, null,
+                React__default.createElement("br", null),
+                React__default.createElement("span", { className: "sf-description " + errorClass }, schema['description'])))),
+        children)); };
+    var errorField = function () { return (React__default.createElement(React__default.Fragment, null,
+        React__default.createElement("label", { className: "sf-caption" }),
+        errors.map(function (err, idx) { return (React__default.createElement("span", { key: idx, className: "sf-error" }, err.message)); }))); };
     return (React__default.createElement(React__default.Fragment, null,
-        React__default.createElement("div", { className: outerClass },
-            caption && React__default.createElement("label", { htmlFor: name, className: "sf-caption " + errorClass + requiredClass },
-                caption,
-                schema['description'] && (React__default.createElement(React__default.Fragment, null,
-                    React__default.createElement("br", null),
-                    React__default.createElement("span", { className: "sf-description " + errorClass }, schema['description'])))),
-            children),
-        isError && React__default.createElement("div", { className: outerErrorClass },
-            React__default.createElement("label", { className: "sf-caption" }),
-            errors.map(function (err, idx) { return (React__default.createElement("label", { key: idx, className: "sf-error", htmlFor: name }, err.message)); }))));
+        gridMode
+            ? mainField()
+            : React__default.createElement("div", { className: outerClass }, mainField()),
+        isError && (gridMode
+            ? errorField()
+            : React__default.createElement("div", { className: outerErrorClass }, errorField()))));
 };
 var stringFilters = {
     "html-newlines": {
@@ -18282,6 +18290,8 @@ function SchemaFormComponent(props) {
         var commonProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: function () { }, onInput: handleChange });
         var selectProps = __assign(__assign({}, baseProps), { value: (value || '').toString(), onChange: handleChange });
         switch (fieldType(schema)) {
+            case "null":
+                return React__default.createElement(React__default.Fragment, null);
             case "string":
                 return (React__default.createElement("input", __assign({}, commonProps, { value: uiValue(value), onInput: handleTextChange, type: "text", className: classes("sf-string") })));
             case "boolean":
@@ -20827,7 +20837,7 @@ function UploadEditor(props) {
         if (acceptedFiles.length === 0)
             return;
         var sendFilePromises = acceptedFiles.map(function (file) {
-            var absUrl = uploadContext.getFileUrl(file, path, schema).toLowerCase();
+            var absUrl = uploadContext.getFileUrl(file, path, schema);
             return uploadContext.sendFile(absUrl, file, function (pc) { return updateProgress(file, pc); })
                 .then(function () { return encodeURI(absUrl); });
         });
@@ -28159,14 +28169,19 @@ function OneOfRadioEditor(props) {
         var readOnly = schema['readOnly'] || false;
         var baseProps = { name: name, readOnly: readOnly, onFocus: handleFocus, onBlur: handleBlur };
         var opts = oneOf && oneOf.map(function (subschema, i) { return subschema['title'] || 'option ' + i.toString(); });
+        var gridMode = context && context['gridMode'];
         if (!opts) {
             throw ("In schema " + JSON.stringify(schema) + ", editor: oneOfRadioEditor must be a subschema with an oneOf property");
         }
         return (React__default.createElement("div", { className: 'sf-row sf-schema-selector' },
             React__default.createElement("div", { className: classes }, opts.map(function (opt, idx) {
-                return React__default.createElement("span", { className: "sf-radio", key: opt },
-                    React__default.createElement("input", __assign({}, baseProps, { id: name + '_' + idx, type: "radio", checked: idx === currentIdx, className: "sf-radio-button", onChange: handleCheckChange(idx), value: idx })),
-                    React__default.createElement("label", { htmlFor: name + '_' + idx }, opt));
+                return React__default.createElement(React__default.Fragment, null, gridMode
+                    ? React__default.createElement(React__default.Fragment, null,
+                        React__default.createElement("input", __assign({}, baseProps, { id: name + '_' + idx, type: "radio", checked: idx === currentIdx, className: "sf-radio-button", onChange: handleCheckChange(idx), value: idx })),
+                        React__default.createElement("label", { htmlFor: name + '_' + idx }, opt))
+                    : React__default.createElement("span", { className: "sf-radio", key: opt },
+                        React__default.createElement("input", __assign({}, baseProps, { id: name + '_' + idx, type: "radio", checked: idx === currentIdx, className: "sf-radio-button", onChange: handleCheckChange(idx), value: idx })),
+                        React__default.createElement("label", { htmlFor: name + '_' + idx }, opt)));
             }))));
     }
     var isError = errors.length > 0;
@@ -28178,6 +28193,7 @@ function OneOfRadioEditor(props) {
 }
 
 var defaultComponentMap = {
+    "null": SchemaFormComponent,
     "string": SchemaFormComponent,
     "number": SchemaFormComponent,
     "enum": SchemaFormComponent,
@@ -28200,7 +28216,7 @@ var defaultContainerMap = {
     "oneOfRadio": OneOfRadioEditor
 };
 function SchemaForm(props) {
-    var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, collapsible = props.collapsible, componentContext = props.componentContext, components = props.components, containers = props.containers;
+    var value = props.value, schema = props.schema, onChange = props.onChange, onFocus = props.onFocus, onBlur = props.onBlur, onEditor = props.onEditor, showErrors = props.showErrors, className = props.className, changeOnBlur = props.changeOnBlur, collapsible = props.collapsible, gridMode = props.gridMode, componentContext = props.componentContext, components = props.components, containers = props.containers;
     var _a = React.useState(true), isPropsChange = _a[0], setIsPropsChange = _a[1];
     var context = {
         components: Object.assign(defaultComponentMap, components || {}),
@@ -28275,6 +28291,9 @@ function SchemaForm(props) {
     var formClass = "sf-form " + className;
     if (schema && schema['currencySymbol']) {
         context.componentContext = __assign(__assign({}, (context.componentContext || {})), { currencySymbol: schema['currencySymbol'] });
+    }
+    if (gridMode !== undefined) {
+        context.componentContext = __assign(__assign({}, (context.componentContext || {})), { gridMode: gridMode });
     }
     //console.log('FORM rendering ' + JSON.stringify(currentValue));
     if (!schema) {

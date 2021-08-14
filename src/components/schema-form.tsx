@@ -29,11 +29,13 @@ export interface ISchemaFormProps {
     className?: string,
     changeOnBlur?: boolean,
     collapsible?: boolean,
+    gridMode?: boolean,
     componentContext?: object,
     schemaResolver?(address: string): object
 }
 
 const defaultComponentMap: IComponentMap = {
+    "null": SchemaFormComponent,
     "string": SchemaFormComponent,
     "number": SchemaFormComponent,
     "enum": SchemaFormComponent,
@@ -69,6 +71,7 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         className,
         changeOnBlur,
         collapsible,
+        gridMode,
         componentContext,
         components,
         containers
@@ -158,6 +161,12 @@ export default function SchemaForm(props: ISchemaFormProps): React.ReactElement 
         context.componentContext = {
             ...(context.componentContext || {}),
             currencySymbol: schema['currencySymbol']
+        };
+    }
+    if (gridMode !== undefined) {
+        context.componentContext = {
+            ...(context.componentContext || {}),
+            gridMode
         };
     }
 

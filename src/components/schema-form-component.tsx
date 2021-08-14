@@ -10,29 +10,50 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
-export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired }) => {
+export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired, context }) => {
     const isError = errors.length > 0;
     const errorClass = isError ? "sf-has-error " : "";
-    const requiredClass = isRequired ? "sf-required" : ""
+    const requiredClass = isRequired ? "sf-required " : ""
     const outerClass = schema['className'] ? "sf-row " + schema['className'] : "sf-row";
     const outerErrorClass = schema['className'] ? "sf-row sf-error-row " + schema["className"] + "-error" : "sf-row sf-error-row";
-    return (
-    <>
-        <div className={outerClass}>
-            {caption && <label htmlFor={name} className={"sf-caption " + errorClass + requiredClass}>
+    const gridMode = context && context['gridMode'];
+    const innerClass = gridMode && schema['className'] ? schema["className"] + ' ' : '';
+
+    const mainField = () => (
+        <>
+            {caption && <label className={"sf-caption " + errorClass + requiredClass + innerClass}>
                 {caption}
                 {schema['description'] && (<><br/><span className={"sf-description " + errorClass}>
                     {schema['description']}
                 </span></>)}
             </label>}
             {children}
-        </div>
-        {isError && <div className={outerErrorClass}>
+        </>
+    );
+
+    const errorField = () => (
+        <>
             <label className="sf-caption"></label>
             {errors.map((err, idx) => (
-                <label key={idx} className="sf-error" htmlFor={name}>{err.message}</label>
+                <span key={idx} className="sf-error">{err.message}</span>
             ))}
-        </div>}
+        </>
+    );
+
+    return (
+    <>
+        {gridMode
+            ? mainField()
+            : <div className={outerClass}>
+                {mainField()}
+            </div>
+        }
+        {isError && (gridMode
+            ? errorField()
+            : <div className={outerErrorClass}>
+                {errorField()}
+            </div>
+        )}
     </>
     );
 }
@@ -170,6 +191,8 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
 
         switch (fieldType(schema)) {
+            case "null":
+                return <></>;
             case "string":
                 return (<input {...commonProps} value={uiValue(value)} onInput={handleTextChange} type="text" className={classes("sf-string")} />)
             case "boolean":

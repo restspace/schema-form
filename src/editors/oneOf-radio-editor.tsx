@@ -64,6 +64,7 @@ export function OneOfRadioEditor(props: ISchemaContainerProps): React.ReactEleme
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, onFocus: handleFocus, onBlur: handleBlur };
         const opts = oneOf && oneOf.map((subschema, i) => (subschema['title'] as string) || 'option ' + i.toString());
+        const gridMode = context && context['gridMode'];
         if (!opts) {
             throw(`In schema ${JSON.stringify(schema)}, editor: oneOfRadioEditor must be a subschema with an oneOf property`);
         }
@@ -72,17 +73,32 @@ export function OneOfRadioEditor(props: ISchemaContainerProps): React.ReactEleme
             <div className='sf-row sf-schema-selector'>
                 <div className={classes}>
                 {opts.map((opt, idx) =>
-                    <span className="sf-radio" key={opt}>
-                        <input
-                            {...baseProps}
-                            id={name + '_' + idx}
-                            type="radio"
-                            checked={idx === currentIdx}
-                            className="sf-radio-button"
-                            onChange={handleCheckChange(idx)}
-                            value={idx} />
-                        <label htmlFor={name + '_' + idx}>{opt}</label>
-                    </span>
+                    <>
+                        {gridMode 
+                            ? <>
+                                <input
+                                    {...baseProps}
+                                    id={name + '_' + idx}
+                                    type="radio"
+                                    checked={idx === currentIdx}
+                                    className="sf-radio-button"
+                                    onChange={handleCheckChange(idx)}
+                                    value={idx} />
+                                <label htmlFor={name + '_' + idx}>{opt}</label>
+                            </>
+                            : <span className="sf-radio" key={opt}>
+                                <input
+                                    {...baseProps}
+                                    id={name + '_' + idx}
+                                    type="radio"
+                                    checked={idx === currentIdx}
+                                    className="sf-radio-button"
+                                    onChange={handleCheckChange(idx)}
+                                    value={idx} />
+                                <label htmlFor={name + '_' + idx}>{opt}</label>
+                            </span>
+                        }
+                    </>
                 )}
                 </div>
             </div>
