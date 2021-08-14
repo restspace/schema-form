@@ -188,7 +188,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
         const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
-        const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange };
+        const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange, disabled: baseProps.readOnly };
 
         switch (fieldType(schema)) {
             case "null":
