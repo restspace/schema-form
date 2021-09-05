@@ -52,6 +52,6 @@ export default {
     sass({
       output: true
     }),
-    //terser()
+    terser()
   ]
 };
