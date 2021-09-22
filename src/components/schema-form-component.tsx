@@ -18,6 +18,8 @@ export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps
     const outerErrorClass = schema['className'] ? "sf-row sf-error-row " + schema["className"] + "-error" : "sf-row sf-error-row";
     const gridMode = context && context['gridMode'];
     const innerClass = gridMode && schema['className'] ? schema["className"] + ' ' : '';
+    
+    if (fieldType(schema) === 'hidden') caption = '';
 
     const mainField = () => (
         <>

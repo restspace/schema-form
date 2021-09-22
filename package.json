@@ -1,6 +1,6 @@
 {
   "name": "@restspace/schema-form",
-  "version": "1.0.11",
+  "version": "1.0.14",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
@@ -36,8 +36,10 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.3.3",
     "@types/jest": "^24.0.17",
-    "@types/react": "^16.8.24",
-    "@types/react-dom": "^16.8.5",
+    "@types/jsonpointer": "^4.0.0",
+    "@types/lodash": "^4.14.138",
+    "@types/react": "^16.8.6 || ^17",
+    "@types/react-dom": "^16.8.6 || ^17",
     "@types/react-test-renderer": "^16.8.3",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
@@ -56,12 +58,10 @@
     "typescript": "^3.9.7"
   },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.8.6 || ^17",
+    "react-dom": "^16.8.6 || ^17"
   },
   "dependencies": {
-    "@types/jsonpointer": "^4.0.0",
-    "@types/lodash": "^4.14.138",
     "ajv": "^6.10.2",
     "dayjs": "^1.9.7",
     "jsonpointer": "^4.0.1",
