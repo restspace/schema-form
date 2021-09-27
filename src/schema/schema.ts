@@ -125,11 +125,11 @@ export function conjoin(schema0: object | null, schema1: object | null): object 
                     }
                 }
                 break;
-            case 'order': 
-                if (!schema['order']) {
-                    schema['order'] = schema1['order']
+            case 'propertyOrder': 
+                if (!schema['propertyOrder']) {
+                    schema['propertyOrder'] = schema1['propertyOrder']
                 } else {
-                    schema['order'] = mergeOrders(schema['order'], schema1['order']);
+                    schema['propertyOrder'] = mergeOrders(schema['propertyOrder'], schema1['propertyOrder']);
                 }
                 break;
             case 'items':

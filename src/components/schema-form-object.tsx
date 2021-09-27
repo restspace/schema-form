@@ -60,10 +60,10 @@ export function SchemaFormObject({
         return <></>;
     }
     
-    let topOrder: NestedListArray = schema['order'] || Object.keys(schema['properties'] || {});
+    let topOrder: NestedListArray = schema['propertyOrder'] || Object.keys(schema['properties'] || {});
     let properties = Object.entries(schema['properties'] || {});
     let requireds = schema['required'];
-    if (schema['order'] && _.flatten(schema['order']).length < properties.length) {
+    if (schema['propertyOrder'] && _.flatten(schema['propertyOrder']).length < properties.length) {
         console.log('fewer items in order than properties at ' + path.join('.'));
     }
     const collapsible = (context.collapsible && path.length > 0) || false;

@@ -48,7 +48,7 @@ const schema = {
       required: [ "postcode" ]
     }
   },
-  order: [ "salutation", [ "firstName", "lastName" ], "canContact", "preferredContact", "dateOfBirth", "password", "comments", "files", "things", "address" ],
+  propertyOrder: [ "salutation", [ "firstName", "lastName" ], "canContact", "preferredContact", "dateOfBirth", "password", "comments", "files", "things", "address" ],
   if: {
     type: "object", properties: {
       salutation: { type: "string", const: "Dr" }
@@ -58,7 +58,7 @@ const schema = {
     type: "object", properties: {
       isMedical: { type: "boolean" }
     },
-    order: [ "canContact", "isMedical" ]
+    propertyOrder: [ "canContact", "isMedical" ]
   }
 }
 

@@ -154,7 +154,7 @@ JSON schema is an extremely powerful descriptive language and this package while
 | object: maxProperties | Implemented as validation |
 | object: dependencies | Not supported |
 | object: patternProperties | Not supported |
-| object: order | NON-STANDARD. This custom keyword should be followed by a list of property names as strings or sublists of the same. It has no effect on validation. It allows specification of the order in which properties are displayed in the data entry form. See below for how orders are merged with combined schemas. Sublists are rendered contained within an outer div to allow more control over layout. |
+| object: propertyOrder | NON-STANDARD. This custom keyword should be followed by a list of property names as strings or sublists of the same. It has no effect on validation. It allows specification of the order in which properties are displayed in the data entry form. See below for how orders are merged with combined schemas. Sublists are rendered contained within an outer div to allow more control over layout. |
 | object: currencySymbol | NON-STANDARD. This custom keyword can only be present on the top-level schema object. It determines the string used as a currency prefix for the currency editor. |
 | object: additionalProperties | Assumed to be true when validating, and false when constructing a UI. See below for more. This means that additionalProperties: false in a schema is not supported. |
 | array: items | This schema is used to render each subsection of the array. Tuple validation (where items is a list of schemas) is not supported. |
