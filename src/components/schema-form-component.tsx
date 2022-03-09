@@ -228,6 +228,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 return (<textarea {...commonProps} value={uiValue(value)} onInput={handleTextChange} className={classes("sf-textarea")} />)
             case "enum":
                 const enumText: (string | number)[] = schema['enumText'] || schema['enum'];
+                if (schema['type'] === 'number') selectProps.onChange = handleChangeNumber;
                 return (
                 <select {...selectProps} className={classes("sf-enum")}>
                     <option key='' value=''></option>

@@ -1,6 +1,6 @@
 {
   "name": "@restspace/schema-form",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
