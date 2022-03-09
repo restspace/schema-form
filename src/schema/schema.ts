@@ -60,6 +60,7 @@ export function fieldCaption(schema: object, path: string[], value?: any): strin
 /** manipulate the schema to allow any optional property to have a null value
  * which is appropriate for form input */
 export function nullOptionalsAllowed(schema: object): object {
+    if (schema === null || schema === undefined) schema = {};
     let newSchema = deepCopy(schema);
     nullOptionalsAllowedApply(newSchema);
     return newSchema;

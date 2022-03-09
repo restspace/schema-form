@@ -166,7 +166,7 @@ JSON schema is an extremely powerful descriptive language and this package while
 | generic: title | The label of a field uses title for preference, otherwise it defaults to convering camel case into separated words e.g. initialRepeatingCost -> Initial repeating cost |
 | generic: description | Description is rendered as part of the label and can be styled differently |
 | generic: default | Not supported. Normally a default would be set on the initial value object passed to the form. |
-| generic: enum | A string-typed schema with an enum property will be rendered by default as a drop-down list i.e. an HTML select |
+| generic: enum | A string or number-typed schema with an enum property will be rendered by default as a drop-down list i.e. an HTML select. The custom property 'enumType' as a sibling of 'enum' is an array of equal length giving select display text corresponding to the value in the 'enum' array. |
 | generic: readOnly | If true, the value should not be editable just displayed |
 | generic: const | Only implemented as validation: for use in conditionals only. |
 | generic: editor | NON-STANDARD. This custom keyword which has no effect on validation allows definition of an editor to be used to render this schema. See Built-in editors below for a list of possibilities. |

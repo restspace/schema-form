@@ -227,11 +227,12 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "textarea":
                 return (<textarea {...commonProps} value={uiValue(value)} onInput={handleTextChange} className={classes("sf-textarea")} />)
             case "enum":
+                const enumText: (string | number)[] = schema['enumText'] || schema['enum'];
                 return (
                 <select {...selectProps} className={classes("sf-enum")}>
                     <option key='' value=''></option>
-                    {schema['enum'].map((val: string, idx: number) =>
-                        (<option key={val || idx} value={val}>{val}</option>))}
+                    {schema['enum'].map((val: string | number, idx: number) =>
+                        (<option key={val || idx} value={val}>{enumText[idx] || val}</option>))}
                 </select>
                 )
         }
