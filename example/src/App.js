@@ -2,7 +2,7 @@ import React, { Component, useState, useCallback, useMemo } from "react";
 import { Router, Link } from "@reach/router";
 import "./App.css";
 import "schema-form/build/index.css";
-import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "schema-form";
+import SchemaForm, { SchemaSubmitForm, SchemaPagedForm, sendFileAsBody } from "@restspace/schema-form";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 const loginSchema = {

@@ -8536,16 +8536,6 @@
     "loose-envify" "^1.1.0"
     "object-assign" "^4.1.1"
 
-"schema-form@file:..":
-  "resolved" "file:.."
-  "version" "1.0.13"
-  dependencies:
-    "ajv" "^6.10.2"
-    "dayjs" "^1.9.7"
-    "jsonpointer" "^4.0.1"
-    "react-dropzone" "^10.1.8"
-    "react-dropzone-uploader" "github:spathon/react-dropzone-uploader"
-
 "schema-utils@^1.0.0":
   "integrity" "sha512-i27Mic4KovM/lnGsy8whRCHhc7VicJajAjTrYg11K9zfZXnYIt4k5F+kZkwjnrhKzLic/HLU4j11mjsz2G/75g=="
   "resolved" "https://registry.npmjs.org/schema-utils/-/schema-utils-1.0.0.tgz"

@@ -8,13 +8,16 @@ import { IUploadEditorContext, sendFileAsBody } from "./editors/upload-editor";
 import { getByPath } from './utility';
 import { ErrorObject } from './error';
 import "./scss/layout.scss"
+import { emptyValue, fieldCaption } from "./schema/schema";
+import { ComponentForType } from "./components/component-for-type";
 
 export default SchemaForm;
-export { getByPath,
+export { getByPath, emptyValue, fieldCaption,
     ISchemaFormProps, SchemaSubmitForm, ISchemaSubmitFormProps,
     ErrorObject,
     SchemaPagedForm, ISchemaPagedFormProps,
     IUploadEditorContext, sendFileAsBody,
     SchemaFormComponentWrapper, ISchemaComponentProps, SchemaFormComponent,
+    ComponentForType,
     ISchemaContainerProps,
-    ValueDispatch, ValueAction };
+    ValueDispatch, ValueAction};

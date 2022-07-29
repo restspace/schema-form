@@ -7,8 +7,7 @@
     "@types/reach__router": "^1.2.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
-    "schema-form": "file:.."
+    "react-scripts": "3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
