@@ -57,12 +57,7 @@
     "sass": "^1.29.0",
     "typescript": "^3.9.7"
   },
-  "peerDependencies": {
-    "react": "^16.8.6 || ^17",
-    "react-dom": "^16.8.6 || ^17"
-  },
   "dependencies": {
-    "@restspace/schema-form": "^1.0.17",
     "ajv": "^6.10.2",
     "dayjs": "^1.9.7",
     "jsonpointer": "^4.0.1",
