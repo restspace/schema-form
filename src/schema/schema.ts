@@ -80,8 +80,7 @@ export function jsonPointerToPath(pointer: string) {
 
   const pathEls = [] as string[];
   pointer.split("/").forEach((el) => {
-    const int = parseInt(el);
-    if (isNaN(int)) {
+    if (!el.match(/^\d+$/)) {
       pathEls.push(`.${el}`);
     } else {
       pathEls.push(`[${el}]`);
