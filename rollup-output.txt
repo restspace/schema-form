@@ -1,0 +1,2062 @@
+[36m
+[1msrc/index.tsx[22m → [1mbuild/index.js, build/index.es.js[22m...[39m
+-----------------------------
+Rollup File Analysis
+-----------------------------
+bundle size:    67.931 KB
+original size:  76.688 KB
+code reduction: 11.42 %
+module count:   106
+
+██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalByTag.js
+bundle space:    5.2 %
+rendered size:   3.531 KB
+original size:   3.744 KB
+code reduction:  5.69 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalObjects.js
+bundle space:    4.28 %
+rendered size:   2.906 KB
+original size:   2.969 KB
+code reduction:  2.12 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsEqualDeep.js
+bundle space:    3.92 %
+rendered size:   2.664 KB
+original size:   3.008 KB
+code reduction:  11.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqual.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalArrays.js
+bundle space:    3.71 %
+rendered size:   2.518 KB
+original size:   2.66 KB
+code reduction:  5.34 %
+dependents:      2
+  - /node_modules/lodash-es/_equalByTag.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/memoize.js
+bundle space:    3.17 %
+rendered size:   2.156 KB
+original size:   2.222 KB
+code reduction:  2.97 %
+dependents:      1
+  - /node_modules/lodash-es/_memoizeCapped.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsTypedArray.js
+bundle space:    3.07 %
+rendered size:   2.085 KB
+original size:   2.22 KB
+code reduction:  6.08 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getTag.js
+bundle space:    2.38 %
+rendered size:   1.615 KB
+original size:   1.836 KB
+code reduction:  12.04 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayLikeKeys.js
+bundle space:    2.23 %
+rendered size:   1.517 KB
+original size:   1.776 KB
+code reduction:  14.58 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsNative.js
+bundle space:    1.82 %
+rendered size:   1.233 KB
+original size:   1.415 KB
+code reduction:  12.86 %
+dependents:      1
+  - /node_modules/lodash-es/_getNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseSet.js
+bundle space:    1.71 %
+rendered size:   1.164 KB
+original size:   1.383 KB
+code reduction:  15.84 %
+dependents:      1
+  - /node_modules/lodash-es/set.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getRawTag.js
+bundle space:    1.62 %
+rendered size:   1.103 KB
+original size:   1.137 KB
+code reduction:  2.99 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isBuffer.js
+bundle space:    1.57 %
+rendered size:   1.065 KB
+original size:   1.112 KB
+code reduction:  4.23 %
+dependents:      2
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseToString.js
+bundle space:    1.45 %
+rendered size:   988 Bytes
+original size:   1.152 KB
+code reduction:  14.24 %
+dependents:      1
+  - /node_modules/lodash-es/toString.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nodeUtil.js
+bundle space:    1.4 %
+rendered size:   952 Bytes
+original size:   993 Bytes
+code reduction:  4.13 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArguments.js
+bundle space:    1.38 %
+rendered size:   938 Bytes
+original size:   1.024 KB
+code reduction:  8.4 %
+dependents:      1
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isEqual.js
+bundle space:    1.35 %
+rendered size:   914 Bytes
+original size:   984 Bytes
+code reduction:  7.11 %
+dependents:      4
+  - /src/components/component-for-type.tsx
+  - /src/components/schema-form.tsx
+  - /src/components/schema-submit-form.tsx
+  - /src/components/schema-paged-form.tsx
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/set.js
+bundle space:    1.32 %
+rendered size:   898 Bytes
+original size:   958 Bytes
+code reduction:  6.26 %
+dependents:      1
+  - /src/components/schema-form-value-context.ts
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsEqual.js
+bundle space:    1.31 %
+rendered size:   887 Bytes
+original size:   1.017 KB
+code reduction:  12.78 %
+dependents:      1
+  - /node_modules/lodash-es/isEqual.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isFunction.js
+bundle space:    1.3 %
+rendered size:   884 Bytes
+original size:   991 Bytes
+code reduction:  10.8 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/isArrayLike.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/get.js
+bundle space:    1.21 %
+rendered size:   824 Bytes
+original size:   882 Bytes
+code reduction:  6.58 %
+dependents:      1
+  - /src/components/schema-form-value-context.ts
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getSymbols.js
+bundle space:    1.19 %
+rendered size:   809 Bytes
+original size:   884 Bytes
+code reduction:  8.48 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_assignValue.js
+bundle space:    1.17 %
+rendered size:   795 Bytes
+original size:   897 Bytes
+code reduction:  11.37 %
+dependents:      1
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stringToPath.js
+bundle space:    1.17 %
+rendered size:   793 Bytes
+original size:   838 Bytes
+code reduction:  5.37 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isKey.js
+bundle space:    1.15 %
+rendered size:   781 Bytes
+original size:   878 Bytes
+code reduction:  11.05 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/eq.js
+bundle space:    1.14 %
+rendered size:   776 Bytes
+original size:   797 Bytes
+code reduction:  2.63 %
+dependents:      3
+  - /node_modules/lodash-es/_assocIndexOf.js
+  - /node_modules/lodash-es/_assignValue.js
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isLength.js
+bundle space:    1.14 %
+rendered size:   773 Bytes
+original size:   800 Bytes
+code reduction:  3.38 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/isArrayLike.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isIndex.js
+bundle space:    1.08 %
+rendered size:   735 Bytes
+original size:   757 Bytes
+code reduction:  2.91 %
+dependents:      2
+  - /node_modules/lodash-es/_baseSet.js
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/keys.js
+bundle space:    1.07 %
+rendered size:   726 Bytes
+original size:   882 Bytes
+code reduction:  17.69 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArrayLike.js
+bundle space:    1.06 %
+rendered size:   717 Bytes
+original size:   828 Bytes
+code reduction:  13.41 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackSet.js
+bundle space:    1.05 %
+rendered size:   716 Bytes
+original size:   851 Bytes
+code reduction:  15.86 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashGet.js
+bundle space:    1.05 %
+rendered size:   710 Bytes
+original size:   770 Bytes
+code reduction:  7.79 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isObject.js
+bundle space:    1.04 %
+rendered size:   704 Bytes
+original size:   731 Bytes
+code reduction:  3.69 %
+dependents:      3
+  - /node_modules/lodash-es/isFunction.js
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheDelete.js
+bundle space:    1.02 %
+rendered size:   691 Bytes
+original size:   773 Bytes
+code reduction:  10.61 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseKeys.js
+bundle space:    0.98 %
+rendered size:   668 Bytes
+original size:   774 Bytes
+code reduction:  13.7 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGetTag.js
+bundle space:    0.94 %
+rendered size:   637 Bytes
+original size:   790 Bytes
+code reduction:  19.37 %
+dependents:      5
+  - /node_modules/lodash-es/isSymbol.js
+  - /node_modules/lodash-es/isFunction.js
+  - /node_modules/lodash-es/_baseIsArguments.js
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGetAllKeys.js
+bundle space:    0.92 %
+rendered size:   628 Bytes
+original size:   737 Bytes
+code reduction:  14.79 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_MapCache.js
+bundle space:    0.89 %
+rendered size:   604 Bytes
+original size:   867 Bytes
+code reduction:  30.33 %
+dependents:      3
+  - /node_modules/lodash-es/memoize.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayFilter.js
+bundle space:    0.88 %
+rendered size:   600 Bytes
+original size:   630 Bytes
+code reduction:  4.76 %
+dependents:      1
+  - /node_modules/lodash-es/_getSymbols.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_ListCache.js
+bundle space:    0.87 %
+rendered size:   593 Bytes
+original size:   867 Bytes
+code reduction:  31.6 %
+dependents:      4
+  - /node_modules/lodash-es/_mapCacheClear.js
+  - /node_modules/lodash-es/_stackClear.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isObjectLike.js
+bundle space:    0.86 %
+rendered size:   581 Bytes
+original size:   612 Bytes
+code reduction:  5.07 %
+dependents:      5
+  - /node_modules/lodash-es/isSymbol.js
+  - /node_modules/lodash-es/_baseIsArguments.js
+  - /node_modules/lodash-es/isArguments.js
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/_baseIsEqual.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isSymbol.js
+bundle space:    0.83 %
+rendered size:   567 Bytes
+original size:   680 Bytes
+code reduction:  16.62 %
+dependents:      3
+  - /node_modules/lodash-es/_isKey.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_toKey.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isTypedArray.js
+bundle space:    0.83 %
+rendered size:   566 Bytes
+original size:   693 Bytes
+code reduction:  18.33 %
+dependents:      2
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arraySome.js
+bundle space:    0.83 %
+rendered size:   564 Bytes
+original size:   592 Bytes
+code reduction:  4.73 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_memoizeCapped.js
+bundle space:    0.83 %
+rendered size:   562 Bytes
+original size:   631 Bytes
+code reduction:  10.94 %
+dependents:      1
+  - /node_modules/lodash-es/_stringToPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashHas.js
+bundle space:    0.82 %
+rendered size:   560 Bytes
+original size:   624 Bytes
+code reduction:  10.26 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseAssignValue.js
+bundle space:    0.8 %
+rendered size:   541 Bytes
+original size:   623 Bytes
+code reduction:  13.16 %
+dependents:      1
+  - /node_modules/lodash-es/_assignValue.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_toSource.js
+bundle space:    0.79 %
+rendered size:   535 Bytes
+original size:   554 Bytes
+code reduction:  3.43 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_objectToString.js
+bundle space:    0.79 %
+rendered size:   534 Bytes
+original size:   563 Bytes
+code reduction:  5.15 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashSet.js
+bundle space:    0.78 %
+rendered size:   528 Bytes
+original size:   596 Bytes
+code reduction:  11.41 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayMap.js
+bundle space:    0.78 %
+rendered size:   527 Bytes
+original size:   554 Bytes
+code reduction:  4.87 %
+dependents:      1
+  - /node_modules/lodash-es/_baseToString.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Hash.js
+bundle space:    0.77 %
+rendered size:   526 Bytes
+original size:   745 Bytes
+code reduction:  29.4 %
+dependents:      1
+  - /node_modules/lodash-es/_mapCacheClear.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGet.js
+bundle space:    0.76 %
+rendered size:   515 Bytes
+original size:   614 Bytes
+code reduction:  16.12 %
+dependents:      1
+  - /node_modules/lodash-es/get.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/toString.js
+bundle space:    0.74 %
+rendered size:   503 Bytes
+original size:   578 Bytes
+code reduction:  12.98 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isMasked.js
+bundle space:    0.73 %
+rendered size:   497 Bytes
+original size:   562 Bytes
+code reduction:  11.57 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArray.js
+bundle space:    0.72 %
+rendered size:   486 Bytes
+original size:   486 Bytes
+code reduction:  0 %
+dependents:      6
+  - /node_modules/lodash-es/_isKey.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_castPath.js
+  - /node_modules/lodash-es/_baseGetAllKeys.js
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseTimes.js
+bundle space:    0.7 %
+rendered size:   474 Bytes
+original size:   502 Bytes
+code reduction:  5.58 %
+dependents:      1
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_SetCache.js
+bundle space:    0.7 %
+rendered size:   473 Bytes
+original size:   630 Bytes
+code reduction:  24.92 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheSet.js
+bundle space:    0.69 %
+rendered size:   472 Bytes
+original size:   551 Bytes
+code reduction:  14.34 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Stack.js
+bundle space:    0.68 %
+rendered size:   461 Bytes
+original size:   732 Bytes
+code reduction:  37.02 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_toKey.js
+bundle space:    0.67 %
+rendered size:   458 Bytes
+original size:   521 Bytes
+code reduction:  12.09 %
+dependents:      2
+  - /node_modules/lodash-es/_baseGet.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isPrototype.js
+bundle space:    0.67 %
+rendered size:   452 Bytes
+original size:   478 Bytes
+code reduction:  5.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_assocIndexOf.js
+bundle space:    0.63 %
+rendered size:   427 Bytes
+original size:   485 Bytes
+code reduction:  11.96 %
+dependents:      4
+  - /node_modules/lodash-es/_listCacheDelete.js
+  - /node_modules/lodash-es/_listCacheGet.js
+  - /node_modules/lodash-es/_listCacheHas.js
+  - /node_modules/lodash-es/_listCacheSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashDelete.js
+bundle space:    0.61 %
+rendered size:   414 Bytes
+original size:   443 Bytes
+code reduction:  6.55 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheSet.js
+bundle space:    0.61 %
+rendered size:   413 Bytes
+original size:   487 Bytes
+code reduction:  15.2 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayPush.js
+bundle space:    0.6 %
+rendered size:   407 Bytes
+original size:   435 Bytes
+code reduction:  6.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isKeyable.js
+bundle space:    0.59 %
+rendered size:   400 Bytes
+original size:   428 Bytes
+code reduction:  6.54 %
+dependents:      1
+  - /node_modules/lodash-es/_getMapData.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setCacheAdd.js
+bundle space:    0.58 %
+rendered size:   392 Bytes
+original size:   422 Bytes
+code reduction:  7.11 %
+dependents:      1
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_castPath.js
+bundle space:    0.57 %
+rendered size:   389 Bytes
+original size:   567 Bytes
+code reduction:  31.39 %
+dependents:      2
+  - /node_modules/lodash-es/_baseGet.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackDelete.js
+bundle space:    0.55 %
+rendered size:   373 Bytes
+original size:   403 Bytes
+code reduction:  7.44 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheDelete.js
+bundle space:    0.55 %
+rendered size:   371 Bytes
+original size:   448 Bytes
+code reduction:  17.19 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getNative.js
+bundle space:    0.54 %
+rendered size:   366 Bytes
+original size:   481 Bytes
+code reduction:  23.91 %
+dependents:      7
+  - /node_modules/lodash-es/_nativeCreate.js
+  - /node_modules/lodash-es/_Map.js
+  - /node_modules/lodash-es/_defineProperty.js
+  - /node_modules/lodash-es/_DataView.js
+  - /node_modules/lodash-es/_Promise.js
+  - /node_modules/lodash-es/_Set.js
+  - /node_modules/lodash-es/_WeakMap.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsArguments.js
+bundle space:    0.54 %
+rendered size:   366 Bytes
+original size:   486 Bytes
+code reduction:  24.69 %
+dependents:      1
+  - /node_modules/lodash-es/isArguments.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/stubArray.js
+bundle space:    0.53 %
+rendered size:   360 Bytes
+original size:   388 Bytes
+code reduction:  7.22 %
+dependents:      1
+  - /node_modules/lodash-es/_getSymbols.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_overArg.js
+bundle space:    0.52 %
+rendered size:   354 Bytes
+original size:   380 Bytes
+code reduction:  6.84 %
+dependents:      1
+  - /node_modules/lodash-es/_nativeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheGet.js
+bundle space:    0.5 %
+rendered size:   339 Bytes
+original size:   418 Bytes
+code reduction:  18.9 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapToArray.js
+bundle space:    0.49 %
+rendered size:   332 Bytes
+original size:   361 Bytes
+code reduction:  8.03 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getMapData.js
+bundle space:    0.48 %
+rendered size:   327 Bytes
+original size:   398 Bytes
+code reduction:  17.84 %
+dependents:      4
+  - /node_modules/lodash-es/_mapCacheDelete.js
+  - /node_modules/lodash-es/_mapCacheGet.js
+  - /node_modules/lodash-es/_mapCacheHas.js
+  - /node_modules/lodash-es/_mapCacheSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheHas.js
+bundle space:    0.47 %
+rendered size:   322 Bytes
+original size:   401 Bytes
+code reduction:  19.7 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setToArray.js
+bundle space:    0.46 %
+rendered size:   314 Bytes
+original size:   343 Bytes
+code reduction:  8.45 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_cacheHas.js
+bundle space:    0.45 %
+rendered size:   308 Bytes
+original size:   335 Bytes
+code reduction:  8.06 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheHas.js
+bundle space:    0.45 %
+rendered size:   306 Bytes
+original size:   380 Bytes
+code reduction:  19.47 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseUnary.js
+bundle space:    0.44 %
+rendered size:   302 Bytes
+original size:   330 Bytes
+code reduction:  8.48 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getAllKeys.js
+bundle space:    0.44 %
+rendered size:   301 Bytes
+original size:   453 Bytes
+code reduction:  33.55 %
+dependents:      1
+  - /node_modules/lodash-es/_equalObjects.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getValue.js
+bundle space:    0.44 %
+rendered size:   296 Bytes
+original size:   323 Bytes
+code reduction:  8.36 %
+dependents:      1
+  - /node_modules/lodash-es/_getNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackHas.js
+bundle space:    0.43 %
+rendered size:   294 Bytes
+original size:   321 Bytes
+code reduction:  8.41 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setCacheHas.js
+bundle space:    0.42 %
+rendered size:   284 Bytes
+original size:   314 Bytes
+code reduction:  9.55 %
+dependents:      1
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheClear.js
+bundle space:    0.38 %
+rendered size:   259 Bytes
+original size:   391 Bytes
+code reduction:  33.76 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheGet.js
+bundle space:    0.37 %
+rendered size:   254 Bytes
+original size:   328 Bytes
+code reduction:  22.56 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_root.js
+bundle space:    0.37 %
+rendered size:   253 Bytes
+original size:   298 Bytes
+code reduction:  15.1 %
+dependents:      9
+  - /node_modules/lodash-es/_Symbol.js
+  - /node_modules/lodash-es/_coreJsData.js
+  - /node_modules/lodash-es/_Map.js
+  - /node_modules/lodash-es/_Uint8Array.js
+  - /node_modules/lodash-es/isBuffer.js
+  - /node_modules/lodash-es/_DataView.js
+  - /node_modules/lodash-es/_Promise.js
+  - /node_modules/lodash-es/_Set.js
+  - /node_modules/lodash-es/_WeakMap.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/stubFalse.js
+bundle space:    0.37 %
+rendered size:   250 Bytes
+original size:   278 Bytes
+code reduction:  10.07 %
+dependents:      1
+  - /node_modules/lodash-es/isBuffer.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackGet.js
+bundle space:    0.36 %
+rendered size:   242 Bytes
+original size:   269 Bytes
+code reduction:  10.04 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashClear.js
+bundle space:    0.3 %
+rendered size:   207 Bytes
+original size:   279 Bytes
+code reduction:  25.81 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_defineProperty.js
+bundle space:    0.29 %
+rendered size:   196 Bytes
+original size:   231 Bytes
+code reduction:  15.15 %
+dependents:      1
+  - /node_modules/lodash-es/_baseAssignValue.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheClear.js
+bundle space:    0.27 %
+rendered size:   183 Bytes
+original size:   216 Bytes
+code reduction:  15.28 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackClear.js
+bundle space:    0.27 %
+rendered size:   181 Bytes
+original size:   252 Bytes
+code reduction:  28.17 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_freeGlobal.js
+bundle space:    0.26 %
+rendered size:   174 Bytes
+original size:   171 Bytes
+code reduction:  0 %
+dependents:      2
+  - /node_modules/lodash-es/_root.js
+  - /node_modules/lodash-es/_nodeUtil.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nativeKeys.js
+bundle space:    0.25 %
+rendered size:   167 Bytes
+original size:   202 Bytes
+code reduction:  17.33 %
+dependents:      1
+  - /node_modules/lodash-es/_baseKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nativeCreate.js
+bundle space:    0.22 %
+rendered size:   148 Bytes
+original size:   185 Bytes
+code reduction:  20 %
+dependents:      4
+  - /node_modules/lodash-es/_hashClear.js
+  - /node_modules/lodash-es/_hashGet.js
+  - /node_modules/lodash-es/_hashHas.js
+  - /node_modules/lodash-es/_hashSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_DataView.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   208 Bytes
+code reduction:  33.65 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Promise.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   205 Bytes
+code reduction:  32.68 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_WeakMap.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   205 Bytes
+code reduction:  32.68 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_coreJsData.js
+bundle space:    0.19 %
+rendered size:   128 Bytes
+original size:   155 Bytes
+code reduction:  17.42 %
+dependents:      1
+  - /node_modules/lodash-es/_isMasked.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Map.js
+bundle space:    0.18 %
+rendered size:   122 Bytes
+original size:   193 Bytes
+code reduction:  36.79 %
+dependents:      3
+  - /node_modules/lodash-es/_mapCacheClear.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Set.js
+bundle space:    0.18 %
+rendered size:   122 Bytes
+original size:   193 Bytes
+code reduction:  36.79 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Uint8Array.js
+bundle space:    0.15 %
+rendered size:   105 Bytes
+original size:   128 Bytes
+code reduction:  17.97 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Symbol.js
+bundle space:    0.13 %
+rendered size:   89 Bytes
+original size:   116 Bytes
+code reduction:  23.28 %
+dependents:      4
+  - /node_modules/lodash-es/_getRawTag.js
+  - /node_modules/lodash-es/_baseGetTag.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_equalByTag.js
+
+
+-----------------------------
+Rollup File Analysis
+-----------------------------
+bundle size:    67.931 KB
+original size:  76.688 KB
+code reduction: 11.42 %
+module count:   106
+
+██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalByTag.js
+bundle space:    5.2 %
+rendered size:   3.531 KB
+original size:   3.744 KB
+code reduction:  5.69 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalObjects.js
+bundle space:    4.28 %
+rendered size:   2.906 KB
+original size:   2.969 KB
+code reduction:  2.12 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsEqualDeep.js
+bundle space:    3.92 %
+rendered size:   2.664 KB
+original size:   3.008 KB
+code reduction:  11.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqual.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_equalArrays.js
+bundle space:    3.71 %
+rendered size:   2.518 KB
+original size:   2.66 KB
+code reduction:  5.34 %
+dependents:      2
+  - /node_modules/lodash-es/_equalByTag.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/memoize.js
+bundle space:    3.17 %
+rendered size:   2.156 KB
+original size:   2.222 KB
+code reduction:  2.97 %
+dependents:      1
+  - /node_modules/lodash-es/_memoizeCapped.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsTypedArray.js
+bundle space:    3.07 %
+rendered size:   2.085 KB
+original size:   2.22 KB
+code reduction:  6.08 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getTag.js
+bundle space:    2.38 %
+rendered size:   1.615 KB
+original size:   1.836 KB
+code reduction:  12.04 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+█░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayLikeKeys.js
+bundle space:    2.23 %
+rendered size:   1.517 KB
+original size:   1.776 KB
+code reduction:  14.58 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsNative.js
+bundle space:    1.82 %
+rendered size:   1.233 KB
+original size:   1.415 KB
+code reduction:  12.86 %
+dependents:      1
+  - /node_modules/lodash-es/_getNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseSet.js
+bundle space:    1.71 %
+rendered size:   1.164 KB
+original size:   1.383 KB
+code reduction:  15.84 %
+dependents:      1
+  - /node_modules/lodash-es/set.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getRawTag.js
+bundle space:    1.62 %
+rendered size:   1.103 KB
+original size:   1.137 KB
+code reduction:  2.99 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isBuffer.js
+bundle space:    1.57 %
+rendered size:   1.065 KB
+original size:   1.112 KB
+code reduction:  4.23 %
+dependents:      2
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseToString.js
+bundle space:    1.45 %
+rendered size:   988 Bytes
+original size:   1.152 KB
+code reduction:  14.24 %
+dependents:      1
+  - /node_modules/lodash-es/toString.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nodeUtil.js
+bundle space:    1.4 %
+rendered size:   952 Bytes
+original size:   993 Bytes
+code reduction:  4.13 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArguments.js
+bundle space:    1.38 %
+rendered size:   938 Bytes
+original size:   1.024 KB
+code reduction:  8.4 %
+dependents:      1
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isEqual.js
+bundle space:    1.35 %
+rendered size:   914 Bytes
+original size:   984 Bytes
+code reduction:  7.11 %
+dependents:      4
+  - /src/components/component-for-type.tsx
+  - /src/components/schema-form.tsx
+  - /src/components/schema-submit-form.tsx
+  - /src/components/schema-paged-form.tsx
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/set.js
+bundle space:    1.32 %
+rendered size:   898 Bytes
+original size:   958 Bytes
+code reduction:  6.26 %
+dependents:      1
+  - /src/components/schema-form-value-context.ts
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsEqual.js
+bundle space:    1.31 %
+rendered size:   887 Bytes
+original size:   1.017 KB
+code reduction:  12.78 %
+dependents:      1
+  - /node_modules/lodash-es/isEqual.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isFunction.js
+bundle space:    1.3 %
+rendered size:   884 Bytes
+original size:   991 Bytes
+code reduction:  10.8 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/isArrayLike.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/get.js
+bundle space:    1.21 %
+rendered size:   824 Bytes
+original size:   882 Bytes
+code reduction:  6.58 %
+dependents:      1
+  - /src/components/schema-form-value-context.ts
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getSymbols.js
+bundle space:    1.19 %
+rendered size:   809 Bytes
+original size:   884 Bytes
+code reduction:  8.48 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_assignValue.js
+bundle space:    1.17 %
+rendered size:   795 Bytes
+original size:   897 Bytes
+code reduction:  11.37 %
+dependents:      1
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stringToPath.js
+bundle space:    1.17 %
+rendered size:   793 Bytes
+original size:   838 Bytes
+code reduction:  5.37 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isKey.js
+bundle space:    1.15 %
+rendered size:   781 Bytes
+original size:   878 Bytes
+code reduction:  11.05 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/eq.js
+bundle space:    1.14 %
+rendered size:   776 Bytes
+original size:   797 Bytes
+code reduction:  2.63 %
+dependents:      3
+  - /node_modules/lodash-es/_assocIndexOf.js
+  - /node_modules/lodash-es/_assignValue.js
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isLength.js
+bundle space:    1.14 %
+rendered size:   773 Bytes
+original size:   800 Bytes
+code reduction:  3.38 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/isArrayLike.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isIndex.js
+bundle space:    1.08 %
+rendered size:   735 Bytes
+original size:   757 Bytes
+code reduction:  2.91 %
+dependents:      2
+  - /node_modules/lodash-es/_baseSet.js
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/keys.js
+bundle space:    1.07 %
+rendered size:   726 Bytes
+original size:   882 Bytes
+code reduction:  17.69 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArrayLike.js
+bundle space:    1.06 %
+rendered size:   717 Bytes
+original size:   828 Bytes
+code reduction:  13.41 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackSet.js
+bundle space:    1.05 %
+rendered size:   716 Bytes
+original size:   851 Bytes
+code reduction:  15.86 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashGet.js
+bundle space:    1.05 %
+rendered size:   710 Bytes
+original size:   770 Bytes
+code reduction:  7.79 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isObject.js
+bundle space:    1.04 %
+rendered size:   704 Bytes
+original size:   731 Bytes
+code reduction:  3.69 %
+dependents:      3
+  - /node_modules/lodash-es/isFunction.js
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheDelete.js
+bundle space:    1.02 %
+rendered size:   691 Bytes
+original size:   773 Bytes
+code reduction:  10.61 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseKeys.js
+bundle space:    0.98 %
+rendered size:   668 Bytes
+original size:   774 Bytes
+code reduction:  13.7 %
+dependents:      1
+  - /node_modules/lodash-es/keys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGetTag.js
+bundle space:    0.94 %
+rendered size:   637 Bytes
+original size:   790 Bytes
+code reduction:  19.37 %
+dependents:      5
+  - /node_modules/lodash-es/isSymbol.js
+  - /node_modules/lodash-es/isFunction.js
+  - /node_modules/lodash-es/_baseIsArguments.js
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGetAllKeys.js
+bundle space:    0.92 %
+rendered size:   628 Bytes
+original size:   737 Bytes
+code reduction:  14.79 %
+dependents:      1
+  - /node_modules/lodash-es/_getAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_MapCache.js
+bundle space:    0.89 %
+rendered size:   604 Bytes
+original size:   867 Bytes
+code reduction:  30.33 %
+dependents:      3
+  - /node_modules/lodash-es/memoize.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayFilter.js
+bundle space:    0.88 %
+rendered size:   600 Bytes
+original size:   630 Bytes
+code reduction:  4.76 %
+dependents:      1
+  - /node_modules/lodash-es/_getSymbols.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_ListCache.js
+bundle space:    0.87 %
+rendered size:   593 Bytes
+original size:   867 Bytes
+code reduction:  31.6 %
+dependents:      4
+  - /node_modules/lodash-es/_mapCacheClear.js
+  - /node_modules/lodash-es/_stackClear.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isObjectLike.js
+bundle space:    0.86 %
+rendered size:   581 Bytes
+original size:   612 Bytes
+code reduction:  5.07 %
+dependents:      5
+  - /node_modules/lodash-es/isSymbol.js
+  - /node_modules/lodash-es/_baseIsArguments.js
+  - /node_modules/lodash-es/isArguments.js
+  - /node_modules/lodash-es/_baseIsTypedArray.js
+  - /node_modules/lodash-es/_baseIsEqual.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isSymbol.js
+bundle space:    0.83 %
+rendered size:   567 Bytes
+original size:   680 Bytes
+code reduction:  16.62 %
+dependents:      3
+  - /node_modules/lodash-es/_isKey.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_toKey.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isTypedArray.js
+bundle space:    0.83 %
+rendered size:   566 Bytes
+original size:   693 Bytes
+code reduction:  18.33 %
+dependents:      2
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arraySome.js
+bundle space:    0.83 %
+rendered size:   564 Bytes
+original size:   592 Bytes
+code reduction:  4.73 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_memoizeCapped.js
+bundle space:    0.83 %
+rendered size:   562 Bytes
+original size:   631 Bytes
+code reduction:  10.94 %
+dependents:      1
+  - /node_modules/lodash-es/_stringToPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashHas.js
+bundle space:    0.82 %
+rendered size:   560 Bytes
+original size:   624 Bytes
+code reduction:  10.26 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseAssignValue.js
+bundle space:    0.8 %
+rendered size:   541 Bytes
+original size:   623 Bytes
+code reduction:  13.16 %
+dependents:      1
+  - /node_modules/lodash-es/_assignValue.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_toSource.js
+bundle space:    0.79 %
+rendered size:   535 Bytes
+original size:   554 Bytes
+code reduction:  3.43 %
+dependents:      2
+  - /node_modules/lodash-es/_baseIsNative.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_objectToString.js
+bundle space:    0.79 %
+rendered size:   534 Bytes
+original size:   563 Bytes
+code reduction:  5.15 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashSet.js
+bundle space:    0.78 %
+rendered size:   528 Bytes
+original size:   596 Bytes
+code reduction:  11.41 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayMap.js
+bundle space:    0.78 %
+rendered size:   527 Bytes
+original size:   554 Bytes
+code reduction:  4.87 %
+dependents:      1
+  - /node_modules/lodash-es/_baseToString.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Hash.js
+bundle space:    0.77 %
+rendered size:   526 Bytes
+original size:   745 Bytes
+code reduction:  29.4 %
+dependents:      1
+  - /node_modules/lodash-es/_mapCacheClear.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseGet.js
+bundle space:    0.76 %
+rendered size:   515 Bytes
+original size:   614 Bytes
+code reduction:  16.12 %
+dependents:      1
+  - /node_modules/lodash-es/get.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/toString.js
+bundle space:    0.74 %
+rendered size:   503 Bytes
+original size:   578 Bytes
+code reduction:  12.98 %
+dependents:      1
+  - /node_modules/lodash-es/_castPath.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isMasked.js
+bundle space:    0.73 %
+rendered size:   497 Bytes
+original size:   562 Bytes
+code reduction:  11.57 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/isArray.js
+bundle space:    0.72 %
+rendered size:   486 Bytes
+original size:   486 Bytes
+code reduction:  0 %
+dependents:      6
+  - /node_modules/lodash-es/_isKey.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_castPath.js
+  - /node_modules/lodash-es/_baseGetAllKeys.js
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseTimes.js
+bundle space:    0.7 %
+rendered size:   474 Bytes
+original size:   502 Bytes
+code reduction:  5.58 %
+dependents:      1
+  - /node_modules/lodash-es/_arrayLikeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_SetCache.js
+bundle space:    0.7 %
+rendered size:   473 Bytes
+original size:   630 Bytes
+code reduction:  24.92 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheSet.js
+bundle space:    0.69 %
+rendered size:   472 Bytes
+original size:   551 Bytes
+code reduction:  14.34 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Stack.js
+bundle space:    0.68 %
+rendered size:   461 Bytes
+original size:   732 Bytes
+code reduction:  37.02 %
+dependents:      1
+  - /node_modules/lodash-es/_baseIsEqualDeep.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_toKey.js
+bundle space:    0.67 %
+rendered size:   458 Bytes
+original size:   521 Bytes
+code reduction:  12.09 %
+dependents:      2
+  - /node_modules/lodash-es/_baseGet.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isPrototype.js
+bundle space:    0.67 %
+rendered size:   452 Bytes
+original size:   478 Bytes
+code reduction:  5.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_assocIndexOf.js
+bundle space:    0.63 %
+rendered size:   427 Bytes
+original size:   485 Bytes
+code reduction:  11.96 %
+dependents:      4
+  - /node_modules/lodash-es/_listCacheDelete.js
+  - /node_modules/lodash-es/_listCacheGet.js
+  - /node_modules/lodash-es/_listCacheHas.js
+  - /node_modules/lodash-es/_listCacheSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashDelete.js
+bundle space:    0.61 %
+rendered size:   414 Bytes
+original size:   443 Bytes
+code reduction:  6.55 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheSet.js
+bundle space:    0.61 %
+rendered size:   413 Bytes
+original size:   487 Bytes
+code reduction:  15.2 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_arrayPush.js
+bundle space:    0.6 %
+rendered size:   407 Bytes
+original size:   435 Bytes
+code reduction:  6.44 %
+dependents:      1
+  - /node_modules/lodash-es/_baseGetAllKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_isKeyable.js
+bundle space:    0.59 %
+rendered size:   400 Bytes
+original size:   428 Bytes
+code reduction:  6.54 %
+dependents:      1
+  - /node_modules/lodash-es/_getMapData.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setCacheAdd.js
+bundle space:    0.58 %
+rendered size:   392 Bytes
+original size:   422 Bytes
+code reduction:  7.11 %
+dependents:      1
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_castPath.js
+bundle space:    0.57 %
+rendered size:   389 Bytes
+original size:   567 Bytes
+code reduction:  31.39 %
+dependents:      2
+  - /node_modules/lodash-es/_baseGet.js
+  - /node_modules/lodash-es/_baseSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackDelete.js
+bundle space:    0.55 %
+rendered size:   373 Bytes
+original size:   403 Bytes
+code reduction:  7.44 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheDelete.js
+bundle space:    0.55 %
+rendered size:   371 Bytes
+original size:   448 Bytes
+code reduction:  17.19 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getNative.js
+bundle space:    0.54 %
+rendered size:   366 Bytes
+original size:   481 Bytes
+code reduction:  23.91 %
+dependents:      7
+  - /node_modules/lodash-es/_nativeCreate.js
+  - /node_modules/lodash-es/_Map.js
+  - /node_modules/lodash-es/_defineProperty.js
+  - /node_modules/lodash-es/_DataView.js
+  - /node_modules/lodash-es/_Promise.js
+  - /node_modules/lodash-es/_Set.js
+  - /node_modules/lodash-es/_WeakMap.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseIsArguments.js
+bundle space:    0.54 %
+rendered size:   366 Bytes
+original size:   486 Bytes
+code reduction:  24.69 %
+dependents:      1
+  - /node_modules/lodash-es/isArguments.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/stubArray.js
+bundle space:    0.53 %
+rendered size:   360 Bytes
+original size:   388 Bytes
+code reduction:  7.22 %
+dependents:      1
+  - /node_modules/lodash-es/_getSymbols.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_overArg.js
+bundle space:    0.52 %
+rendered size:   354 Bytes
+original size:   380 Bytes
+code reduction:  6.84 %
+dependents:      1
+  - /node_modules/lodash-es/_nativeKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheGet.js
+bundle space:    0.5 %
+rendered size:   339 Bytes
+original size:   418 Bytes
+code reduction:  18.9 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapToArray.js
+bundle space:    0.49 %
+rendered size:   332 Bytes
+original size:   361 Bytes
+code reduction:  8.03 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getMapData.js
+bundle space:    0.48 %
+rendered size:   327 Bytes
+original size:   398 Bytes
+code reduction:  17.84 %
+dependents:      4
+  - /node_modules/lodash-es/_mapCacheDelete.js
+  - /node_modules/lodash-es/_mapCacheGet.js
+  - /node_modules/lodash-es/_mapCacheHas.js
+  - /node_modules/lodash-es/_mapCacheSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheHas.js
+bundle space:    0.47 %
+rendered size:   322 Bytes
+original size:   401 Bytes
+code reduction:  19.7 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setToArray.js
+bundle space:    0.46 %
+rendered size:   314 Bytes
+original size:   343 Bytes
+code reduction:  8.45 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_cacheHas.js
+bundle space:    0.45 %
+rendered size:   308 Bytes
+original size:   335 Bytes
+code reduction:  8.06 %
+dependents:      1
+  - /node_modules/lodash-es/_equalArrays.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheHas.js
+bundle space:    0.45 %
+rendered size:   306 Bytes
+original size:   380 Bytes
+code reduction:  19.47 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_baseUnary.js
+bundle space:    0.44 %
+rendered size:   302 Bytes
+original size:   330 Bytes
+code reduction:  8.48 %
+dependents:      1
+  - /node_modules/lodash-es/isTypedArray.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getAllKeys.js
+bundle space:    0.44 %
+rendered size:   301 Bytes
+original size:   453 Bytes
+code reduction:  33.55 %
+dependents:      1
+  - /node_modules/lodash-es/_equalObjects.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_getValue.js
+bundle space:    0.44 %
+rendered size:   296 Bytes
+original size:   323 Bytes
+code reduction:  8.36 %
+dependents:      1
+  - /node_modules/lodash-es/_getNative.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackHas.js
+bundle space:    0.43 %
+rendered size:   294 Bytes
+original size:   321 Bytes
+code reduction:  8.41 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_setCacheHas.js
+bundle space:    0.42 %
+rendered size:   284 Bytes
+original size:   314 Bytes
+code reduction:  9.55 %
+dependents:      1
+  - /node_modules/lodash-es/_SetCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheClear.js
+bundle space:    0.38 %
+rendered size:   259 Bytes
+original size:   391 Bytes
+code reduction:  33.76 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_mapCacheGet.js
+bundle space:    0.37 %
+rendered size:   254 Bytes
+original size:   328 Bytes
+code reduction:  22.56 %
+dependents:      1
+  - /node_modules/lodash-es/_MapCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_root.js
+bundle space:    0.37 %
+rendered size:   253 Bytes
+original size:   298 Bytes
+code reduction:  15.1 %
+dependents:      9
+  - /node_modules/lodash-es/_Symbol.js
+  - /node_modules/lodash-es/_coreJsData.js
+  - /node_modules/lodash-es/_Map.js
+  - /node_modules/lodash-es/_Uint8Array.js
+  - /node_modules/lodash-es/isBuffer.js
+  - /node_modules/lodash-es/_DataView.js
+  - /node_modules/lodash-es/_Promise.js
+  - /node_modules/lodash-es/_Set.js
+  - /node_modules/lodash-es/_WeakMap.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/stubFalse.js
+bundle space:    0.37 %
+rendered size:   250 Bytes
+original size:   278 Bytes
+code reduction:  10.07 %
+dependents:      1
+  - /node_modules/lodash-es/isBuffer.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackGet.js
+bundle space:    0.36 %
+rendered size:   242 Bytes
+original size:   269 Bytes
+code reduction:  10.04 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_hashClear.js
+bundle space:    0.3 %
+rendered size:   207 Bytes
+original size:   279 Bytes
+code reduction:  25.81 %
+dependents:      1
+  - /node_modules/lodash-es/_Hash.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_defineProperty.js
+bundle space:    0.29 %
+rendered size:   196 Bytes
+original size:   231 Bytes
+code reduction:  15.15 %
+dependents:      1
+  - /node_modules/lodash-es/_baseAssignValue.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_listCacheClear.js
+bundle space:    0.27 %
+rendered size:   183 Bytes
+original size:   216 Bytes
+code reduction:  15.28 %
+dependents:      1
+  - /node_modules/lodash-es/_ListCache.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_stackClear.js
+bundle space:    0.27 %
+rendered size:   181 Bytes
+original size:   252 Bytes
+code reduction:  28.17 %
+dependents:      1
+  - /node_modules/lodash-es/_Stack.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_freeGlobal.js
+bundle space:    0.26 %
+rendered size:   174 Bytes
+original size:   171 Bytes
+code reduction:  0 %
+dependents:      2
+  - /node_modules/lodash-es/_root.js
+  - /node_modules/lodash-es/_nodeUtil.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nativeKeys.js
+bundle space:    0.25 %
+rendered size:   167 Bytes
+original size:   202 Bytes
+code reduction:  17.33 %
+dependents:      1
+  - /node_modules/lodash-es/_baseKeys.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_nativeCreate.js
+bundle space:    0.22 %
+rendered size:   148 Bytes
+original size:   185 Bytes
+code reduction:  20 %
+dependents:      4
+  - /node_modules/lodash-es/_hashClear.js
+  - /node_modules/lodash-es/_hashGet.js
+  - /node_modules/lodash-es/_hashHas.js
+  - /node_modules/lodash-es/_hashSet.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_DataView.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   208 Bytes
+code reduction:  33.65 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Promise.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   205 Bytes
+code reduction:  32.68 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_WeakMap.js
+bundle space:    0.2 %
+rendered size:   138 Bytes
+original size:   205 Bytes
+code reduction:  32.68 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_coreJsData.js
+bundle space:    0.19 %
+rendered size:   128 Bytes
+original size:   155 Bytes
+code reduction:  17.42 %
+dependents:      1
+  - /node_modules/lodash-es/_isMasked.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Map.js
+bundle space:    0.18 %
+rendered size:   122 Bytes
+original size:   193 Bytes
+code reduction:  36.79 %
+dependents:      3
+  - /node_modules/lodash-es/_mapCacheClear.js
+  - /node_modules/lodash-es/_stackSet.js
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Set.js
+bundle space:    0.18 %
+rendered size:   122 Bytes
+original size:   193 Bytes
+code reduction:  36.79 %
+dependents:      1
+  - /node_modules/lodash-es/_getTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Uint8Array.js
+bundle space:    0.15 %
+rendered size:   105 Bytes
+original size:   128 Bytes
+code reduction:  17.97 %
+dependents:      1
+  - /node_modules/lodash-es/_equalByTag.js
+
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+file:            /node_modules/lodash-es/_Symbol.js
+bundle space:    0.13 %
+rendered size:   89 Bytes
+original size:   116 Bytes
+code reduction:  23.28 %
+dependents:      4
+  - /node_modules/lodash-es/_getRawTag.js
+  - /node_modules/lodash-es/_baseGetTag.js
+  - /node_modules/lodash-es/_baseToString.js
+  - /node_modules/lodash-es/_equalByTag.js
+
+
+[1m[33m(!) Unresolved dependencies[39m[22m
+[90mhttps://rollupjs.org/troubleshooting/#warning-treating-module-as-external-dependency[39m
+[1mreact[22m (imported by "src/components/schema-form-value-context.ts", "src/components/schema-form-component.tsx", "src/components/component-for-type.tsx", "src/components/schema-form-array.tsx", "src/components/schema-form-object.tsx", "src/editors/upload-editor.tsx", "node_modules/react-dropzone/dist/es/index.js", "src/editors/radio-buttons-editor.tsx", "src/editors/multi-select-buttons-editor.tsx", "src/editors/oneOf-radio-editor.tsx", "src/components/schema-form.tsx", "src/components/schema-submit-form.tsx" and "src/components/schema-paged-form.tsx")
+[32mcreated [1mbuild/index.js, build/index.es.js[22m in [1m9.8s[22m[39m

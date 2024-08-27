@@ -8,182 +8,18 @@ import SchemaForm, {
   sendFileAsBody,
 } from "@restspace/schema-form";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { loginSchema } from "./schemas/loginSchema";
+import { schema } from "./schemas/testSchema";
+import { schemaSelector } from "./schemas/selectorSchema";
+import { schemaSelector2 } from "./schemas/selectorSchema2";
+import { schemaPaged } from "./schemas/pagedSchema";
+import { validationsSchema } from "./schemas/validationsSchema";
 
-const loginSchema = {
-  type: "object",
-  title: "Log In",
-  properties: {
-    email_x: {
-      type: "string",
-    },
-    password_x: {
-      type: "string",
-    },
-  },
-  required: ["email_x", "password_x"],
-};
-
-const schema = {
-  type: "object",
-  properties: {
-    salutation: { type: "string", enum: ["Mr", "Mrs", "Ms", "Dr"] },
-    firstName: { type: "string", maxLength: 10 },
-    lastName: { type: "string", readOnly: true },
-    canContact: {
-      type: "string",
-      enum: ["yes", "no"],
-      editor: "radioButtons",
-      description: "Whether can contact",
-    },
-    preferredContact: {
-      type: "array",
-      items: {
-        type: "string",
-        enum: ["phone", "email", "text"],
-      },
-      editor: "multiCheck",
-    },
-    dateOfBirth: { type: "string", format: "date" },
-    password: { type: "string", format: "password" },
-    comments: { type: "string", editor: "textarea" },
-    files: { type: "string", editor: "upload" },
-    things: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          first: { type: "string" },
-          second: { type: "string" },
-        },
-      },
-    },
-    address: {
-      type: "object",
-      properties: {
-        addressLine: { type: "string" },
-        postcode: { type: "string" },
-      },
-      required: ["postcode"],
-    },
-  },
-  propertyOrder: [
-    "salutation",
-    ["firstName", "lastName"],
-    "canContact",
-    "preferredContact",
-    "dateOfBirth",
-    "password",
-    "comments",
-    "files",
-    "things",
-    "address",
-  ],
-  if: {
-    type: "object",
-    properties: {
-      salutation: { type: "string", const: "Dr" },
-    },
-  },
-  then: {
-    type: "object",
-    properties: {
-      isMedical: { type: "boolean" },
-    },
-    propertyOrder: ["canContact", "isMedical"],
-  },
-};
-
-const schemaSelector = {
-  type: "object",
-  properties: {
-    selector: {
-      type: "string",
-      enum: ["text", "checkbox", "nothing"],
-    },
-  },
-  anyOf: [
-    {
-      type: "object",
-      properties: {
-        selector: { type: "string", const: "text" },
-        textInput: { type: "string" },
-      },
-    },
-    {
-      type: "object",
-      properties: {
-        selector: { type: "string", const: "checkbox" },
-        checkboxInput: { type: "boolean" },
-      },
-    },
-    {
-      type: "object",
-      properties: {
-        selector: { type: "string", const: "nothing" },
-      },
-    },
-  ],
-};
-
-const schemaSelector2 = {
-  type: "object",
-  anyOf: [
-    {
-      type: "object",
-      properties: {
-        number: { type: "string", pattern: "[0-9]+" },
-        sign: { type: "boolean" },
-      },
-      required: ["number"],
-    },
-    {
-      type: "object",
-      properties: {
-        number: { type: "string", not: { pattern: "[0-9]+" } },
-      },
-    },
-  ],
-};
-
-const schemaPaged = {
-  type: "object",
-  properties: {
-    page0: {
-      type: "object",
-      properties: {
-        salutation: {
-          type: "string",
-          enum: ["Mr", "Mrs", "Ms", "Dr"],
-        },
-        firstName: {
-          type: "string",
-          maxLength: 10,
-        },
-        lastName: {
-          type: "string",
-          readOnly: true,
-        },
-      },
-    },
-    page1: {
-      type: "object",
-      properties: {
-        abc: {
-          type: "number",
-        },
-        def: {
-          type: "number",
-        },
-      },
-    },
-  },
-};
 
 const testValue = {
   salutation: "Dr",
   firstName: "John",
   lastName: "Smith",
-  canContact: false,
   password: "abc",
   things: [{ first: "thing1", second: "thing2" }],
   address: {
@@ -263,6 +99,7 @@ function Form(props) {
   const [valuePaged, setValuePaged] = useState(testValuePaged);
   const [valueSel, setValueSel] = useState({});
   const [valueSubmit, setValueSubmit] = useState({});
+  const [valueValidations, setValueValidations] = useState({});
   const [errors, setErrors] = useState([]);
   const [path, setPath] = useState("");
   const [focus, setFocus] = useState("");
@@ -289,11 +126,24 @@ function Form(props) {
     setValueSubmit(v);
     return true;
   }, []);
+  const validationsOnSubmit = useCallback(async (v) => {
+    setValueValidations(v);
+    return true;
+  }, []);
 
   const loginMakeSubmitLink = useCallback(
     (onClick) => <div onClick={onClick}>Submit</div>,
     []
   );
+
+  const onError = (path, schemaPath, value, schemaValue) => {
+    if (
+      path.join(".") === "address.postcode" &&
+      schemaPath[schemaPath.length - 1] === "required"
+    ) {
+      return "Please enter a postcode";
+    }
+  };
 
   return (
     <>
@@ -304,12 +154,13 @@ function Form(props) {
             value={value}
             onChange={noSubmitChange}
             onFocus={onFocus}
+            onError={onError}
             componentContext={componentContext}
           />
         )}
-        {props.type === "selector" && (
+        {[ "selector", "selector2"].includes(props.type) && (
           <SchemaForm
-            schema={schemaSelector2}
+            schema={props.type === "selector" ? schemaSelector2 : schemaSelector}
             value={valueSel}
             onChange={(v, p, e) => {
               setValueSel(v);
@@ -320,11 +171,11 @@ function Form(props) {
             componentContext={componentContext}
           />
         )}
-        {props.type === "submit" && (
+        {[ "submit", "validations" ].includes(props.type) && (
           <SchemaSubmitForm
-            schema={loginSchema}
-            value={valueSubmit}
-            onSubmit={loginOnSubmit}
+            schema={props.type === "submit" ? loginSchema : validationsSchema}
+            value={props.type === "submit" ? valueSubmit : valueValidations}
+            onSubmit={props.type === "submit" ? loginOnSubmit : validationsOnSubmit}
             onFocus={(p) => setFocus(p.join("."))}
             makeSubmitLink={loginMakeSubmitLink}
           />
@@ -363,10 +214,10 @@ function Form(props) {
         {props.type === "no submit" && (
           <div>Value: {JSON.stringify(value)}</div>
         )}
-        {props.type === "submit" && (
+        {[ "submit", "validations" ].includes(props.type) && (
           <div>Value: {JSON.stringify(valueSubmit)}</div>
         )}
-        {props.type === "selector" && (
+        {["selector", "selector2"].includes(props.type) && (
           <div>Value: {JSON.stringify(valueSel)}</div>
         )}
         {props.type === "paged" && (
@@ -395,6 +246,12 @@ class App extends Component {
               <Link to="/selector">Selector</Link>
             </li>
             <li>
+              <Link to="/selector2">Oneof Selector</Link>
+            </li>
+            <li>
+              <Link to="/validations">Validations</Link>
+            </li>
+            <li>
               <Link to="/single-form">Single Form</Link>
             </li>
             <li>
@@ -408,6 +265,8 @@ class App extends Component {
         <Router>
           <Form path="/" type="no submit" />
           <Form path="/selector" type="selector" />
+          <Form path="/selector2" type="selector2" />
+          <Form path="/validations" type="validations" />
           <Form path="/single-form" type="submit" />
           <Form path="/paged-form" type="paged" />
           <Form path="/playground" type="playground" />

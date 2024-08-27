@@ -16,7 +16,7 @@ export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactEle
     const dispatch = useContext(ValueDispatch);
 
     function handleCheckChange(ev: React.ChangeEvent) {
-        dispatch(ValueAction.set(path, ev.target['value']));
+        dispatch(ValueAction.set(path, (ev.target as any)['value']));
     }
 
     function handleFocus() {
@@ -29,9 +29,9 @@ export function RadioButtonsEditor(props: ISchemaComponentProps): React.ReactEle
 
     function radios(isError: boolean) {
         const classes = `sf-control sf-radio-buttons ${isError && 'sf-has-error'}`;
-        const readOnly = schema['readOnly'] || false;
+        const readOnly = (schema as any)['readOnly'] || false;
         const baseProps = { name, readOnly, onFocus: handleFocus, onBlur: handleBlur };
-        const enums = schema['enum'] as string[];
+        const enums = (schema as any)['enum'] as string[];
         if (!enums) throw(`In schema ${JSON.stringify(schema)}, editor: radioButtons requires an enum property`);
 
         return (

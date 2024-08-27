@@ -11,7 +11,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired, context }) => {
-    const isError = errors.length > 0;
+    const isError = errors.length > 0 && !schema['readOnly'] && schema['editor'] !== 'hidden';
     const errorClass = isError ? "sf-has-error " : "";
     const requiredClass = isRequired ? "sf-required " : ""
     const outerClass = schema['className'] ? "sf-row " + schema['className'] : "sf-row";
@@ -223,6 +223,10 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "password":
                 return (<input {...commonProps} type="password" className={classes("sf-password")} />)
             case "hidden":
+                if (schema['const'] && commonProps.value !== schema['const']) {
+                    commonProps.value = schema['const'];
+                    dispatch(ValueAction.set(path, schema['const']));
+                }
                 return (<input {...commonProps} type="hidden" className="sf-hidden" />)
             case "textarea":
                 return (<textarea {...commonProps} value={uiValue(value)} onInput={handleTextChange} className={classes("sf-textarea")} />)
