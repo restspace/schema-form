@@ -4,7 +4,7 @@ import {
   ValueDispatch,
   ValueAction,
 } from "../components/schema-form-value-context";
-import { useDropzone } from "react-dropzone";
+import { useDropzone } from "react-dropzone-esm";
 import { SchemaFormComponentWrapper } from "../components/schema-form-component";
 import Upload from "./upload.svg";
 import Link from "./link.svg";
@@ -92,7 +92,8 @@ function getHost(url: string): string {
 }
 
 export function UploadEditor(props: ISchemaComponentProps) {
-  const { context, schema, path, value, errors, onFocus } = props;
+  const { context, schema: _schema, path, value } = props;
+  const schema = _schema as any;
   const [showUrl, setShowUrl] = useState(false);
   const [progressBars, dispatchProgressBars] = useReducer(
     progressBarsReducer,
@@ -101,7 +102,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
   const dispatch = useContext(ValueDispatch);
   const isMulti = schema["editor"].toLowerCase().indexOf("multi") >= 0;
   const uploadMsg = "Drag files here or click to select";
-  const uploadContext = ((context && context["uploadEditor"]) ||
+  const uploadContext = ((context && (context as any)["uploadEditor"]) ||
     {}) as IUploadEditorContext;
   const testState = uploadContext.testState || null;
 
@@ -217,7 +218,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
   };
 
   const onTextChange = (ev: React.FormEvent) => {
-    let val = ev.target["value"];
+    let val = (ev.target as any)["value"];
     dispatch(ValueAction.set(path, val));
   };
 

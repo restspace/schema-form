@@ -48,9 +48,10 @@ export default {
     sass({
       output: true,
     }),
-    analyze({
-      filter: "lodash-es",
-      filterSummary: true,
-    }),
+    // analyze({
+    //   filter: "lodash-es",
+    //   filterSummary: true,
+    // }),
   ],
+  external: ["react", "react-dom"],
 };
