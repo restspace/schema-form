@@ -69,9 +69,5 @@
     "jsonpointer": "^4.0.1",
     "lodash-es": "^4.17.21",
     "react-dropzone-esm": "^15.0.1"
-  },
-  "peerDependencies": {
-    "react": "^16.8.6 || ^17 || ^18 || ^19 || ^20",
-    "react-dom": "^16.8.6 || ^17 || ^18 || ^19 || ^20"
   }
 }
