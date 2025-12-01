@@ -140,11 +140,19 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
 
     function handleChangeNumber(ev: React.FormEvent) {
         const str = ev.target['value'] as string;
-        if (str === '')
+        if (str === '') {
+            setHoldString('');
             dispatch(ValueAction.set(path, null));
-        else { 
+        } else {
             const num = parseFloat(str);
-            if (!isNaN(num)) {
+            if (isNaN(num)) {
+                // Keep the raw string in the UI while the value is not a valid number
+                setHoldString(str);
+            } else {
+                const canonical = num.toString();
+                // Only use holdString when the typed string differs from the canonical
+                // numeric representation (e.g. to preserve leading zeros or trailing zeros)
+                setHoldString(str === canonical ? '' : str);
                 dispatch(ValueAction.set(path, num));
             }
         }
@@ -189,8 +197,9 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
         const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
-        const commonProps = { ...baseProps, value: (value || '').toString(), onChange: () => {}, onInput: handleChange };
-        const selectProps = { ...baseProps, value: (value || '').toString(), onChange: handleChange, disabled: baseProps.readOnly };
+        const valueString = value === null || value === undefined ? '' : value.toString();
+        const commonProps = { ...baseProps, value: valueString, onChange: () => {}, onInput: handleChange };
+        const selectProps = { ...baseProps, value: valueString, onChange: handleChange, disabled: baseProps.readOnly };
 
         switch (fieldType(schema)) {
             case "null":
@@ -200,7 +209,9 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "boolean":
                 return (<input {...baseProps} type="checkbox" checked={(value || false) as boolean} className={classes("sf-boolean sf-checkbox")} onChange={handleCheckChange} />)
             case "number":
-                return (<input {...commonProps} type="number" className={classes("sf-number")} onInput={handleChangeNumber} />)
+                const numberDisplay = holdString !== '' ? holdString : valueString;
+                const numberProps = { ...baseProps, value: numberDisplay, onChange: () => {}, onInput: handleChangeNumber };
+                return (<input {...numberProps} type="number" className={classes("sf-number")} />)
             case "currency":
                 const currencyProps = { ...baseProps, value: holdString ? holdString : formatCurrency(value), onChange: () => {}, onInput: handleCurrencyChange };
                 console.log('hold string:::' + holdString);
