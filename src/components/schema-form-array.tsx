@@ -1,10 +1,23 @@
 import React, { useContext, useState } from "react";
 import { ComponentForType } from "./component-for-type";
 import { ISchemaContainerProps } from "./schema-form-interfaces";
-import { ErrorObject } from "../error";
+import { ErrorItem, ErrorObject } from "../error";
 import { fieldCaption, emptyValue } from "../schema/schema";
 import { ValueDispatch, ValueAction } from "./schema-form-value-context";
 import { last } from "../utility";
+
+const flattenErrors = (errObj: ErrorObject): ErrorItem[] => {
+  const all: ErrorItem[] = [];
+  for (const key in errObj) {
+    const child = (errObj as any)[key];
+    if (Array.isArray(child)) {
+      all.push(...(child as ErrorItem[]));
+    } else if (child instanceof ErrorObject) {
+      all.push(...flattenErrors(child));
+    }
+  }
+  return all;
+};
 
 export function SchemaFormArray({
   schema,
@@ -25,6 +38,21 @@ export function SchemaFormArray({
   const count = valueArray.length;
   const updatable = !(schema["readOnly"] || false);
   const gridMode = context && context['gridMode'];
+  let containerErrors: ErrorItem[] =
+    Array.isArray(errors)
+      ? (errors as ErrorItem[])
+      : path.length === 0 &&
+        errors instanceof ErrorObject &&
+        Array.isArray((errors as ErrorObject)[""])
+      ? ((errors as ErrorObject)[""] as ErrorItem[])
+      : [];
+
+  // If there are no rendered children (empty array) but there is a nested
+  // ErrorObject subtree, bubble those errors up to the container so they are
+  // not stranded on non-existent items.
+  if (!containerErrors.length && valueArray.length === 0 && errors instanceof ErrorObject) {
+    containerErrors = flattenErrors(errors as ErrorObject);
+  }
 
   const handleDelete = (path: string[]) => () =>
     dispatch(ValueAction.delete(path));
@@ -93,9 +121,9 @@ export function SchemaFormArray({
 
   const errorField = () => (
     <>
-        {Array.isArray(errors) && errors.map((err, idx) => (
-            <span key={idx} className="sf-error">{err.message}</span>
-        ))}
+      {containerErrors.map((err, idx) => (
+        <span key={idx} className="sf-error">{err.message}</span>
+      ))}
     </>
   );
 
@@ -105,7 +133,7 @@ export function SchemaFormArray({
     "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
   const caption = fieldCaption(schema, path);
   const showTitle = path.length > 0 && (collapsible || caption);
-  const isError = Array.isArray(errors) && errors.length > 0;
+  const isError = containerErrors.length > 0;
 
   return (
     <div className={arrayClass}>

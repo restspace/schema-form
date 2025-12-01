@@ -140,7 +140,7 @@ export function errorPathsToObject(errors: ErrorItem[]): ErrorObject {
   const errorObj = new ErrorObject();
   for (let error of errors) {
     const wasAttached = attachError(errorObj, error.path, error);
-    if (!wasAttached) attachError(errorObj, ["."], error);
+    if (!wasAttached) attachError(errorObj, [""], error);
   }
   return errorObj;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ComponentForType } from "./component-for-type";
-import { ErrorObject } from "../error";
+import { ErrorItem, ErrorObject } from "../error";
 import { fieldCaption } from "../schema/schema";
 import { ISchemaContainerProps } from "./schema-form-interfaces";
 import flatt from "lodash";
@@ -8,6 +8,19 @@ import { last } from "../utility";
 
 type NestedList = string | NestedListArray;
 interface NestedListArray extends Array<NestedList> {}
+
+const flattenErrors = (errObj: ErrorObject): ErrorItem[] => {
+  const all: ErrorItem[] = [];
+  for (const key in errObj) {
+    const child = (errObj as any)[key];
+    if (Array.isArray(child)) {
+      all.push(...(child as ErrorItem[]));
+    } else if (child instanceof ErrorObject) {
+      all.push(...flattenErrors(child));
+    }
+  }
+  return all;
+};
 
 const firstNestedString = (list: NestedList): [string, number] => {
   if (typeof list === "string") {
@@ -89,6 +102,33 @@ export function SchemaFormObject({
     "sf-collapser " + (collapsed ? "sf-collapsed" : "sf-open");
   const caption = fieldCaption(schema, path);
   const showTitle = path.length > 0 && (collapsible || caption);
+  const baseContainerErrors: ErrorItem[] =
+    Array.isArray(errors)
+      ? (errors as ErrorItem[])
+      : path.length === 0 &&
+        errors instanceof ErrorObject &&
+        Array.isArray((errors as ErrorObject)[""])
+      ? ((errors as ErrorObject)[""] as ErrorItem[])
+      : [];
+
+  // If this object has no properties to render but there is a nested
+  // ErrorObject subtree, bubble those errors up to the object container.
+  const containerErrors: ErrorItem[] =
+    baseContainerErrors.length || properties.length > 0 || !(errors instanceof ErrorObject)
+      ? baseContainerErrors
+      : flattenErrors(errors as ErrorObject);
+
+  const isError = containerErrors.length > 0;
+  const errorField = () => (
+    <>
+      <label className="sf-caption"></label>
+      {containerErrors.map((err, idx) => (
+        <span key={idx} className="sf-error">
+          {err.message}
+        </span>
+      ))}
+    </>
+  );
 
   return (
     <div className={objectClass}>
@@ -108,6 +148,11 @@ export function SchemaFormObject({
           {topOrder.map((subOrder) =>
             renderSection(subOrder, properties, requireds)
           )}
+        </div>
+      )}
+      {isError && (
+        <div className="sf-row sf-error-row">
+          {errorField()}
         </div>
       )}
     </div>
