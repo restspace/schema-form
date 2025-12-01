@@ -246,9 +246,21 @@ align-items: center;
 
 /*Hide the checkmark by default*/
 .checkbox input[type="checkbox"] + label::after,
-.sf-radio input[type="radio"] + label::after,
-.sf-multi-check input[type="checkbox"] + label::after {
-content: none;
+.sf-radio input[type="radio"]:checked + label::after,
+.sf-multi-check input[type="checkbox"]:checked + label::after {
+content: "";
+}
+
+.sf-key-name-deemphasised {
+  font-size: 0.85em;
+  color: #666;
+  margin-left: 0.5em;
+}
+
+.sf-inline-buttons {
+  display: inline-flex;
+  gap: 0.5em;
+  padding: 0.25em 1em;
 }
 
 /*Unhide on the checked state*/

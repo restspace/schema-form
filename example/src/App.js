@@ -14,6 +14,7 @@ import { schemaSelector } from "./schemas/selectorSchema";
 import { schemaSelector2 } from "./schemas/selectorSchema2";
 import { schemaPaged } from "./schemas/pagedSchema";
 import { validationsSchema } from "./schemas/validationsSchema";
+import { dynamicKeysSchema } from "./schemas/dynamicKeysSchema";
 
 
 const testValue = {
@@ -100,6 +101,7 @@ function Form(props) {
   const [valueSel, setValueSel] = useState({});
   const [valueSubmit, setValueSubmit] = useState({});
   const [valueValidations, setValueValidations] = useState({});
+  const [valueDynamic, setValueDynamic] = useState({});
   const [errors, setErrors] = useState([]);
   const [path, setPath] = useState("");
   const [focus, setFocus] = useState("");
@@ -208,6 +210,19 @@ function Form(props) {
             )}
           />
         )}
+        {props.type === "dynamic-keys" && (
+          <SchemaForm
+            schema={dynamicKeysSchema}
+            value={valueDynamic}
+            onChange={(v, p, e) => {
+              setValueDynamic(v);
+              setPath(p.join("."));
+              setErrors(e);
+            }}
+            onFocus={(p) => setFocus(p.join("."))}
+            componentContext={componentContext}
+          />
+        )}
         {props.type === "playground" && <Playground />}
       </div>
       <div>
@@ -223,7 +238,10 @@ function Form(props) {
         {props.type === "paged" && (
           <div>Value: {JSON.stringify(valuePaged)}</div>
         )}
-        {(props.type === "no submit" || props.type === "selector") && (
+        {props.type === "dynamic-keys" && (
+          <div>Value: {JSON.stringify(valueDynamic)}</div>
+        )}
+        {(props.type === "no submit" || props.type === "selector" || props.type === "dynamic-keys") && (
           <div>Errors: {JSON.stringify(errors)}</div>
         )}
         <div>Path: {path}</div>
@@ -260,6 +278,9 @@ class App extends Component {
             <li>
               <Link to="/playground">Playground</Link>
             </li>
+            <li>
+              <Link to="/dynamic-keys">Dynamic Keys</Link>
+            </li>
           </ul>
         </div>
         <Router>
@@ -270,6 +291,7 @@ class App extends Component {
           <Form path="/single-form" type="submit" />
           <Form path="/paged-form" type="paged" />
           <Form path="/playground" type="playground" />
+          <Form path="/dynamic-keys" type="dynamic-keys" />
         </Router>
       </div>
     );

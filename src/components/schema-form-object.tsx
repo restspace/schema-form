@@ -3,6 +3,7 @@ import { ComponentForType } from "./component-for-type";
 import { ErrorItem, ErrorObject } from "../error";
 import { fieldCaption } from "../schema/schema";
 import { ISchemaContainerProps } from "./schema-form-interfaces";
+import { SchemaFormKeys } from "./schema-form-keys";
 import flatt from "lodash";
 import { last } from "../utility";
 
@@ -110,11 +111,17 @@ export function SchemaFormObject({
         Array.isArray((errors as ErrorObject)[""])
       ? ((errors as ErrorObject)[""] as ErrorItem[])
       : [];
+  const isDynamicKeysEditor = schema["properties"] === undefined;
 
   // If this object has no properties to render but there is a nested
   // ErrorObject subtree, bubble those errors up to the object container.
+  // For dynamic-keys objects we keep errors per-key via SchemaFormKeys,
+  // so we only flatten when there is truly nothing to render.
   const containerErrors: ErrorItem[] =
-    baseContainerErrors.length || properties.length > 0 || !(errors instanceof ErrorObject)
+    baseContainerErrors.length ||
+    properties.length > 0 ||
+    isDynamicKeysEditor ||
+    !(errors instanceof ErrorObject)
       ? baseContainerErrors
       : flattenErrors(errors as ErrorObject);
 
@@ -145,8 +152,21 @@ export function SchemaFormObject({
       )}
       {!collapsed && (
         <div className="sf-object-fieldset fieldset">
-          {topOrder.map((subOrder) =>
-            renderSection(subOrder, properties, requireds)
+          {schema["properties"] !== undefined ? (
+            topOrder.map((subOrder) =>
+              renderSection(subOrder, properties, requireds)
+            )
+          ) : (
+            <SchemaFormKeys
+              schema={schema}
+              path={path}
+              value={value}
+              errors={errors}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              onEditor={onEditor}
+              context={context}
+            />
           )}
         </div>
       )}
