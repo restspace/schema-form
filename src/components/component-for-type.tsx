@@ -5,6 +5,7 @@ import {
   containerType,
   applyConditional,
 } from "../schema/schema";
+import { applyUiHints } from "../schema/ui-schema";
 import {
   ISchemaContainerProps,
   ISchemaComponentProps,
@@ -21,6 +22,10 @@ function ComponentForTypeInner(
 
   // resolve a $ref
   if (schema["$ref"]) schema = context.schemaContext.resolver(schema["$ref"]);
+
+  // overlay node-level uiSchema hints — done after $ref resolution so they apply
+  // to the resolved schema, and before widget selection so ui:editor can pick it.
+  schema = applyUiHints(schema, props.uiSchema);
 
   const container: React.FC<ISchemaContainerProps> =
     props.context.containers[containerType(schema)];
@@ -57,6 +62,7 @@ function isEqual(p0: ISchemaContainerProps, p1: ISchemaContainerProps) {
   // reference-equal and skips the expensive deep equality entirely.
   return (
     p0.schema === p1.schema &&
+    p0.uiSchema === p1.uiSchema &&
     (p0.isRequired || false) === (p1.isRequired || false) &&
     p0.onBlur === p1.onBlur &&
     p0.onFocus === p1.onFocus &&

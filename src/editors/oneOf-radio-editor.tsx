@@ -13,7 +13,7 @@ import { isEmpty } from "../utility";
 export function OneOfRadioEditor(
   props: ISchemaContainerProps
 ): React.ReactElement {
-  const { schema, path, value, errors, onFocus, onBlur, onEditor, context } =
+  const { schema, path, value, errors, onFocus, onBlur, onEditor, context, uiSchema } =
     props;
   const name = path.join(".");
   const [currentIdx, setCurrentIdx] = useState(-1);
@@ -140,6 +140,7 @@ export function OneOfRadioEditor(
           onBlur={onBlur}
           onEditor={onEditor}
           context={context}
+          uiSchema={uiSchema}
         />
       )}
     </>

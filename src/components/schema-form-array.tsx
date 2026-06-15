@@ -28,10 +28,14 @@ export function SchemaFormArray({
   onBlur,
   onEditor,
   context,
+  uiSchema,
 }: ISchemaContainerProps): React.ReactElement {
   const dispatch = useContext(ValueDispatch);
   const [collapsed, setCollapsed] = useState(false);
   const itemSchema = schema["items"] || {};
+  // ui hints for array items: `ui:items` (preferred) or a mirrored `items` key.
+  const itemUiSchema =
+    uiSchema && (uiSchema["ui:items"] !== undefined ? uiSchema["ui:items"] : uiSchema.items);
   const valueArray = Array.isArray(value) ? (value as any[]) : [];
   const pathEl = path.length ? last(path) : "";
   const arrayClass = path.length === 0 ? "" : "sf-array sf-" + pathEl;
@@ -95,6 +99,14 @@ export function SchemaFormArray({
   const handleAdd = () =>
     dispatch(ValueAction.create(path, emptyValue(itemSchema)));
 
+  // Make the icon-only <span> controls keyboard-operable (Enter/Space).
+  const activate = (fn: () => void) => (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      fn();
+    }
+  };
+
   function arrayElement(v: object, i: number) {
     const newPath = [...path, `${i}`];
     const newErrors = ErrorObject.forKey(errors, `[${i}]`);
@@ -110,12 +122,17 @@ export function SchemaFormArray({
           onBlur={onBlur}
           onEditor={onEditor}
           context={context}
+          uiSchema={itemUiSchema}
         />
         {updatable && (
           <div className="sf-array-buttons">
             <span
               className="sf-control-button sf-delete-button oi"
               onClick={handleDelete(newPath, i)}
+              onKeyDown={activate(handleDelete(newPath, i))}
+              role="button"
+              tabIndex={0}
+              aria-label="Delete item"
               title="Delete"
             >
               x
@@ -124,6 +141,10 @@ export function SchemaFormArray({
               <span
                 className="sf-control-button sf-up-button oi"
                 onClick={handleUp(newPath, i)}
+                onKeyDown={activate(handleUp(newPath, i))}
+                role="button"
+                tabIndex={0}
+                aria-label="Move item up"
                 title="Move up"
               >
                 ^
@@ -133,6 +154,10 @@ export function SchemaFormArray({
               <span
                 className="sf-control-button sf-down-button oi"
                 onClick={handleDown(newPath, i)}
+                onKeyDown={activate(handleDown(newPath, i))}
+                role="button"
+                tabIndex={0}
+                aria-label="Move item down"
                 title="Move down"
               >
                 v
@@ -141,6 +166,10 @@ export function SchemaFormArray({
             <span
               className="sf-control-button sf-duplication-button oi"
               onClick={handleDuplicate(newPath, i)}
+              onKeyDown={activate(handleDuplicate(newPath, i))}
+              role="button"
+              tabIndex={0}
+              aria-label="Duplicate item"
               title="Duplicate"
             >
               +
@@ -167,14 +196,25 @@ export function SchemaFormArray({
   const showTitle = path.length > 0 && (collapsible || caption);
   const isError = containerErrors.length > 0;
 
+  const titleId = path.length ? `${path.join(".")}_title` : undefined;
+
   return (
-    <div className={arrayClass}>
+    <div
+      className={arrayClass}
+      role={showTitle ? "group" : undefined}
+      aria-labelledby={showTitle ? titleId : undefined}
+    >
       {showTitle && (
-        <div className="sf-title">
+        <div className="sf-title" id={titleId}>
           {collapsible && (
             <span
               className={collapserClasses}
               onClick={onCollapserClick}
+              onKeyDown={activate(onCollapserClick)}
+              role="button"
+              tabIndex={0}
+              aria-expanded={!collapsed}
+              aria-label={collapsed ? "Expand" : "Collapse"}
             ></span>
           )}
           {fieldCaption(schema, path) || "\u00A0"}
@@ -193,6 +233,10 @@ export function SchemaFormArray({
         <span
           className="sf-control-button sf-add-button"
           onClick={handleAdd}
+          onKeyDown={activate(handleAdd)}
+          role="button"
+          tabIndex={0}
+          aria-label="Add new item"
           title="Add new"
         >
           +

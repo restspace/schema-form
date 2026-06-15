@@ -21,6 +21,9 @@ export interface ISchemaContainerProps {
   onBlur(path: string[]): void;
   onEditor?(data: object, path: string[]): any;
   context: ISchemaFormContext;
+  // Optional presentation hints for this node, threaded down from the root
+  // `uiSchema` prop (see applyUiHints / SchemaForm).
+  uiSchema?: any;
 }
 
 // export function containerPropsEqual(props0: ISchemaContainerProps, props1: ISchemaContainerProps): boolean {

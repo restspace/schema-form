@@ -242,7 +242,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         {imageUrls.map((absUrl) => (
           <div className="sf-upload-container" key={absUrl}>
             <div className="sf-upload-item sf-image-crop">
-              <img className="sf-upload-image" src={absUrl} />
+              <img className="sf-upload-image" src={absUrl} alt={parseUrl(absUrl).resourceName || "uploaded image"} />
             </div>
             <div className="sf-upload-delete" onMouseDown={onDelete(absUrl)}>
               x
@@ -298,8 +298,20 @@ export function UploadEditor(props: ISchemaComponentProps) {
             ))}
           </>
         )}
-        <div className="sf-upload-mode" onClick={() => setShowUrl(!showUrl)}>
-          <img src={showUrl ? Upload : Link}></img>
+        <div
+          className="sf-upload-mode"
+          onClick={() => setShowUrl(!showUrl)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setShowUrl(!showUrl);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label={showUrl ? "Switch to file upload" : "Switch to URL entry"}
+        >
+          <img src={showUrl ? Upload : Link} alt="" />
         </div>
       </div>
     </SchemaFormComponentWrapper>

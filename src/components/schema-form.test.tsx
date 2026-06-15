@@ -97,3 +97,102 @@ describe("SchemaForm custom components do not leak across instances", () => {
     expect(screen.queryByTestId("custom-string")).not.toBeInTheDocument();
   });
 });
+
+describe("uiSchema (presentation separated from data schema)", () => {
+  const dataSchema = {
+    type: "object",
+    properties: {
+      bio: { type: "string" },
+      secret: { type: "string" },
+    },
+  };
+
+  it("selects a widget via ui:editor without touching the data schema", () => {
+    const { container } = render(
+      <SchemaForm
+        schema={dataSchema}
+        value={{}}
+        uiSchema={{ bio: { "ui:editor": "textarea" } }}
+      />
+    );
+    expect(container.querySelector("textarea")).toBeInTheDocument();
+  });
+
+  it("hides a field via ui:hidden", () => {
+    const { container } = render(
+      <SchemaForm
+        schema={dataSchema}
+        value={{}}
+        uiSchema={{ secret: { "ui:hidden": true } }}
+      />
+    );
+    // `secret` becomes a hidden input; only `bio` is an editable textbox.
+    expect(container.querySelectorAll('input[type="hidden"]').length).toBe(1);
+    expect(screen.getAllByRole("textbox")).toHaveLength(1);
+  });
+
+  it("leaves rendering unchanged when no uiSchema is supplied", () => {
+    render(<SchemaForm schema={dataSchema} value={{}} />);
+    expect(screen.getAllByRole("textbox")).toHaveLength(2);
+  });
+
+  it("applies hints to a field behind a $ref", () => {
+    const refSchema = {
+      type: "object",
+      definitions: { note: { type: "string" } },
+      properties: { note: { $ref: "#/definitions/note" } },
+    };
+    const { container } = render(
+      <SchemaForm
+        schema={refSchema}
+        value={{}}
+        uiSchema={{ note: { "ui:editor": "textarea" } }}
+      />
+    );
+    expect(container.querySelector("textarea")).toBeInTheDocument();
+  });
+});
+
+describe("accessibility", () => {
+  it("associates the caption label with its input", () => {
+    render(
+      <SchemaForm
+        schema={{ type: "object", properties: { name: { type: "string" } } }}
+        value={{}}
+      />
+    );
+    // getByLabelText only succeeds if label[for] ↔ input id is wired up.
+    expect(screen.getByLabelText("Name")).toBe(screen.getByRole("textbox"));
+  });
+
+  it("sets aria-invalid and aria-describedby on an errored field", () => {
+    const { container } = render(
+      <SchemaForm
+        schema={{
+          type: "object",
+          properties: { name: { type: "string", minLength: 5 } },
+        }}
+        value={{ name: "ab" }}
+        showErrors={true}
+      />
+    );
+    const input = screen.getByRole("textbox");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-describedby", "name_error");
+    expect(container.querySelector("#name_error")).toBeInTheDocument();
+  });
+
+  it("labels the icon-only array controls", () => {
+    render(
+      <SchemaForm
+        schema={{
+          type: "object",
+          properties: { list: { type: "array", items: { type: "string" } } },
+        }}
+        value={{ list: ["a"] }}
+      />
+    );
+    expect(screen.getByLabelText("Add new item")).toBeInTheDocument();
+    expect(screen.getByLabelText("Delete item")).toBeInTheDocument();
+  });
+});

@@ -33,6 +33,11 @@ import { OneOfRadioEditor } from "../editors/oneOf-radio-editor";
 
 export interface ISchemaFormProps {
   schema: JSONSchema | JSONSchema[];
+  // Optional presentation hints kept separate from the (pure) data schema. Mirrors
+  // the data shape; node-level keys use the `ui:` prefix (ui:editor, ui:hidden,
+  // ui:order, ui:className, ui:readonly, ui:title, ui:description) and nested keys
+  // are property names (or `ui:items` for array items). See applyUiHints.
+  uiSchema?: any;
   value: object;
   onChange?(
     value: object,
@@ -92,6 +97,7 @@ export default function SchemaForm(
   const {
     value,
     schema,
+    uiSchema,
     onChange,
     onFocus,
     onBlur,
@@ -250,6 +256,7 @@ export default function SchemaForm(
             onBlur={handleBlur}
             onEditor={onEditor}
             context={context}
+            uiSchema={uiSchema}
           />
         </div>
       </ValueDispatch.Provider>

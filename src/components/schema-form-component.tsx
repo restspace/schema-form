@@ -10,7 +10,9 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
-export const SchemaFormComponentWrapper: FunctionComponent<React.PropsWithChildren<ISchemaComponentProps>> = ({ errors, caption, children, schema, isRequired, context }) => {
+export const SchemaFormComponentWrapper: FunctionComponent<React.PropsWithChildren<ISchemaComponentProps>> = ({ errors, caption, children, schema, isRequired, context, path }) => {
+    const name = path.join('.');
+    const errorId = `${name}_error`;
     const isError = errors.length > 0 && !schema['readOnly'] && schema['editor'] !== 'hidden';
     const errorClass = isError ? "sf-has-error " : "";
     const requiredClass = isRequired ? "sf-required " : ""
@@ -23,7 +25,7 @@ export const SchemaFormComponentWrapper: FunctionComponent<React.PropsWithChildr
 
     const mainField = () => (
         <>
-            {caption && <label className={"sf-caption " + errorClass + requiredClass + innerClass}>
+            {caption && <label htmlFor={name} className={"sf-caption " + errorClass + requiredClass + innerClass}>
                 {caption}
                 {schema['description'] && (<><br/><span className={"sf-description " + errorClass}>
                     {schema['description']}
@@ -37,7 +39,7 @@ export const SchemaFormComponentWrapper: FunctionComponent<React.PropsWithChildr
         <>
             <label className="sf-caption"></label>
             {errors.map((err, idx) => (
-                <span key={idx} className="sf-error">{err.message}</span>
+                <span key={idx} className="sf-error" id={idx === 0 ? errorId : undefined} role={idx === 0 ? "alert" : undefined}>{err.message}</span>
             ))}
         </>
     );
@@ -215,7 +217,12 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     function schemaInput(isError: boolean) {
         const classes = (specific: string) => `sf-control ${specific} ${isError && 'sf-has-error'}`;
         const readOnly = schema['readOnly'] || false;
-        const baseProps = { name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur };
+        const baseProps = {
+            name, readOnly, id: name, onFocus: handleFocus, onBlur: handleBlur,
+            'aria-invalid': isError || undefined,
+            'aria-describedby': isError ? `${name}_error` : undefined,
+            'aria-required': isRequired || undefined,
+        };
         const valueString = value === null || value === undefined ? '' : value.toString();
         const commonProps = { ...baseProps, value: valueString, onChange: () => {}, onInput: handleChange };
         const selectProps = { ...baseProps, value: valueString, onChange: handleChange, disabled: baseProps.readOnly };

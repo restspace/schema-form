@@ -40,6 +40,7 @@ export function SchemaFormObject({
   onBlur,
   onEditor,
   context,
+  uiSchema,
 }: ISchemaContainerProps): React.ReactElement {
   const [collapsed, setCollapsed] = useState(false);
   const pathEl = path.length ? last(path) : "";
@@ -69,6 +70,7 @@ export function SchemaFormObject({
             onEditor={onEditor}
             key={key}
             context={context}
+            uiSchema={uiSchema && uiSchema[key]}
           />
         );
       }
@@ -132,14 +134,30 @@ export function SchemaFormObject({
     </>
   );
 
+  const titleId = path.length ? `${path.join(".")}_title` : undefined;
+
   return (
-    <div className={objectClass}>
+    <div
+      className={objectClass}
+      role={showTitle ? "group" : undefined}
+      aria-labelledby={showTitle ? titleId : undefined}
+    >
       {showTitle && (
-        <div className="sf-title">
+        <div className="sf-title" id={titleId}>
           {collapsible && (
             <span
               className={collapserClasses}
               onClick={onCollapserClick}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onCollapserClick();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-expanded={!collapsed}
+              aria-label={collapsed ? "Expand" : "Collapse"}
             ></span>
           )}
           {fieldCaption(schema, path, value) || "\u00A0"}
