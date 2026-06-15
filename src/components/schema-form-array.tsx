@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { ComponentForType } from "./component-for-type";
 import { ISchemaContainerProps } from "./schema-form-interfaces";
 import { ErrorItem, ErrorObject } from "../error";
@@ -54,12 +54,44 @@ export function SchemaFormArray({
     containerErrors = flattenErrors(errors as ErrorObject);
   }
 
-  const handleDelete = (path: string[]) => () =>
+  // Stable per-item ids so React keys survive edits, reorders and deletes
+  // (using the array index as a key misreconciles item-local state — input
+  // focus, hold strings, collapsed flags — on move/delete/duplicate).
+  // The id list is kept in lockstep with the structural operations below; on
+  // an unexpected length change (e.g. the value prop is replaced externally)
+  // it is reconciled positionally.
+  const idsRef = useRef<number[]>([]);
+  const nextIdRef = useRef(0);
+  if (idsRef.current.length !== count) {
+    const ids: number[] = [];
+    for (let i = 0; i < count; i++) {
+      ids.push(idsRef.current[i] ?? nextIdRef.current++);
+    }
+    idsRef.current = ids;
+  }
+
+  const handleDelete = (path: string[], i: number) => () => {
+    idsRef.current = idsRef.current.filter((_, j) => j !== i);
     dispatch(ValueAction.delete(path));
-  const handleUp = (path: string[]) => () => dispatch(ValueAction.up(path));
-  const handleDown = (path: string[]) => () => dispatch(ValueAction.down(path));
-  const handleDuplicate = (path: string[]) => () =>
+  };
+  const handleUp = (path: string[], i: number) => () => {
+    const ids = idsRef.current.slice();
+    [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
+    idsRef.current = ids;
+    dispatch(ValueAction.up(path));
+  };
+  const handleDown = (path: string[], i: number) => () => {
+    const ids = idsRef.current.slice();
+    [ids[i], ids[i + 1]] = [ids[i + 1], ids[i]];
+    idsRef.current = ids;
+    dispatch(ValueAction.down(path));
+  };
+  const handleDuplicate = (path: string[], i: number) => () => {
+    const ids = idsRef.current.slice();
+    ids.splice(i + 1, 0, nextIdRef.current++);
+    idsRef.current = ids;
     dispatch(ValueAction.duplicate(path));
+  };
   const handleAdd = () =>
     dispatch(ValueAction.create(path, emptyValue(itemSchema)));
 
@@ -83,7 +115,7 @@ export function SchemaFormArray({
           <div className="sf-array-buttons">
             <span
               className="sf-control-button sf-delete-button oi"
-              onClick={handleDelete(newPath)}
+              onClick={handleDelete(newPath, i)}
               title="Delete"
             >
               x
@@ -91,7 +123,7 @@ export function SchemaFormArray({
             {i > 0 && (
               <span
                 className="sf-control-button sf-up-button oi"
-                onClick={handleUp(newPath)}
+                onClick={handleUp(newPath, i)}
                 title="Move up"
               >
                 ^
@@ -100,7 +132,7 @@ export function SchemaFormArray({
             {i < count - 1 && (
               <span
                 className="sf-control-button sf-down-button oi"
-                onClick={handleDown(newPath)}
+                onClick={handleDown(newPath, i)}
                 title="Move down"
               >
                 v
@@ -108,7 +140,7 @@ export function SchemaFormArray({
             )}
             <span
               className="sf-control-button sf-duplication-button oi"
-              onClick={handleDuplicate(newPath)}
+              onClick={handleDuplicate(newPath, i)}
               title="Duplicate"
             >
               +
@@ -151,7 +183,9 @@ export function SchemaFormArray({
       {!collapsed && (
         <div className="sf-array-fieldset fieldset">
           {valueArray.map((v, i) => (
-            <React.Fragment key={i}>{arrayElement(v, i)}</React.Fragment>
+            <React.Fragment key={idsRef.current[i]}>
+              {arrayElement(v, i)}
+            </React.Fragment>
           ))}
         </div>
       )}

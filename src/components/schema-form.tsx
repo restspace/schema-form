@@ -2,6 +2,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   useRef,
   useReducer,
 } from "react";
@@ -28,7 +29,6 @@ import isEqual from "lodash-es/isEqual";
 import { makeSchemaResolver } from "../schema/schema";
 import { SchemaContext } from "../schema/schemaContext";
 import { OneOfRadioEditor } from "../editors/oneOf-radio-editor";
-import { deepCopy } from "../utility";
 
 export interface ISchemaFormProps {
   schema: object | object[];
@@ -108,14 +108,51 @@ export default function SchemaForm(
 
   const [isPropsChange, setIsPropsChange] = useState(true);
 
-  const context: ISchemaFormContext = {
-    components: Object.assign(defaultComponentMap, components || {}),
-    containers: Object.assign(defaultContainerMap, containers || {}),
-    schemaContext: new SchemaContext(schema, onError),
-    outerPropsChange: isPropsChange,
-    componentContext,
-    collapsible,
-  };
+  // Merge custom maps into a *new* object so the module-level defaults are
+  // never mutated (mutation would leak custom components across every
+  // SchemaForm instance in the app). Memoize the SchemaContext separately so
+  // its validator cache survives across renders / form interactions.
+  const schemaContext = useMemo(
+    () => new SchemaContext(schema, onError),
+    [schema, onError]
+  );
+  const mergedComponents = useMemo(
+    () => Object.assign({}, defaultComponentMap, components || {}),
+    [components]
+  );
+  const mergedContainers = useMemo(
+    () => Object.assign({}, defaultContainerMap, containers || {}),
+    [containers]
+  );
+  const mergedComponentContext = useMemo(() => {
+    let cc = componentContext;
+    if (schema && schema["currencySymbol"]) {
+      cc = { ...(cc || {}), currencySymbol: schema["currencySymbol"] };
+    }
+    if (gridMode !== undefined) {
+      cc = { ...(cc || {}), gridMode };
+    }
+    return cc;
+  }, [componentContext, schema, gridMode]);
+
+  const context: ISchemaFormContext = useMemo(
+    () => ({
+      components: mergedComponents,
+      containers: mergedContainers,
+      schemaContext,
+      outerPropsChange: isPropsChange,
+      componentContext: mergedComponentContext,
+      collapsible,
+    }),
+    [
+      mergedComponents,
+      mergedContainers,
+      schemaContext,
+      isPropsChange,
+      mergedComponentContext,
+      collapsible,
+    ]
+  );
 
   const [currentValue, dispatch] = useReducer(valueReducer, value);
   const refLastCurrentValue = useRef(currentValue);
@@ -141,8 +178,6 @@ export default function SchemaForm(
       const newErrors = validate(schema, currentValue, context.schemaContext);
       if (isEqual(errors, newErrors) && refShowErrors.current === showErrors)
         return;
-      console.log("ER Updating errors:");
-      console.log(deepCopy(newErrors));
       setErrors(newErrors);
     }
     refShowErrors.current = showErrors;
@@ -152,8 +187,6 @@ export default function SchemaForm(
   // This updates the internal state currentValue with an external change of the value prop
   useEffect(() => {
     if (!isEqual(refLastCurrentValue.current, value)) {
-      console.log("PROPS Update from props value:");
-      console.log(deepCopy(value));
       setIsPropsChange(true);
       dispatch(ValueAction.replace(value));
     }
@@ -167,8 +200,6 @@ export default function SchemaForm(
 
   const dispatchChange = useCallback(
     (action: ValueAction) => {
-      //console.log(`setting - ${JSON.stringify(newPathValue)} at path ${path.join('.')} produces ${JSON.stringify(newValue)}`);
-      console.log("CH: internal value change:");
       dispatch(action);
       const onChange = refOnChange.current;
       if (onChange && (action !== undefined || !changeOnBlur)) {
@@ -203,20 +234,6 @@ export default function SchemaForm(
 
   const formClass = `sf-form ${className}`;
 
-  if (schema && schema["currencySymbol"]) {
-    context.componentContext = {
-      ...(context.componentContext || {}),
-      currencySymbol: schema["currencySymbol"],
-    };
-  }
-  if (gridMode !== undefined) {
-    context.componentContext = {
-      ...(context.componentContext || {}),
-      gridMode,
-    };
-  }
-
-  //console.log('FORM rendering ' + JSON.stringify(currentValue));
   if (!schema) {
     return <></>;
   } else {

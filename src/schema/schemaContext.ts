@@ -30,6 +30,13 @@ export class SchemaContext {
     this.onError = onError;
   }
 
+  // Compiling a schema with @exodus/schemasafe generates validation code and is
+  // expensive; validationErrors runs on essentially every keystroke. Cache the
+  // compiled validator keyed by the *input* schema's identity (stable across
+  // renders now that SchemaForm memoizes its schema), so each distinct schema
+  // is compiled at most once for the lifetime of this context.
+  private validatorCache = new WeakMap<object, ReturnType<typeof validator>>();
+
   validatorFor(schema: object, schemas: object[] = []) {
     return validator(schema, {
       includeErrors: true,
@@ -43,21 +50,24 @@ export class SchemaContext {
   }
 
   validationErrors(schema: object, value: any) {
-    if (
-      schema !== this.rootSchema &&
-      !(schema["$id"] && schema["$id"] === this.rootSchema["$id"])
-    ) {
-      // this means we're validating a subschema of the root schema
-      // so we repoint any refs in the subschema to point to the id of the root schema
-      // and add the root schema in as a separate schema to allow the
-      // refs to work
-      const rootRefsSchema = this.baseRefsOnRoot(schema);
-      const validate = this.validatorFor(rootRefsSchema, [this.rootSchema]);
-      return validate(value) ? null : validate.errors;
-    } else {
-      const validate = this.validatorFor(schema);
-      return validate(value) ? null : validate.errors;
+    let validate = this.validatorCache.get(schema);
+    if (!validate) {
+      if (
+        schema !== this.rootSchema &&
+        !(schema["$id"] && schema["$id"] === this.rootSchema["$id"])
+      ) {
+        // this means we're validating a subschema of the root schema
+        // so we repoint any refs in the subschema to point to the id of the root schema
+        // and add the root schema in as a separate schema to allow the
+        // refs to work
+        const rootRefsSchema = this.baseRefsOnRoot(schema);
+        validate = this.validatorFor(rootRefsSchema, [this.rootSchema]);
+      } else {
+        validate = this.validatorFor(schema);
+      }
+      this.validatorCache.set(schema, validate);
     }
+    return validate(value) ? null : validate.errors;
   }
 
   private baseRefsOnRootInner(schema: object) {

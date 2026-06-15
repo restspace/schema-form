@@ -29,6 +29,13 @@
     "build-plain": "rollup -c",
     "sass": "sass src/scss:src/css"
   },
+  "jest": {
+    "moduleDirectories": ["node_modules", "src"],
+    "testRunner": "jest-jasmine2/build/index.js",
+    "roots": ["<rootDir>/src"],
+    "testPathIgnorePatterns": ["/node_modules/", "/build/"],
+    "transformIgnorePatterns": ["/node_modules/(?!lodash-es)"]
+  },
   "bugs": {
     "url": "https://github.com/restspace/schema-form/issues"
   },

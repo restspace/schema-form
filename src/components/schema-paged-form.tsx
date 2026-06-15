@@ -36,11 +36,15 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
   // feed value into state when props change
   useEffect(() => {
     if (!isEqual(props.value, refLastPropsValue.current)) {
-      setValue(props.value);
       const pageKey = "page" + props.page;
-      if (!props.value[pageKey]) props.value[pageKey] = {};
-      refValue.current = props.value;
-      setPageValue(props.value[pageKey]);
+      // Don't mutate the parent-owned props object; derive a local copy that
+      // guarantees the current page bucket exists.
+      const nextValue = props.value[pageKey]
+        ? props.value
+        : { ...props.value, [pageKey]: {} };
+      setValue(nextValue);
+      refValue.current = nextValue;
+      setPageValue(nextValue[pageKey]);
     }
     refLastPropsValue.current = props.value;
   }, [props.value, refLastPropsValue, props.page]);
@@ -48,8 +52,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
   useEffect(() => {
     setEntered(false);
     const pageKey = "page" + props.page;
-    if (!props.value[pageKey]) props.value[pageKey] = {};
-    setPageValue(props.value[pageKey]);
+    setPageValue(props.value[pageKey] || {});
   }, [props.page]);
 
   // if (!pageSchema) return (

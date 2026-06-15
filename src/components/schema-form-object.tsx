@@ -4,7 +4,6 @@ import { ErrorItem, ErrorObject } from "../error";
 import { fieldCaption } from "../schema/schema";
 import { ISchemaContainerProps } from "./schema-form-interfaces";
 import { SchemaFormKeys } from "./schema-form-keys";
-import flatt from "lodash";
 import { last } from "../utility";
 
 type NestedList = string | NestedListArray;
@@ -76,8 +75,10 @@ export function SchemaFormObject({
     } else {
       // recurse into a section list
       const [firstKey, depth] = firstNestedString(order);
+      // Key sections by their (stable) leading property name rather than array
+      // index, so reordering property groups doesn't misreconcile sections.
       return (
-        <section key={i || 0} className={`group-${depth}-${firstKey}`}>
+        <section key={`group-${depth}-${firstKey}`} className={`group-${depth}-${firstKey}`}>
           {order.map((subOrder, i) =>
             renderSection(subOrder, properties, requireds, i)
           )}
@@ -91,12 +92,6 @@ export function SchemaFormObject({
     schema["propertyOrder"] || Object.keys(schema["properties"] || {});
   let properties = Object.entries(schema["properties"] || {});
   let requireds = schema["required"];
-  if (
-    schema["propertyOrder"] &&
-    (schema["propertyOrder"] as Array<any>).flat(1).length < properties.length
-  ) {
-    console.log("fewer items in order than properties at " + path.join("."));
-  }
   const collapsible = (context.collapsible && path.length > 0) || false;
   const onCollapserClick = () => setCollapsed((collapsed) => !collapsed);
   const collapserClasses =

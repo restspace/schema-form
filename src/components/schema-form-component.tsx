@@ -133,7 +133,6 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             setHoldString(str);
             if (!dt.isValid()) return;
             const newStr = dt.utc().format();
-            console.log('ch d val ' + newStr);
             dispatch(ValueAction.set(path, newStr));
         }
     }
@@ -238,7 +237,6 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 return (<input {...integerProps} type="number" step={1} className={classes("sf-number sf-integer")} />)
             case "currency":
                 const currencyProps = { ...baseProps, value: holdString ? holdString : formatCurrency(value), onChange: () => {}, onInput: handleCurrencyChange };
-                console.log('hold string:::' + holdString);
                 return (<input {...currencyProps} type="text" className={classes("sf-currency")} />)
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)

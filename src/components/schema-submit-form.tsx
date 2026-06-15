@@ -28,7 +28,6 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
         setDirty(false);
       }
       setCurrentValue(value);
-      console.log("value changed, set clean");
     }
   }, [value]);
 
@@ -44,7 +43,6 @@ export default function SchemaSubmitForm(props: ISchemaSubmitFormProps) {
       if (!dirty && onDirty) onDirty(true);
       if (!dirty) {
         setDirty(true);
-        console.log("-> dirty");
       }
       if (onChange) onChange(value, path, errors);
     },

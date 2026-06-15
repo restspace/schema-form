@@ -236,6 +236,7 @@ export function conjoin(
         if (schema[prop] > schema1[prop]) {
           schema[prop] = schema1[prop];
         }
+        break;
       case "minimum":
       case "exclusiveMinimum":
       case "minLength":
@@ -244,6 +245,7 @@ export function conjoin(
         if (schema[prop] < schema1[prop]) {
           schema[prop] = schema1[prop];
         }
+        break;
       case "if":
       case "then":
       case "else":
@@ -280,7 +282,9 @@ export function disjoin(
           } else {
             let res = disjoin(schema["properties"][p], otherProp);
             if (isEmpty(res))
-              throw "Disjoining property " + p + " means it has no definition";
+              throw new Error(
+                "Disjoining property " + p + " means it has no definition"
+              );
             schema["properties"][p] = res;
           }
         }
@@ -341,6 +345,7 @@ export function disjoin(
         if (schema[prop] <= schema1[prop]) {
           schema[prop] = schema1[prop];
         }
+        break;
       case "minimum":
       case "exclusiveMinimum":
       case "minLength":
@@ -349,9 +354,12 @@ export function disjoin(
         if (schema[prop] >= schema1[prop]) {
           schema[prop] = schema1[prop];
         }
+        break;
       default:
         if (schema[prop] && schema[prop] != schema1[prop])
-          throw "Property " + prop + " has different undisjoinable values";
+          throw new Error(
+            "Property " + prop + " has different undisjoinable values"
+          );
         schema[prop] = schema1[prop];
         break;
     }
@@ -368,7 +376,7 @@ export function fieldUnion(
   if (schema === null) return null;
 
   if (!schema["type"])
-    throw "object not well-formed schema in fieldUnion, no type field";
+    throw new Error("object not well-formed schema in fieldUnion, no type field");
   let union = {
     $type: fieldType(schema),
   };
@@ -467,7 +475,9 @@ export function applyConditional(
       }
     }
     if (disjunction === null)
-      throw "Current state of form illegal, no condition in anyOf is true";
+      throw new Error(
+        "Current state of form illegal, no condition in anyOf is true"
+      );
     result = conjoin(result || schema, disjunction);
   }
   if (schema["allOf"]) {
@@ -477,7 +487,9 @@ export function applyConditional(
       conjunction = conjoin(conjunction, apply);
     }
     if (conjunction === null)
-      throw "Current state of form illegal, a condition in allOf is not true";
+      throw new Error(
+        "Current state of form illegal, a condition in allOf is not true"
+      );
     result = conjoin(result || schema, conjunction);
   }
 

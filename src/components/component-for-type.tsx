@@ -29,7 +29,10 @@ function ComponentForTypeInner(
   try {
     condSchema = applyConditional(schema, value, context.schemaContext);
   } catch (er) {
-    console.log(er);
+    // A thrown conditional means the current value satisfies no branch yet
+    // (a normal transient state while the form is being filled in). Fall back
+    // to the unmodified schema; the validator still surfaces any real errors
+    // through the error channel.
   }
   let mergedSchema = condSchema || schema;
 
@@ -86,13 +89,11 @@ function SchemaFormComponentGenericInner({
   const component: React.FC<ISchemaComponentProps> =
     context.components[fieldType(schema)];
 
-  console.log("> rendering " + schema["type"] + " at " + path.join("."));
-
   if (component) {
     // memoize on the basis of full depth equality of props
     return React.createElement(component, componentProps) || <></>;
   } else {
-    console.log("Can't find editor for field type: " + fieldType(schema));
+    console.warn("Can't find editor for field type: " + fieldType(schema));
     return <></>;
   }
 }

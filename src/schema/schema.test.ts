@@ -1,4 +1,4 @@
-import { nullOptionalsAllowed, conjoin, mergeOrders, applyOrder } from './schema';
+import { nullOptionalsAllowed, conjoin, disjoin, mergeOrders, applyOrder } from './schema';
 
 it('nullOptionals simple', () => {
     let nopts = nullOptionalsAllowed({
@@ -110,5 +110,31 @@ it("merge orders", () => {
 it("apply order", () => {
     let ordered = applyOrder([[ "x", 1 ], [ "y", 2 ], [ "z", 3 ]], ([key, _]) => key.toString(), [ "z", "y" ]);
     expect(ordered).toEqual([[ "z", 3], [ "y", 2], [ "x", 1 ]]);
+});
+
+describe("conjoin bound merging (intersection)", () => {
+    it("takes the tighter (smaller) maximum", () => {
+        expect(conjoin({ type: "number", maximum: 5 }, { maximum: 10 })!["maximum"]).toBe(5);
+        expect(conjoin({ type: "number", maximum: 10 }, { maximum: 5 })!["maximum"]).toBe(5);
+    });
+    it("takes the tighter (larger) minimum", () => {
+        expect(conjoin({ type: "number", minimum: 5 }, { minimum: 2 })!["minimum"]).toBe(5);
+        expect(conjoin({ type: "number", minimum: 2 }, { minimum: 5 })!["minimum"]).toBe(5);
+    });
+    it("does not let a maximum leak into the minimum (fall-through regression)", () => {
+        const merged = conjoin({ type: "number", maximum: 5 }, { maximum: 10 })!;
+        expect(merged["minimum"]).toBeUndefined();
+    });
+});
+
+describe("disjoin bound merging (union)", () => {
+    it("takes the looser (larger) maximum", () => {
+        expect(disjoin({ type: "number", maximum: 5 }, { maximum: 10 })!["maximum"]).toBe(10);
+        expect(disjoin({ type: "number", maximum: 10 }, { maximum: 5 })!["maximum"]).toBe(10);
+    });
+    it("takes the looser (smaller) minimum", () => {
+        expect(disjoin({ type: "number", minimum: 5 }, { minimum: 2 })!["minimum"]).toBe(2);
+        expect(disjoin({ type: "number", minimum: 2 }, { minimum: 5 })!["minimum"]).toBe(2);
+    });
 });
 

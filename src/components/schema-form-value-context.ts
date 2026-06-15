@@ -1,5 +1,5 @@
 import React from "react";
-import { last, deepCopy } from "../utility";
+import { last, deepCopy, cloneAlongPath } from "../utility";
 import get from "lodash-es/get";
 import set from "lodash-es/set";
 
@@ -70,12 +70,14 @@ export class ValueAction {
 
 export function valueReducer(oldValue: object, action: ValueAction) {
   if (action.type === ValueActionType.Replace) {
-    console.log("VALUE update (Replace):");
-    console.log(JSON.parse(JSON.stringify(action.value)));
     return deepCopy(action.value);
   }
 
-  let value = deepCopy(oldValue); // unless we clone before we will mutate the value used for matching by memo
+  // Structural-sharing clone of just the spine touched by this action, so
+  // untouched subtrees keep their references (cheaper than a full deep copy
+  // on every keystroke, and preserves identity for memoization / list keys).
+  // The subsequent get/set/splice calls only ever mutate this cloned spine.
+  let value = cloneAlongPath(oldValue, action.path);
   const parentPath = action.path.slice(0, -1);
   const idx = parseInt(last(action.path) || "");
   switch (action.type) {
@@ -131,7 +133,5 @@ export function valueReducer(oldValue: object, action: ValueAction) {
       }
     }
   }
-  console.log("VALUE update (" + ValueActionType[action.type] + "):");
-  console.log(JSON.parse(JSON.stringify(value)));
   return value;
 }

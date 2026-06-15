@@ -14,11 +14,30 @@ export function union<T>(arr0: T[], arr1: T[]): T[] {
     output.push(val);
   }
   for (let val of arr1) {
-    if (arr1.indexOf(val) < 0) {
+    if (arr0.indexOf(val) < 0) {
       output.push(val);
     }
   }
   return output;
+}
+
+// Structural-sharing clone: returns a copy of `root` in which only the nodes
+// along `path` are shallow-cloned. Sibling/untouched subtrees keep their
+// original references, so an immutable update along `path` is O(path) rather
+// than O(whole tree). Cloning stops at the first missing/primitive node so the
+// caller (e.g. lodash set) can build any remaining structure freshly.
+export function cloneAlongPath<T>(root: T, path: string[]): T {
+  if (root === null || typeof root !== "object") return root;
+  const newRoot: any = Array.isArray(root) ? (root as any).slice() : { ...root };
+  let cursor: any = newRoot;
+  for (let i = 0; i < path.length; i++) {
+    const key = path[i];
+    const child = cursor[key];
+    if (child === null || typeof child !== "object") break;
+    cursor[key] = Array.isArray(child) ? child.slice() : { ...child };
+    cursor = cursor[key];
+  }
+  return newRoot;
 }
 
 export function isEmpty(map: object | null): boolean {
