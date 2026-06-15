@@ -22,6 +22,7 @@ in as props. It has no submit logic, and simply updates the current value via a 
 
     import SchemaForm from "schema-form";
     <SchemaForm schema={schema} value={value}
+        uiSchema={uiSchema}
         onChange={onSubmitChange}
         onFocus={onFocus}
         onBlur={onBlur}
@@ -89,6 +90,7 @@ An explanation of each of the props follows:
 |------|------|-------------|
 |schema|object|This is the JSON Schema which defines the form's structure and validation. It can optionally be an array of schemas, in which case the first is the base schema actually used and the others provide schemas to which it can refer using $ref references.|
 |value|object|This is the current value for the form fields to display. This can be used to make the form controlled|
+|uiSchema|object|Optional. Presentation hints kept *separate* from the data schema (see the uiSchema section below), so a pure/shared JSON Schema can drive the form without being annotated with UI concerns. Mirrors the shape of the data; node-level keys are prefixed `ui:` (e.g. `ui:editor`, `ui:hidden`). Omitting it leaves rendering unchanged.|
 |page|number|On the paged form, the current page number being shown (starts at 0)|
 |onChange|function|This function is called when the form fields' value is displayed. It's called with parameters (*value*, *path*, *errors*, *action*). *value* is an object representing the value of all the fields in the form. *path* is a list of property name strings indicating the path to the property which just changed. *errors* is an ErrorObject describing any current errors. *action* is an enum number indicating what action was just taken in terms mainly of array manipulation.|
 |changeOnBlur|boolean|This prop determines whether the onChange event is called whenever a form value changes (the default) or only when the focus moves away from a changed form field.|
@@ -109,11 +111,64 @@ An explanation of each of the props follows:
 |makePreviousLink|function|A render prop which returns an element which lets the user tell the paged form to return to the previous page. The parameters is (*previousPage*, *onClick*). *previousPage* is the page number (starting 0) of the previous page. *onClick* is a function the rendered element must call when the user has requested to go to the previous page. It has one argument which is the number of the page to which to go.|
 |makeNextLink|function|A render prop which returns an element which lets the user tell the paged form to go to the next page. The parameters is (*nextPage*, *onClick*). *nextPage* is the page number (starting 0) of the next page. *onClick* is a function the rendered element must call when the user has requested to go to the next page. It has one argument which is the number of the page to which to go.|
 
+## uiSchema: separating presentation from the data schema
+
+The custom keywords above (`editor`, `propertyOrder`, `className`, `hidden`, …) can be placed
+directly in the schema, which is convenient when you own the schema. But when the schema is a
+canonical or shared artifact — an API contract, an OpenAPI definition, a schema served from a
+registry, or one you simply don't want to pollute with UI concerns — you can instead supply an
+optional `uiSchema` prop. The data schema then stays pure and portable, and the presentation
+lives alongside it.
+
+`uiSchema` mirrors the shape of the data. Node-level presentation keys use a `ui:` prefix;
+nested keys are property names (and `ui:items` for array item hints). Supported keys map onto
+the existing custom keywords:
+
+| uiSchema key | Equivalent schema keyword |
+|--------------|---------------------------|
+| `ui:editor` | `editor` |
+| `ui:hidden` | `hidden` |
+| `ui:order` | `propertyOrder` |
+| `ui:className` | `className` |
+| `ui:readonly` | `readOnly` |
+| `ui:title` | `title` |
+| `ui:description` | `description` |
+
+For example, given a pure data schema with `description` and `internalId` string properties:
+
+    <SchemaForm
+      schema={dataSchema}
+      value={value}
+      uiSchema={{
+        "ui:order": ["description", "internalId"],
+        description: { "ui:editor": "textarea" },
+        internalId:  { "ui:hidden": true },
+        addresses:   { "ui:items": { "ui:className": "address-row" } }
+      }} />
+
+Notes:
+- **Backward compatible.** Omitting `uiSchema` produces identical output, and the in-schema
+  custom keywords continue to work. Where both are present, `uiSchema` takes precedence for the
+  keys it sets.
+- **Works through `$ref`.** Hints are applied after a `$ref` is resolved, so a property whose
+  schema is a `$ref` can still be styled via `uiSchema` at the point it is used.
+
 ## Styling the components
 
 The package comes with a base CSS file which sets up expected layout. This can then be overriden with style customisations.
 
     import "@restspace/schema-form/build/index.css";
+
+## Accessibility
+
+Fields are rendered with accessibility in mind:
+- each field's caption `<label>` is associated with its control via `htmlFor`/`id`;
+- invalid fields set `aria-invalid` and reference their error message through `aria-describedby`,
+  and the message is announced via `role="alert"`; required fields set `aria-required`;
+- object and array sections are exposed as `role="group"` labelled by their title;
+- the icon-only array controls (add / delete / reorder / duplicate) and section collapsers are
+  keyboard-operable buttons (`role="button"`, focusable, activated with Enter/Space) with
+  descriptive `aria-label`s.
 
 ## JSON schema
 JSON Schema is a (provisional but widely used) web standard defining a system for describing validity conditions on a JSON object. It is described here: [https://json-schema.org/](https://json-schema.org/).
