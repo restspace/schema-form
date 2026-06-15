@@ -67,8 +67,9 @@ function progressBarsReducer(
 ) {
   const [filename, progress] = action;
   if (progress < 0) {
-    delete state[filename];
-    return state;
+    // Return a new object (don't mutate state) so useReducer re-renders.
+    const { [filename]: _removed, ...rest } = state;
+    return rest;
   } else {
     return { ...state, [filename]: progress };
   }
@@ -166,7 +167,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         return parts.length === 1 ? "" : parts[parts.length - 1].toLowerCase();
       };
       const accepted = (schema["acceptedExtensions"] as string[]).map((ext) =>
-        ext.startsWith(".") ? ext.substr(1) : ext
+        ext.startsWith(".") ? ext.slice(1) : ext
       );
       const badExtensions = acceptedFiles.filter(
         (f) => !accepted.includes(getExt(f.name))
@@ -250,7 +251,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
         ))}
         {fileUrls.map((url) => (
           <div className="sf-upload-container" key={url}>
-            <div className="sf-upload-item sf-file-crop" key={url} title={url}>
+            <div className="sf-upload-item sf-file-crop" title={url}>
               {parseUrl(url).resourceExtension}
             </div>
             <div
@@ -270,7 +271,7 @@ export function UploadEditor(props: ISchemaComponentProps) {
       <div
         className={`sf-control sf-upload ${
           isDragActive ? "sf-drag-over" : ""
-        } ${progressBars.length ? "sf-uploading" : ""}`}
+        } ${Object.keys(progressBars).length ? "sf-uploading" : ""}`}
       >
         {showUrl ? (
           <>

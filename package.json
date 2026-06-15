@@ -19,6 +19,10 @@
   "types": "build/index.d.ts",
   "module": "build/index.es.js",
   "jsnext:main": "build/index.es.js",
+  "sideEffects": [
+    "**/*.scss",
+    "**/*.css"
+  ],
   "files": [
     "build",
     "src/css"
@@ -30,11 +34,15 @@
     "sass": "sass src/scss:src/css"
   },
   "jest": {
+    "testEnvironment": "jsdom",
     "moduleDirectories": ["node_modules", "src"],
-    "testRunner": "jest-jasmine2/build/index.js",
     "roots": ["<rootDir>/src"],
     "testPathIgnorePatterns": ["/node_modules/", "/build/"],
-    "transformIgnorePatterns": ["/node_modules/(?!lodash-es)"]
+    "transformIgnorePatterns": ["/node_modules/(?!lodash-es)"],
+    "setupFilesAfterEnv": ["<rootDir>/src/setupTests.ts"],
+    "moduleNameMapper": {
+      "\\.(svg|png|jpg|jpeg|gif|css|scss|sass)$": "<rootDir>/src/test/fileMock.cjs"
+    }
   },
   "bugs": {
     "url": "https://github.com/restspace/schema-form/issues"
@@ -43,18 +51,24 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.0",
     "@babel/preset-typescript": "^7.26.0",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
-    "@types/jest": "^24.0.17",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.4.8",
+    "@testing-library/react": "^16.1.0",
+    "@types/jest": "^29.5.12",
     "@types/jsonpointer": "^4.0.0",
     "@types/lodash": "^4.14.138",
+    "@types/lodash-es": "^4.17.7",
     "@types/node": "^18.15.11",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "babel-jest": "^24.9.0",
-    "jest": "^24.9.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "rollup": "^3",
@@ -74,7 +88,6 @@
   },
   "dependencies": {
     "@exodus/schemasafe": "^1.0.0-rc.7",
-    "@types/lodash-es": "^4.17.7",
     "dayjs": "^1.9.7",
     "jsonpointer": "^4.0.1",
     "lodash-es": "^4.17.21",

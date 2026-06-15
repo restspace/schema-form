@@ -23,10 +23,12 @@ export class SchemaContext {
   ) {
     const schemas = Array.isArray(baseSchemas) ? baseSchemas : [baseSchemas];
     this.resolver = makeSchemaResolver(schemas);
-    this.rootSchema = schemas[0];
-    if (!this.rootSchema["$id"]) {
-      this.rootSchema["$id"] = "http://schema-form.org/root";
-    }
+    // Don't mutate the caller's schema object; if it has no $id, tag a shallow
+    // copy instead (the $id is only needed by the validator below).
+    const root = schemas[0];
+    this.rootSchema = root["$id"]
+      ? root
+      : { ...root, $id: "http://schema-form.org/root" };
     this.onError = onError;
   }
 

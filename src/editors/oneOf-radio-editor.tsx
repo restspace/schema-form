@@ -38,7 +38,7 @@ export function OneOfRadioEditor(
         setCurrentIdx(-1);
       }
     }
-  }, [value]);
+  }, [value, oneOf, context.outerPropsChange, context.schemaContext]);
 
   const handleCheckChange = (idx: number) => () => {
     setCurrentIdx(idx);
@@ -77,16 +77,18 @@ export function OneOfRadioEditor(
       );
     const gridMode = context && context["gridMode"];
     if (!opts) {
-      throw `In schema ${JSON.stringify(
-        schema
-      )}, editor: oneOfRadioEditor must be a subschema with an oneOf property`;
+      throw new Error(
+        `In schema ${JSON.stringify(
+          schema
+        )}, editor: oneOfRadioEditor must be a subschema with an oneOf property`
+      );
     }
 
     return (
       <div className="sf-row sf-schema-selector">
         <div className={classes}>
           {opts.map((opt, idx) => (
-            <>
+            <React.Fragment key={name + "_" + idx}>
               {gridMode ? (
                 <>
                   <input
@@ -114,7 +116,7 @@ export function OneOfRadioEditor(
                   <label htmlFor={name + "_" + idx}>{opt}</label>
                 </span>
               )}
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useContext, useImperativeHandle, useState } f
 import { ISchemaComponentProps } from "./schema-form-interfaces";
 import { fieldType } from "../schema/schema";
 import { ValueDispatch, ValueAction } from "./schema-form-value-context";
-import { browserInfo } from "../utility";
+import { getBrowserInfo } from "../utility";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
@@ -241,6 +241,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "date":
                 return (<input {...commonProps} type="date" className={classes("sf-date")} />)
             case "date-time":
+                const browserInfo = getBrowserInfo();
                 if (browserInfo.isIE || browserInfo.isSafari || browserInfo.isFirefox) {
                     const val = holdString || (value ? dayjs(value).format('YYYY-MM-DD HH:mm:ss') : '');
                     const textDateTimeProps = { ...baseProps, value: val, onChange: () => {}, onInput: handleTextDateTimeChange, onBlur: handleHeldBlur };

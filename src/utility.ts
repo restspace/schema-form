@@ -44,7 +44,7 @@ export function isEmpty(map: object | null): boolean {
   if (map === null) return false;
 
   for (var key in map) {
-    return !map.hasOwnProperty(key);
+    if (Object.prototype.hasOwnProperty.call(map, key)) return false;
   }
   return true;
 }
@@ -216,7 +216,7 @@ export function parseUrl(url: string) {
   return urlElements;
 }
 
-export const browserInfo: {
+export interface BrowserInfo {
   isOpera: boolean;
   isFirefox: boolean;
   isSafari: boolean;
@@ -224,40 +224,70 @@ export const browserInfo: {
   isEdge: boolean;
   isChrome: boolean;
   isBlink: boolean;
-} = {
-  // Opera 8.0+
-  isOpera:
-    (!!window["opr"] && !!window["opr"]["addons"]) ||
-    !!window["opera"] ||
-    navigator.userAgent.indexOf(" OPR/") >= 0,
+}
 
-  // Firefox 1.0+
-  isFirefox: typeof window["InstallTrigger"] !== "undefined",
+let cachedBrowserInfo: BrowserInfo | null = null;
 
-  // Safari 3.0+ "[object HTMLElementConstructor]"
-  isSafari:
-    /constructor/i.test(window["HTMLElement"] as unknown as string) ||
-    (function (p) {
-      return p.toString() === "[object SafariRemoteNotification]";
-    })(
-      !window["safari"] ||
-        (typeof window["safari"] !== "undefined" &&
-          window["safari"].pushNotification)
-    ),
+// Detected lazily (and cached) rather than at module load, so importing the
+// library in a non-browser environment (SSR / Node / tests) does not throw on
+// the missing window/navigator/document globals.
+export function getBrowserInfo(): BrowserInfo {
+  if (cachedBrowserInfo) return cachedBrowserInfo;
 
-  // Internet Explorer 6-11
-  isIE: /*@cc_on!@*/ false || !!document["documentMode"],
+  if (
+    typeof window === "undefined" ||
+    typeof navigator === "undefined" ||
+    typeof document === "undefined"
+  ) {
+    cachedBrowserInfo = {
+      isOpera: false,
+      isFirefox: false,
+      isSafari: false,
+      isIE: false,
+      isEdge: false,
+      isChrome: false,
+      isBlink: false,
+    };
+    return cachedBrowserInfo;
+  }
 
-  // Chrome 1 - 71
-  isChrome:
-    !!window["chrome"] &&
-    (!!window["chrome"]["webstore"] || !!window["chrome"]["runtime"]),
-  isEdge: false,
-  isBlink: false,
-};
+  const info: BrowserInfo = {
+    // Opera 8.0+
+    isOpera:
+      (!!window["opr"] && !!window["opr"]["addons"]) ||
+      !!window["opera"] ||
+      navigator.userAgent.indexOf(" OPR/") >= 0,
 
-// Edge 20+
-browserInfo.isEdge = !browserInfo.isIE && !!window["StyleMedia"];
-// Blink engine detection
-browserInfo.isBlink =
-  (browserInfo.isChrome || browserInfo.isOpera) && !!window["CSS"];
+    // Firefox 1.0+
+    isFirefox: typeof window["InstallTrigger"] !== "undefined",
+
+    // Safari 3.0+ "[object HTMLElementConstructor]"
+    isSafari:
+      /constructor/i.test(window["HTMLElement"] as unknown as string) ||
+      (function (p) {
+        return p.toString() === "[object SafariRemoteNotification]";
+      })(
+        !window["safari"] ||
+          (typeof window["safari"] !== "undefined" &&
+            window["safari"].pushNotification)
+      ),
+
+    // Internet Explorer 6-11
+    isIE: /*@cc_on!@*/ false || !!document["documentMode"],
+
+    // Chrome 1 - 71
+    isChrome:
+      !!window["chrome"] &&
+      (!!window["chrome"]["webstore"] || !!window["chrome"]["runtime"]),
+    isEdge: false,
+    isBlink: false,
+  };
+
+  // Edge 20+
+  info.isEdge = !info.isIE && !!window["StyleMedia"];
+  // Blink engine detection
+  info.isBlink = (info.isChrome || info.isOpera) && !!window["CSS"];
+
+  cachedBrowserInfo = info;
+  return info;
+}
