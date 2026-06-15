@@ -63,6 +63,7 @@ const defaultComponentMap: IComponentMap = {
   null: SchemaFormComponent,
   string: SchemaFormComponent,
   number: SchemaFormComponent,
+  integer: SchemaFormComponent,
   enum: SchemaFormComponent,
   boolean: SchemaFormComponent,
   date: SchemaFormComponent,

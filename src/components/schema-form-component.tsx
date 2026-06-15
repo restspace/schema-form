@@ -10,7 +10,7 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
-export const SchemaFormComponentWrapper: FunctionComponent<ISchemaComponentProps> = ({ errors, caption, children, schema, isRequired, context }) => {
+export const SchemaFormComponentWrapper: FunctionComponent<React.PropsWithChildren<ISchemaComponentProps>> = ({ errors, caption, children, schema, isRequired, context }) => {
     const isError = errors.length > 0 && !schema['readOnly'] && schema['editor'] !== 'hidden';
     const errorClass = isError ? "sf-has-error " : "";
     const requiredClass = isRequired ? "sf-required " : ""
@@ -158,6 +158,26 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
         }
     }
 
+    function handleChangeInteger(ev: React.FormEvent) {
+        const str = ev.target['value'] as string;
+        if (str.trim() === '') {
+            setHoldString('');
+            dispatch(ValueAction.set(path, null));
+        } else {
+            const num = Number(str);
+            if (!Number.isInteger(num)) {
+                // Keep the raw string in the UI while the value is not a valid integer
+                setHoldString(str);
+            } else {
+                const canonical = num.toString();
+                // Preserve the raw string when it differs from the canonical form
+                // (e.g. leading zeros or a trailing decimal point while typing)
+                setHoldString(str === canonical ? '' : str);
+                dispatch(ValueAction.set(path, num));
+            }
+        }
+    }
+
     function handleCurrencyChange(ev: React.FormEvent) {
         let str = ev.target['value'] as string;
         if (str === '' || str == currencySymbol) {
@@ -212,6 +232,10 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
                 const numberDisplay = holdString !== '' ? holdString : valueString;
                 const numberProps = { ...baseProps, value: numberDisplay, onChange: () => {}, onInput: handleChangeNumber };
                 return (<input {...numberProps} type="number" className={classes("sf-number")} />)
+            case "integer":
+                const integerDisplay = holdString !== '' ? holdString : valueString;
+                const integerProps = { ...baseProps, value: integerDisplay, onChange: () => {}, onInput: handleChangeInteger };
+                return (<input {...integerProps} type="number" step={1} className={classes("sf-number sf-integer")} />)
             case "currency":
                 const currencyProps = { ...baseProps, value: holdString ? holdString : formatCurrency(value), onChange: () => {}, onInput: handleCurrencyChange };
                 console.log('hold string:::' + holdString);
@@ -244,6 +268,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
             case "enum":
                 const enumText: (string | number)[] = schema['enumText'] || schema['enum'];
                 if (schema['type'] === 'number') selectProps.onChange = handleChangeNumber;
+                if (schema['type'] === 'integer') selectProps.onChange = handleChangeInteger;
                 return (
                 <select {...selectProps} className={classes("sf-enum")}>
                     <option key='' value=''></option>

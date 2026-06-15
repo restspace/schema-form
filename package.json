@@ -1,6 +1,6 @@
 {
   "name": "@restspace/schema-form",
-  "version": "1.1.5",
+  "version": "2.0.0",
   "description": "JSON Schema based form generator in React",
   "author": "James Ellis-Jones",
   "license": "MIT",
@@ -34,9 +34,9 @@
   },
   "homepage": "https://github.com/restspace/schema-form#readme",
   "devDependencies": {
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.21.4",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-typescript": "^7.26.0",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -44,13 +44,12 @@
     "@types/jsonpointer": "^4.0.0",
     "@types/lodash": "^4.14.138",
     "@types/node": "^18.15.11",
-    "@types/react": "^16.8.6 || ^17",
-    "@types/react-dom": "^16.8.6 || ^17",
-    "@types/react-test-renderer": "^16.8.3",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
     "babel-jest": "^24.9.0",
     "jest": "^24.9.0",
-    "react-scripts-ts": "^3.1.0",
-    "react-test-renderer": "^16.8.6",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "rollup": "^3",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-esbuild": "^5.0.0",
@@ -60,7 +59,11 @@
     "rollup-plugin-typescript2": "^0.34.1",
     "sass": "^1.29.0",
     "tslib": "^2.5.0",
-    "typescript": "^3.9.7"
+    "typescript": "~5.3.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@exodus/schemasafe": "^1.0.0-rc.7",
