@@ -15,6 +15,7 @@ import {
   IComponentMap,
   IContainerMap,
   ISchemaFormContext,
+  JSONSchema,
 } from "./schema-form-interfaces";
 import {
   ValueDispatch,
@@ -31,7 +32,7 @@ import { SchemaContext } from "../schema/schemaContext";
 import { OneOfRadioEditor } from "../editors/oneOf-radio-editor";
 
 export interface ISchemaFormProps {
-  schema: object | object[];
+  schema: JSONSchema | JSONSchema[];
   value: object;
   onChange?(
     value: object,
@@ -126,8 +127,8 @@ export default function SchemaForm(
   );
   const mergedComponentContext = useMemo(() => {
     let cc = componentContext;
-    if (schema && schema["currencySymbol"]) {
-      cc = { ...(cc || {}), currencySymbol: schema["currencySymbol"] };
+    if (schema && (schema as JSONSchema)["currencySymbol"]) {
+      cc = { ...(cc || {}), currencySymbol: (schema as JSONSchema)["currencySymbol"] };
     }
     if (gridMode !== undefined) {
       cc = { ...(cc || {}), gridMode };

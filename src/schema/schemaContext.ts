@@ -1,10 +1,11 @@
 import { deepCopy } from "../utility";
 import { makeSchemaResolver } from "./schema";
+import { JSONSchema } from "../components/schema-form-interfaces";
 import { validator } from "@exodus/schemasafe";
 
 export class SchemaContext {
-  resolver: (address: string) => object;
-  rootSchema: object;
+  resolver: (address: string) => JSONSchema;
+  rootSchema: JSONSchema;
   onError?: (
     path: string[],
     schemaPath: string[],
@@ -13,7 +14,7 @@ export class SchemaContext {
   ) => string;
 
   constructor(
-    baseSchemas: object | object[],
+    baseSchemas: JSONSchema | JSONSchema[],
     onError?: (
       path: string[],
       schemaPath: string[],
@@ -39,7 +40,7 @@ export class SchemaContext {
   // is compiled at most once for the lifetime of this context.
   private validatorCache = new WeakMap<object, ReturnType<typeof validator>>();
 
-  validatorFor(schema: object, schemas: object[] = []) {
+  validatorFor(schema: JSONSchema, schemas: JSONSchema[] = []) {
     return validator(schema, {
       includeErrors: true,
       allErrors: true,
@@ -51,7 +52,7 @@ export class SchemaContext {
     });
   }
 
-  validationErrors(schema: object, value: any) {
+  validationErrors(schema: JSONSchema, value: any) {
     let validate = this.validatorCache.get(schema);
     if (!validate) {
       if (
@@ -72,7 +73,7 @@ export class SchemaContext {
     return validate(value) ? null : validate.errors;
   }
 
-  private baseRefsOnRootInner(schema: object) {
+  private baseRefsOnRootInner(schema: JSONSchema) {
     for (const key in schema) {
       if (key === "$ref" && schema[key].startsWith("#")) {
         schema[key] = this.rootSchema["$id"] + schema[key];
@@ -82,7 +83,7 @@ export class SchemaContext {
     }
   }
 
-  baseRefsOnRoot(schema: object): object {
+  baseRefsOnRoot(schema: JSONSchema): JSONSchema {
     const schemaCopy = deepCopy(schema);
     this.baseRefsOnRootInner(schemaCopy);
     return schemaCopy;

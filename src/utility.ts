@@ -49,33 +49,34 @@ export function isEmpty(map: object | null): boolean {
   return true;
 }
 
-export function deepCopy(obj: object): object {
-  var copy;
+export function deepCopy<T>(obj: T): T {
+  const source: any = obj;
+  let copy: any;
 
   // Handle the 3 simple types, and null or undefined
-  if (null == obj || "object" != typeof obj) return obj;
+  if (null == source || "object" != typeof source) return obj;
 
   // Handle Date
-  if (obj instanceof Date) {
+  if (source instanceof Date) {
     copy = new Date();
-    copy.setTime(obj.getTime());
+    copy.setTime(source.getTime());
     return copy;
   }
 
   // Handle Array
-  if (obj instanceof Array) {
+  if (source instanceof Array) {
     copy = [];
-    for (var i = 0, len = obj.length; i < len; i++) {
-      copy[i] = deepCopy(obj[i]);
+    for (var i = 0, len = source.length; i < len; i++) {
+      copy[i] = deepCopy(source[i]);
     }
     return copy;
   }
 
   // Handle Object
-  if (obj instanceof Object) {
+  if (source instanceof Object) {
     copy = {};
-    for (var attr in obj) {
-      if (obj.hasOwnProperty(attr)) copy[attr] = deepCopy(obj[attr]);
+    for (var attr in source) {
+      if (source.hasOwnProperty(attr)) copy[attr] = deepCopy(source[attr]);
     }
     return copy;
   }
@@ -93,7 +94,7 @@ export function copySetPath(
   } else {
     return {
       ...value,
-      [path[0]]: copySetPath(value[path[0]], path.slice(1), valueAtPath),
+      [path[0]]: copySetPath((value as any)[path[0]], path.slice(1), valueAtPath),
     };
   }
 }
@@ -165,7 +166,7 @@ export function getByPath(value: object, path: string[]): any {
   if (Array.isArray(value)) {
     return getByPath(value[indexFromPathElement(head)], tail);
   } else if (typeof value === "object") {
-    return getByPath(value[head], tail);
+    return getByPath((value as any)[head], tail);
   } else {
     return undefined;
   }
@@ -254,39 +255,39 @@ export function getBrowserInfo(): BrowserInfo {
   const info: BrowserInfo = {
     // Opera 8.0+
     isOpera:
-      (!!window["opr"] && !!window["opr"]["addons"]) ||
-      !!window["opera"] ||
+      (!!(window as any)["opr"] && !!(window as any)["opr"]["addons"]) ||
+      !!(window as any)["opera"] ||
       navigator.userAgent.indexOf(" OPR/") >= 0,
 
     // Firefox 1.0+
-    isFirefox: typeof window["InstallTrigger"] !== "undefined",
+    isFirefox: typeof (window as any)["InstallTrigger"] !== "undefined",
 
     // Safari 3.0+ "[object HTMLElementConstructor]"
     isSafari:
-      /constructor/i.test(window["HTMLElement"] as unknown as string) ||
+      /constructor/i.test((window as any)["HTMLElement"] as unknown as string) ||
       (function (p) {
         return p.toString() === "[object SafariRemoteNotification]";
       })(
-        !window["safari"] ||
-          (typeof window["safari"] !== "undefined" &&
-            window["safari"].pushNotification)
+        !(window as any)["safari"] ||
+          (typeof (window as any)["safari"] !== "undefined" &&
+            (window as any)["safari"].pushNotification)
       ),
 
     // Internet Explorer 6-11
-    isIE: /*@cc_on!@*/ false || !!document["documentMode"],
+    isIE: /*@cc_on!@*/ false || !!(document as any)["documentMode"],
 
     // Chrome 1 - 71
     isChrome:
-      !!window["chrome"] &&
-      (!!window["chrome"]["webstore"] || !!window["chrome"]["runtime"]),
+      !!(window as any)["chrome"] &&
+      (!!(window as any)["chrome"]["webstore"] || !!(window as any)["chrome"]["runtime"]),
     isEdge: false,
     isBlink: false,
   };
 
   // Edge 20+
-  info.isEdge = !info.isIE && !!window["StyleMedia"];
+  info.isEdge = !info.isIE && !!(window as any)["StyleMedia"];
   // Blink engine detection
-  info.isBlink = (info.isChrome || info.isOpera) && !!window["CSS"];
+  info.isBlink = (info.isChrome || info.isOpera) && !!(window as any)["CSS"];
 
   cachedBrowserInfo = info;
   return info;

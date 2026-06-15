@@ -6,6 +6,7 @@ import { isEmpty, deepCopy } from "../utility";
 import { emptyValue } from "../schema/schema";
 import isEqual from "lodash-es/isEqual";
 import { SchemaContext } from "../schema/schemaContext";
+import { JSONSchema } from "./schema-form-interfaces";
 
 export interface ISchemaPagedFormProps extends ISchemaFormProps {
   onSubmit?(value: object, page: number): void;
@@ -24,12 +25,16 @@ export interface ISchemaPagedFormProps extends ISchemaFormProps {
 }
 
 export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
-  const pageSchema = props.schema["properties"]["page" + props.page];
+  // The paged form always works with a single object schema (pages live under
+  // its `properties`); narrow it once for typed keyword access.
+  const schemaObj = props.schema as JSONSchema;
+  const propsValue = props.value as { [key: string]: any };
+  const pageSchema = schemaObj["properties"]["page" + props.page];
   const [value, setValue] = useState(props.value);
   const refLastPropsValue = useRef(props.value);
   const refValue = useRef(value);
   const [pageValue, setPageValue] = useState(
-    props.value["page" + props.page] || {}
+    propsValue["page" + props.page] || {}
   );
   const [entered, setEntered] = useState(false);
 
@@ -39,7 +44,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
       const pageKey = "page" + props.page;
       // Don't mutate the parent-owned props object; derive a local copy that
       // guarantees the current page bucket exists.
-      const nextValue = props.value[pageKey]
+      const nextValue: { [key: string]: any } = propsValue[pageKey]
         ? props.value
         : { ...props.value, [pageKey]: {} };
       setValue(nextValue);
@@ -52,7 +57,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
   useEffect(() => {
     setEntered(false);
     const pageKey = "page" + props.page;
-    setPageValue(props.value[pageKey] || {});
+    setPageValue(propsValue[pageKey] || {});
   }, [props.page]);
 
   // if (!pageSchema) return (
@@ -75,8 +80,8 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     setEntered(true);
     const pageKey = "page" + props.page;
     const errors = validate(
-      props.schema["properties"][pageKey],
-      value[pageKey],
+      schemaObj["properties"][pageKey],
+      (value as { [key: string]: any })[pageKey],
       new SchemaContext(props.schema)
     );
     if (props.onPage && isEmpty(errors)) props.onPage(value, page, props.page);
@@ -96,7 +101,7 @@ export default function SchemaPagedForm(props: ISchemaPagedFormProps) {
     }
   }
 
-  const pageLast = Object.keys(props.schema["properties"]).reduce(
+  const pageLast = Object.keys(schemaObj["properties"]).reduce(
     (currCount, key) => {
       let val = 0;
       if (key.substr(0, 4) === "page") val = parseInt(key.substr(4));

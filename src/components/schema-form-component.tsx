@@ -95,12 +95,12 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleChange(ev: React.FormEvent) {
-        const val = ev.target['value'] as string;
+        const val = (ev.target as HTMLInputElement).value as string;
         dispatch(ValueAction.set(path, val));
     }
 
     function handleTextChange(ev: React.FormEvent) {
-        let val = ev.target['value'];
+        let val = (ev.target as HTMLInputElement).value;
         if (schema['filter']) {
             val = stringFilters[schema['filter'] as string].toStore(val);
         }
@@ -114,13 +114,13 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleDateTimeChange(ev: React.FormEvent) {
-        if (!ev.target['validity'].valid) return;
-        const val = ev.target['value'] + ':00Z';
+        if (!(ev.target as HTMLInputElement).validity.valid) return;
+        const val = (ev.target as HTMLInputElement).value + ':00Z';
         dispatch(ValueAction.set(path, val));
     }
 
     function handleTextDateTimeChange(ev: React.FormEvent) {
-        const str = ev.target['value'] as string;
+        const str = (ev.target as HTMLInputElement).value as string;
         if (str === '') {
             setHoldString('');
             dispatch(ValueAction.set(path, null));
@@ -138,7 +138,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleChangeNumber(ev: React.FormEvent) {
-        const str = ev.target['value'] as string;
+        const str = (ev.target as HTMLInputElement).value as string;
         if (str === '') {
             setHoldString('');
             dispatch(ValueAction.set(path, null));
@@ -158,7 +158,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleChangeInteger(ev: React.FormEvent) {
-        const str = ev.target['value'] as string;
+        const str = (ev.target as HTMLInputElement).value as string;
         if (str.trim() === '') {
             setHoldString('');
             dispatch(ValueAction.set(path, null));
@@ -178,7 +178,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleCurrencyChange(ev: React.FormEvent) {
-        let str = ev.target['value'] as string;
+        let str = (ev.target as HTMLInputElement).value as string;
         if (str === '' || str == currencySymbol) {
             setHoldString('');
             dispatch(ValueAction.set(path, null));
@@ -195,7 +195,7 @@ export function SchemaFormComponent(props: ISchemaComponentProps): React.ReactEl
     }
 
     function handleCheckChange(ev: React.ChangeEvent) {
-        dispatch(ValueAction.set(path, ev.target['checked']));
+        dispatch(ValueAction.set(path, (ev.target as HTMLInputElement).checked));
     }
 
     function handleFocus() {

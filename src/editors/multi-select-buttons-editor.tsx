@@ -17,7 +17,7 @@ export function MultiSelectButtonsEditor(
   const arrayValue = (value as string[]) || [];
 
   const handleCheckChange = (enumValue: string) => (ev: React.ChangeEvent) => {
-    const newValue = !!ev.target["checked"]
+    const newValue = !!(ev.target as HTMLInputElement).checked
       ? [...arrayValue, enumValue]
       : arrayValue.filter((v) => v !== enumValue);
 

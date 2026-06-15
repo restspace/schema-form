@@ -61,7 +61,7 @@ export function SchemaFormObject({
           <ComponentForType
             schema={subSchema as object}
             path={[...path, key]}
-            value={value && value[key]}
+            value={value && (value as any)[key]}
             isRequired={requireds && requireds.indexOf(key) >= 0}
             errors={ErrorObject.forKey(errors, key)}
             onFocus={onFocus}

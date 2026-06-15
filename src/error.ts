@@ -2,6 +2,7 @@ import { ValidationError } from "@exodus/schemasafe";
 import { jsonPointerToPath, nullOptionalsAllowed } from "./schema/schema";
 import { afterLast, getByPath, withoutNoValueProperties } from "./utility";
 import { SchemaContext } from "./schema/schemaContext";
+import { JSONSchema } from "./components/schema-form-interfaces";
 
 export interface ErrorItem {
   path: string[];
@@ -17,7 +18,7 @@ export class ErrorObject {
 }
 
 export function validate(
-  schema: object,
+  schema: JSONSchema,
   value: object,
   context: SchemaContext
 ) {

@@ -6,10 +6,10 @@ import {
   camelToTitle,
 } from "../utility";
 import jsonpointer from "jsonpointer";
-import { ISchemaFormContext } from "../components/schema-form-interfaces";
+import { ISchemaFormContext, JSONSchema } from "../components/schema-form-interfaces";
 import { SchemaContext } from "./schemaContext";
 
-export function fieldType(schema: object): string {
+export function fieldType(schema: JSONSchema): string {
   let type = schema["type"];
   if (schema["enum"]) type = "enum";
   if (schema["format"]) type += "-" + schema["format"];
@@ -28,13 +28,13 @@ export function fieldType(schema: object): string {
   }
 }
 
-export function containerType(schema: object): string {
+export function containerType(schema: JSONSchema): string {
   let type = schema["type"];
   if (schema["editor"]) type = schema["editor"];
   return type;
 }
 
-export function emptyValue(schema: object): any {
+export function emptyValue(schema: JSONSchema): any {
   switch (schema["type"] || "") {
     case "object":
       return {};
@@ -46,7 +46,7 @@ export function emptyValue(schema: object): any {
 }
 
 export function fieldCaption(
-  schema: object,
+  schema: JSONSchema,
   path: string[],
   value?: any
 ): string {
@@ -93,14 +93,14 @@ export function jsonPointerToPath(pointer: string) {
 
 /** manipulate the schema to allow any optional property to have a null value
  * which is appropriate for form input */
-export function nullOptionalsAllowed(schema: object): object {
+export function nullOptionalsAllowed(schema: JSONSchema): JSONSchema {
   if (schema === null || schema === undefined) schema = {};
   let newSchema = deepCopy(schema);
   nullOptionalsAllowedApply(newSchema);
   return newSchema;
 }
 
-function nullOptionalsAllowedApply(schema: object) {
+function nullOptionalsAllowedApply(schema: JSONSchema) {
   let req: Array<string> = schema["required"] || [];
   if (schema["$ref"]) return;
   switch (schema["type"]) {
@@ -142,9 +142,9 @@ function nullOptionalsAllowedApply(schema: object) {
 }
 
 export function conjoin(
-  schema0: object | null,
-  schema1: object | null
-): object | null {
+  schema0: JSONSchema | null,
+  schema1: JSONSchema | null
+): JSONSchema | null {
   if (schema0 === null || schema1 === null) return null;
 
   if (isEmpty(schema0)) return deepCopy(schema1);
@@ -263,9 +263,9 @@ export function conjoin(
 }
 
 export function disjoin(
-  schema0: object | null,
-  schema1: object | null
-): object | null {
+  schema0: JSONSchema | null,
+  schema1: JSONSchema | null
+): JSONSchema | null {
   if (schema0 === null) return schema1;
   else if (schema1 === null) return schema0;
 
@@ -369,15 +369,15 @@ export function disjoin(
 }
 
 export function fieldUnion(
-  baseSchema: object,
-  schema: object | null
-): object | null {
+  baseSchema: JSONSchema,
+  schema: JSONSchema | null
+): JSONSchema | null {
   schema = expandConditionals(baseSchema, schema);
   if (schema === null) return null;
 
   if (!schema["type"])
     throw new Error("object not well-formed schema in fieldUnion, no type field");
-  let union = {
+  let union: JSONSchema = {
     $type: fieldType(schema),
   };
   switch (schema["type"]) {
@@ -395,9 +395,9 @@ export function fieldUnion(
 }
 
 function expandConditionals(
-  baseSchema: object,
-  schema: object | null
-): object | null {
+  baseSchema: JSONSchema,
+  schema: JSONSchema | null
+): JSONSchema | null {
   if (schema === null) return null;
 
   let conditionalParts = [];
@@ -419,7 +419,7 @@ function expandConditionals(
   return schema;
 }
 
-export function schemaHasConditional(schema: object) {
+export function schemaHasConditional(schema: JSONSchema) {
   return (
     (schema["if"] && (schema["then"] || schema["else"])) ||
     schema["anyOf"] ||
@@ -428,11 +428,11 @@ export function schemaHasConditional(schema: object) {
 }
 
 export function applyConditional(
-  schema: object,
+  schema: JSONSchema,
   val: object,
   context: SchemaContext
-): object | null {
-  let result: object | null = null;
+): JSONSchema | null {
+  let result: JSONSchema | null = null;
   if (schema["if"]) {
     let valid = !context.validationErrors(
       nullOptionalsAllowed(schema["if"]),
@@ -455,7 +455,7 @@ export function applyConditional(
     // We only select and apply subschemas which when added to the parent schema will
     // validate against the current value
     let disjunction = null;
-    for (let subSchema of <object[]>schema["anyOf"]) {
+    for (let subSchema of <JSONSchema[]>schema["anyOf"]) {
       const schemaWithSubSchema = conjoin(
         Object.fromEntries(
           Object.entries(schema).filter(([k]) => k !== "anyOf")
@@ -481,8 +481,8 @@ export function applyConditional(
     result = conjoin(result || schema, disjunction);
   }
   if (schema["allOf"]) {
-    let conjunction: object | null = {};
-    for (let subSchema of <object[]>schema["allOf"]) {
+    let conjunction: JSONSchema | null = {};
+    for (let subSchema of <JSONSchema[]>schema["allOf"]) {
       let apply = applyConditional(subSchema, val, context) || subSchema;
       conjunction = conjoin(conjunction, apply);
     }
@@ -530,7 +530,7 @@ export function applyOrder<T>(
   order: string[]
 ): T[] {
   const result: T[] = [];
-  const itemMap = items.reduce(
+  const itemMap: { [k: string]: any } = items.reduce(
     (partMap, item) => ({ ...partMap, [selector(item)]: item }),
     {}
   );
@@ -547,7 +547,7 @@ export function applyOrder<T>(
 }
 
 export const makeSchemaResolver =
-  (schemas: object[], fallbackResolver?: (address: string) => object) =>
+  (schemas: JSONSchema[], fallbackResolver?: (address: string) => JSONSchema) =>
   (address: string) => {
     let resolution;
     if (address.startsWith("#")) {
@@ -576,7 +576,7 @@ export const makeSchemaResolver =
     return resolution || (fallbackResolver && fallbackResolver(address));
   };
 
-export const deleteSubschemaProperties = (value: any, schema: object): any => {
+export const deleteSubschemaProperties = (value: any, schema: JSONSchema): any => {
   const schemaType = schema["type"];
   if (schemaType === "object" && value && typeof value === "object") {
     if (schema["properties"]) {
