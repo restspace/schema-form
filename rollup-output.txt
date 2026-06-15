@@ -1,9 +1,0 @@
-[36m
-[1msrc/index.tsx[22m → [1mbuild/index.js, build/index.es.js[22m...[39m
-[1m[33m(!) Module level directives cause errors when bundled, "use client" in "node_modules/react-dropzone-esm/dist/esm/index.mjs" was ignored.[39m[22m
-[1mnode_modules/react-dropzone-esm/dist/esm/index.mjs (1:0)[22m
-[90m1: 'use client';
-   ^
-2: import React, { forwardRef, useImperativeHandle, Fragment, useMemo, useRef, useReducer, useEffect, useCallback } from...
-3: import PropTypes from 'prop-types';[39m
-[32mcreated [1mbuild/index.js, build/index.es.js[22m in [1m21.1s[22m[39m
